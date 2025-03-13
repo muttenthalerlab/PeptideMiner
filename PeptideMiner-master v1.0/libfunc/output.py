@@ -39,7 +39,7 @@ def fasta(filename,seq):
         for l in seq:
             i=l[0]
             seq=l[1]
-            out.write('>{}\n{}\n'.format(i,seq))
+            out.write(f">{i}\n{seq}\n")
 
 
 def csv(filename,header,lines):

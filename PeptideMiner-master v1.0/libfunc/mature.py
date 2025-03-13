@@ -28,6 +28,6 @@ def findmat(sequence,fasta,ecutoff,min_length,max_length):
         if len(seq) <= int(min_length) or len(seq) >= int(max_length):
             continue
         else:
-            output.append(['{}_{}'.format(sequence[0],i),seq])
+            output.append([f"{sequence[0]}_{seq}"])
 
     return output

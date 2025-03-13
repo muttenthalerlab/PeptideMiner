@@ -8,28 +8,27 @@ Support module for Step 7.
 
 def make(knownseqfile):
     """Create a ncbi db of knownseqfile"""
-    blastdb = os.popen('{0}/makeblastdb -in {1} -dbtype prot -hash_index -out {1}'.format(
-        config.C['ncbi_path'],knownseqfile))
+    blastdb = os.popen('{0}/makeblastdb -in {knownseqfile} -dbtype prot -hash_index -out {knownseqfile}'.format(
+        config.C['ncbi_path'],))
 
 
 def check(knownseqfile):
     """Check if an NCBI db of the knownseqfile already exists"""
     query = '{}'.format(knownseqfile)
 
-    if os.path.isfile('{}.phd'.format(knownseqfile)) is True:
-        print 'Yay, there is already an NCBI database for {}!\n'.format(knownseqfile)
+    if os.path.isfile(f'{knownseqfile}.phd') :
+        print(f" [BLAST] NCBI database for {knownseqfile} exists already !\n")
     else:
-        print 'Making an NCBI database for {0} in {1}.\n'.format(
-            knownseqfile,config.C['neuropeptide_family'])
-        make('{}'.format(knownseqfile))
+        print(f" [BLAST] Creating an NCBI database for {knownseqfile} in {config.C['neuropeptide_family']}.\n")
+        make(knownseqfile)
     return query
 
 
-def blastp(blastdb,queryfile,outfile):
-    print 'Running BLASTp...'
+def blastp(blastdb, queryfile, outfile):
+    print(' [BLAST] Running BLASTp...')
     blastp = os.popen('{0}/blastp -db {1} -query {2} -outfmt 10 -out {3}'.format(
         config.C['ncbi_path'],blastdb,queryfile,outfile))
-    print 'BLASTp complete.'
+    print('  [BLAST] BLASTp complete.')
 
     return blastp
 
@@ -53,7 +52,8 @@ def parse(blastoutput):
     B = []
     blastout = file(blastoutput)
     for b in blastout:
-        B.append([int(b[0]),b[1],b[2],b[3],b[10]])#[hit,known sequence,PID,length,evalue]
+        #[hit,known sequence,PID,length,evalue]
+        B.append([int(b[0]),b[1],b[2],b[3],b[10]])
 
     """Create list of unique query id's"""
     query = set([i[0] for i in B])

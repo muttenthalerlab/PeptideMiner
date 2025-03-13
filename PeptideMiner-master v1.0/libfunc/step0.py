@@ -59,26 +59,26 @@ def combine(out_path,query):
 
 
 def run():
-    """Set up paths to profile-HMMs, query database and output"""
+    #Set up paths to profile-HMMs, query database and output
     query_path = config.C['query_path']
-    hmm_dir = '{}/data/02-pHMM'.format(config.C['path'])
+    hmm_dir = f'{config.C['path']}/data/02-pHMM'
     out_dir = './01-hmmsearch'
     hmmsearchout = './01-hmmsearch/00-step0_hmmsearchoutput.txt'
 
-    """Get a list of the profile-HMMs available for the desired neuropeptide family"""
+    #"Get a list of the profile-HMMs available for the desired neuropeptide family"""
     hmms = []
     for h in os.listdir(hmm_dir):
         if h.startswith(str(config.C['neuropeptide_family'])):
             hmms.append('{}/{}'.format(hmm_dir,h))
 
-    """Retrieve query db and profile-HMMs and do hmmsearch"""
-    print 'Running hmmsearch...'
+    #Retrieve query db and profile-HMMs and do hmmsearch
+    print('Running hmmsearch...')
     search = []
     csv = []
     for q in os.listdir(query_path):
         if q.endswith('.fna'):
-            q_path = '{}/{}'.format(query_path,q)
-            print 'The query is {}'.format(q_path)
+            q_path = f"{query_path}/{q}"
+            print(f"The query is {q_path}")
             query = ''.join(q.split('.')[:1])
             
             with open(q_path,'r') as f:
@@ -87,17 +87,17 @@ def run():
             
             for h in hmms:
                 hmm = h.strip().split('/')[-1].split('.')[0]
-                hmm_path = '{}/{}.hmm'.format(hmm_dir,hmm)
-                print 'The pHMM path is {}\n'.format(hmm_path)
+                hmm_path = f"{hmm_dir}/{hmm}.hmm"
+                print("The pHMM path is {hmm_path}\n")
                 out_path = "{}/{}.{}".format(out_dir,hmm,query)
 
-                """hmmsearch"""
+                #hmmsearch
                 search.append(hmmsearch(out_path,hmm_path,q_path))
                 
-                """Add read sequence to output file"""
+                #Add read sequence to output file
                 csv = combine(out_path,fastaDict)
 
-    """Output hmmsearch stdout and stderr to text file"""
+    #Output hmmsearch stdout and stderr to text file
     out = []
     for l in search:
         ll = "\n".join(l)

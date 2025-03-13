@@ -22,15 +22,15 @@ def filt(input_file):
                 continue
             E.append([fields[0],hmm,transcriptome_name,fields[4],fields[19]])
 
-    """Isolate readnames in the table and keep only the unique ones"""
+    #Isolate readnames in the table and keep only the unique ones
     nodup = set([i[0] for i in E])
     
     S = []
     for r in nodup:
-        """Isolate lines where the r == readname"""
+        #Isolate lines where the r == readname
         b = [i for i in E if i[0] == r]
         
-        """Sort list accroding to evalue"""
+        #Sort list accroding to evalue
         b.sort(key=lambda i:float(i[3]))
         S.append(b[0])
     return S

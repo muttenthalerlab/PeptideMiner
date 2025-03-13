@@ -14,16 +14,11 @@ def step1b(input_file):
     return name
 
 
-def loop():
+def get_csv_files(Dir):
     files=[]
-    hmmoutput_dir = './01-hmmsearch'
-
-    for file in os.listdir(hmmoutput_dir):
+    for file in os.listdir(Dir):
         if file.endswith('.csv'):
-            files.append('{}/{}'.format(hmmoutput_dir,file))
-        else:
-            continue
-
+            files.append(f"{Dir}/{file}")
     return files
 
 
@@ -31,37 +26,37 @@ def pop():
     count = 0
     hmmids=[]
 
-    """loop through the files in the hmmsearch directory"""
-    for file in loop():
+    #loop through the files in the hmmsearch directory
+    for file in get_csv_files('./01-hmmsearch'):
         
-        """Get hmm name from filename"""
+        #Get hmm name from filename
         hmmname=step1a(file)
 
-        """Get transcriptome name from filename"""
+        #Get transcriptome name from filename
         transcriptomename=step1b(file)
 
-        """Filter according to lowest evalue per readname and populate seqreads"""
-        print 'Populating the SQLite seqreads table with hmmsearch hits...'
+        #Filter according to lowest evalue per readname and populate seqreads
+        print("Populating the SQLite seqreads table with hmmsearch hits...")
         for e in evalue.filt(file):
             s = mysqlpop.seqreads(e)
             count += s
 
-        """Return the listof HMM IDs from the sqlite DB"""
+        #Return the listof HMM IDs from the sqlite DB
         hmmid=mysqlout.hmmid(hmmname)
         if hmmid not in hmmids:
             hmmids.append([transcriptomename,hmmid,hmmname])
 
-    print 'Data entry into the SQLite seqreads table is complete.'
-    print '{} hits have been added to the SQLite seqreads table.\n'.format(count)
+    print("Data entry into the SQLite seqreads table is complete.")
+    print(f"{count} hits have been added to the SQLite seqreads table.\n")
     return hmmids
 
 
 def run():
     
-    """Populate SQLite database with hmmsearch output"""
+    #Populate SQLite database with hmmsearch output
     l=pop()
 
-    """Output the name of hmmids to a .csv file"""
+    #Output the name of hmmids to a .csv file
     filename='02-pipeline/step1.csv'
     header=['transcriptome','hmmid','hmmname']
     output.csv(filename,header,l)

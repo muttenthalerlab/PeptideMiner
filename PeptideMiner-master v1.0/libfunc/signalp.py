@@ -7,20 +7,18 @@ Currently accomodates SignalP 4.1 (http://www.cbs.dtu.dk/services/SignalP-4.1/)
 """
 
 def create_temp_fasta (sequence,name='seq'):
-	tmp_seq_file = "/tmp/seq_{0}.fasta".format(random.randint(1,10e9))
+	tmp_seq_file = f"/tmp/seq_{random.randint(1,10e9)}.fasta"
 	tmp = open(tmp_seq_file,'w')
-	tmp.write(""">{0}
-{1}
-""".format(name,sequence))
+	tmp.write(f">{name}\n{sequence}")
 	tmp.close()
 	return tmp_seq_file
 
 def find (sequence,signalp,cutoff):
-        """Run signalp; for signalp-4.1"""
+    #Run signalp; for signalp-4.1"""
 	tmp_seq_file = create_temp_fasta(sequence)
 	signalp = os.popen("{0} -t euk -U {2} -u {2} {1}".format(signalp,tmp_seq_file,cutoff))
 	
-	"""Parse output"""
+	#Parse output"""
 	pos = 0
 	insignal = 0
 	inHMM = 0

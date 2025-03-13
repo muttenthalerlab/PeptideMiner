@@ -20,7 +20,8 @@ def find_regions (sequence,fasta,dir_fasta,ecutoff):
 	for filename in glob.glob("{0}/*.fna*".format(dir_fasta)):
 		name = re.search("/(.*)\.fna",filename).group(1)
 		ali = alignment(sequence,fasta,filename)
-		if len(ali.results) == 0: continue
+		if len(ali.results) == 0: 
+			continue
 		r = ali.results[0]
 		score = r.lenseq - r.overlap
 		if float(r.E) < ecutoff and (best_r is None or best_score > score):
@@ -206,15 +207,14 @@ class cleavage:
 		self.sequence = m.group(2)
 		self.pre = m.group(1)
 		self.post = m.group(3)
+
 	def __str__ (self):
-		return "  {0} cleavage: {1} - {2} - {3}".format(self.name,self.pre,self.sequence,self.post)
+		return(f"  {self.name} cleavage: {self.pre} - {self.sequence} - {self.post}")
 
 def create_temp_fasta (sequence,name='seq'):
-	tmp_seq_file = "/tmp/seq_{0}.fasta".format(random.randint(1,10e9))
+	tmp_seq_file = f"/tmp/seq_{random.randint(1,10e9)}.fasta"
 	tmp = open(tmp_seq_file,'w')
-	tmp.write(""">{0}
-{1}
-""".format(name,sequence))
+	tmp.write(f">{name}\n{sequence}")
 	tmp.close()
 	return tmp_seq_file
 
@@ -304,6 +304,7 @@ class result:
 		self.ali1    = ''
 		self.ali2    = ''
 		self.alim    = ''
+
 	def parse_score1 (self,line):
 		m = re.search("initn: +([0-9]+) init1: +([0-9]+) opt: +([0-9]+) +Z-score: +([0-9\.]+) +bits: +([0-9\.]+) +E\([^\)]*\): +([0-9\.eE\-\+]+)",line)
 		if m:
@@ -312,6 +313,7 @@ class result:
 		m = re.search("Frame: (.) initn",line)
 		if m:
 			self.sense = m.group(1)
+
 	def parse_score2 (self,line):
 		m = re.search("Smith-Waterman score: (\d+); ([0-9\.]+)% identity \(([0-9\.]+)% similar\) in (\d+) (aa|nt) overlap \((\d+)-(\d+):(\d+)-(\d+)\)",line)
 		if m:
@@ -328,6 +330,7 @@ class result:
 					self.frame = ((self.start_l - 1)% 3) + 1
 				else:
 					self.frame = -1*((self.lenseq-self.start_l) % 3 + 1)
+
 	def parse_ali (self):
 		lines = self.ali.split("\n")
 		ali1 = []
@@ -363,14 +366,15 @@ class result:
 		self.alim = "".join(alim)
 
 	def summary(self):
-		return "[{0:3.0f} PID - {1:3.0f} PS] [{2:3d} Overlap] {3}".format(self.PID,self.PS,self.overlap,self.name)
+		return(f"[{self.PID:3.0f} PID - {self.PS:3.0f} PS] [{self.overlap:3d} Overlap] {self.name}")
+
 	def __str__ (self):
-		return """
-> {0}
-{1}
-{2}
-SW {3} - PID {4} - PS {5} - Overlap {6} - Query [{7}-{8}] | Subject [{9}-{10}]
-E {11} Z {12}
-{13}
-""".format(self.name,self.score1,self.score2,self.SW,self.PID,self.PS,self.overlap,self.start_q,
-self.end_q,self.start_l,self.end_l,self.E,self.Z,self.ali)
+		retStr  = f">{self.name}\n"
+		retStr += f"{self.score1}\n"
+		retStr += f"{self.score2}\n"
+		retStr += f"SW {self.SW} - PID {self.PID} - PS {self.PS} "
+		retStr += f"Overlap {self.overlap} - Query [{self.start_q} - {self.end_q}] "
+		retStr += f"| Subject [{self.start_l} - {self.end_l}] \n"
+		retStr += f"E {self.E} Z {self.Z}\n"
+		retStr += f"{self.ali}"
+		return(retStr)

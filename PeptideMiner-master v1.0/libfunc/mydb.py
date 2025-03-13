@@ -13,8 +13,10 @@ class mysql:
 		self.test = False
 		self.verbose = False
 		self.e = None
+
 	def last_error (self):
-		print "Last error: {0}".format(self.e)
+		print(f"Last error: {self.e}")
+
 	def execute (self,query):
 		try:
 			self.cur.execute(query)
@@ -22,46 +24,50 @@ class mysql:
 			return 1
 		except sqlite3.Error as e:
 			self.e = e
-			print "ERROR MYSQL> {0}".format(e)
-			print " << the query was : {0} >>".format(query)
+			print(f"ERROR MYSQL> {e}")
+			print(f" << the query was : {query} >>")
 			return 0
 
 	def __build_query__ (self,fields='',tables='',where='',other=''):
 		if type(fields) != str:
 			fields = ",".join(fields)
-		query = "select {0}".format(fields)
+
+		query = f"select {fields}")
 		if type(tables) != str:
 			if type(tables) == dict:
 				listtab = []
 				for (k,v) in tables.iteritems():
-					listtab.append("{0} {1}".format(k,v))
+					listtab.append(f"{k} {v}")
 				tables = ",".join(listtab)
 			else:
 				tables = ",".join(tables)
+
 		if tables != '':
-			query = "{0} from {1}".format(query,tables)
+			query = f"{query} from {tables}"
+
 		if type(where) != str:
 			if type(where) == dict:
 				listw = []
 				for (k,v) in where.iteritems():
 					if re.search('^[a-z]{1,4}\.[A-za-z_]+$',str(v)): # refer another field
-						listw.append("{0}={1}".format(k,v))
+						listw.append(f"{k}={v}")
 					else:
-						listw.append("{0}=\"{1}\"".format(k,re.sub("\"","\\\"",str(v))))
+						listw.append("{k}=\"{1}\"".format(k,re.sub("\"","\\\"",str(v))))
 				where = " and ".join(listw)
 			else:
 				where = " and ".join(where)
 		if where != '':
-			query = "{0} where {1}".format(query,where)
+			query = f"{query} where {where}"
 		if other != '':
-			query = "{0} {1}".format(query,other)
+			query = f"{query} {other}"
 		if self.verbose:
-			print query
+			print(query)
 		return query
 
 	def onerow (self,fields='',tables='',where='',other=''):
 		self.execute(self.__build_query__(fields,tables,where,other))
 		return self.cur.fetchone()
+	
 	def nextrow (self):
 		return self.cur.fetchone()
 
@@ -80,11 +86,13 @@ class mysql:
 		for i in range(0,len(fields)):
 			resd[fields[i]] = res[i]
 		return resd
+
 	def onerow_dict (self,fields='',tables='',where='',other=''):
 		res = self.onerow(fields,tables,where,other)
 		if not res:
 			return None
 		return self.__row_dict__(fields,res)
+
 	def nextrow_dict (self,fields):
 		return self.__row_dict__(fields,self.cur.fetchone())
 	
@@ -116,14 +124,15 @@ class mysql:
 				v = re.sub('\\\\','\\\\\\\\',str(v))
 				values[k] = "'{0}'".format(re.sub('\'','\\\\\'',str(v)))
 			entered_values[k] = values[k]
+
+		sqlIns  = f"insert into {table} "
+		sqlIns += f" ({','.join(entered_values.keys())}) "
+		sqlIns += f" values ({','.join([str(v) for v in entered_values.values()])})"
 		if not self.test:
-			self.execute("insert into {0} ({1}) values ({2})".format(
-				table,",".join(entered_values.keys()),",".join([str(v) for v in entered_values.values()])
-				))
+			self.execute(sqlIns)
+
 		if self.test and self.verbose:
-			print "insert into {0} ({1}) values ({2})".format(
-				table,",".join(entered_values.keys()),",".join([str(v) for v in entered_values.values()])
-				)
+			print(sqlIns)
 			
 
 	def delete (self,table,where=''):
@@ -133,7 +142,7 @@ class mysql:
 		if not self.test:
 			self.execute(query)
 		if self.test and self.verbose:
-			print query
+			print(query)
 	
 	def update (self,table,values,where=''):
 		query = "update {0} set ".format(table)
@@ -152,7 +161,7 @@ class mysql:
 		if where:
 			query = "{0} where {1}".format(query,where)
 		if self.verbose:
-			print query
+			print(query)
 		if not self.test:
 			self.execute(query)
 	
@@ -161,7 +170,7 @@ class mysql:
 		if not self.test:
 			self.execute(query)
 		if self.test and self.verbose:
-			print query
+			print(query)
 
 	def findminid (self,table,field):
 		maxi = 1
@@ -170,18 +179,20 @@ class mysql:
 		return maxi
 
 	def setminautoincrement (self,table,field):
-		self.alter(table,"AUTO_INCREMENT={0}".format(self.findminid(table,field)))
+		self.alter(table,f"AUTO_INCREMENT={self.findminid(table,field)}")
 
-        def create_if_not (self,db):
-                query = "create database if not exists {}".format(db)
-                if not self.test:
+	def create_if_not (self,db):
+		query = f"create database if not exists {db}"
+		if not self.test:
 			self.execute(query)
+	
 		if self.test and self.verbose:
-			print query
+			print(query)
 
-        def use (self,db):
-                query = "use {}".format(db)
-                if not self.test:
+	def use (self,db):
+		query = f"use {db}"
+		if not self.test:
 			self.execute(query)
+
 		if self.test and self.verbose:
-			print query
+			print(query)

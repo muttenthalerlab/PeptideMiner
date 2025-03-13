@@ -25,7 +25,7 @@ with open(configfile) as f:
 
 """Create the sqlite3 database"""
 if not [f for f in os.listdir('./') if f.endswith('.db')]:
-    print 'Creating the SQLite database'
+    print(' [Sqlite] Creating database')
     sqlite3_path = C['sqlite3_path']
     structure = '{}/data/PeptideMiner.sql'.format(C['path'])
     os.popen('{0} sqlite.db < {1}'.format(sqlite3_path,structure))

@@ -1,14 +1,10 @@
-
-
 """
 PeptideMiner
 Neuropeptide search pipeline
 
 Pipeline requirements:
 1. Config.txt file must be in the working directory
-
 2. Correct paths to required programs must be provided in libfunc/config.txt
-
 3. Output files will be directed to the working directory.
 
 """
@@ -40,7 +36,7 @@ Step 0
 hmmsearch 
 """
 if not output.check_hmm_has_run():
-    print 'Running step 0'
+    print(' [PeptideMiner] Running step 0')
     step0.run()
 
 
@@ -51,7 +47,7 @@ Loops through hmmsearch output files and populates the SQLite DB.
 Returns a list of hmmid per transcriptome database in output folder.
 """
 if not output.check_step_has_run('step1'):
-    print 'Running step 1'
+    print(' [PeptideMiner]  Running step 1')
     step1.run()
 
 
@@ -61,7 +57,7 @@ Step 2
 Output seqreads table to .csv file.
 """
 if not output.check_step_has_run('step2'):
-    print 'Running step 2'
+    print(' [PeptideMiner] Running step 2')
     step2.run()
 
 
@@ -72,7 +68,7 @@ Identification of protein coding sequences (CDS) in hmmsearch hits.
 Outputs a .csv file of the CDS table.
 """
 if not output.check_step_has_run('step3'):
-    print 'Running step 3'
+    print(' [PeptideMiner] Running step 3')
     step3.run()
 
 
@@ -82,7 +78,7 @@ Step 4
 Predicts signal peptides in CDS using SignalP.
 """
 if not output.check_step_has_run('step4'):
-    print 'Running step 4'
+    print(' [PeptideMiner] Running step 4')
     step4.run()
 
 
@@ -93,7 +89,7 @@ Predicts mature peptides in CDS.
 User is given the option to change the mature e-value cut-off after step 5 has run.
 """
 if not output.check_step_has_run('step5'):
-    print 'Running step 5'
+    print(' [PeptideMiner] Running step 5')
     step5.run(config.C['mature_evalue_cutoff'])
     matseq_cont.question()
 
@@ -104,7 +100,7 @@ Populates the sqlite3 mature table.
 Populates the sqlite3 noduplicates table.
 """
 if not output.check_step_has_run('step6'):
-    print 'Running step 6'
+    print(' [PeptideMiner] Running step 6')
     step6.run()
 
 
@@ -114,7 +110,7 @@ Step 7
 Annotates mature peptides using BLASTp.
 """
 if not output.check_step_has_run('step7.'):
-    print 'Running step 7'
+    print(' [PeptideMiner] Running step 7')
     step7.run()
 
 
@@ -124,10 +120,10 @@ Step 8
 Final results output.
 """ 
 if not output.check_step_has_run('step8'):
-    print 'Running step 8'
+    print(' [PeptideMiner] Running step 8')
     step8.run()
 
-print 'PeptideMiner search is complete'
+print(' [PeptideMiner] Search is complete')
 
 
 

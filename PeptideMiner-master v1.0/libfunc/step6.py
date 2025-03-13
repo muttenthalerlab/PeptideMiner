@@ -30,11 +30,9 @@ def mysql_pop(file):
         n = mysqlpop.nodups(cdsid,seq)
         nodups_count += n
         
-    print '\nThe MySQL mature table has been populated.'
-    print '{} mature peptides have been added to the SQLite DB mature table.'.format(
-        matseq_count)
-    print '{} unique mature peptides have been added to the SQLite DB noduplicates\
-table.'.format(nodups_count)
+    print("\nThe MySQL mature table has been populated.")
+    print(f"{matseq_count} mature peptides have been added to the SQLite DB mature table.")
+    print(f"{nodups_count} unique mature peptides have been added to the SQLite DB noduplicates table.")
 
 
 def hmmid(file):
@@ -64,20 +62,20 @@ def nodup():
 def run():
     file_step5 = './02-pipeline/step5.csv'
     
-    print 'Populating the mature and noduplicates table in MySQL...\n'
+    print("Populating the mature and noduplicates table in MySQL...\n")
     mysql_pop(file_step5)
 
     header = ['id','hmm_id','transcriptome','matseq']
     filename = './02-pipeline/step6.fna'
     seq = []
 
-    """Output mature sequences to a fasta file """
+    #Output mature sequences to a fasta file
     for n in nodup():
         for nn in n:
             nn = nn[0].strip().split(',')
             seq.append([nn[0],nn[3]])
 
     output.fasta(filename,seq)
-    print 'The unique mature sequences have been written to the file {}.\n'.format(filename)
+    print(f"The unique mature sequences have been written to the file {filename}.\n")
     
     

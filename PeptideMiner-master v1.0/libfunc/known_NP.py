@@ -31,22 +31,20 @@ def known(file):
 def known_pop():
     count = 0
     knownseqfile = ''
-    knownseqpath = '{}/data/01-known_seq/{}'.format(
-        config.C['path'],config.C['neuropeptide_family'])
+    knownseqpath = f"{config.C['path']}/data/01-known_seq/{config.C['neuropeptide_family']}")
 
     for k in os.listdir(knownseqpath):
         if k.endswith('.fna'):
-            knownseqfile = '{}/{}'.format(knownseqpath,k)
+            knownseqfile = f"{knownseqpath}/{k}"
 
     if knownseqfile == '':
-        print 'No known peptide file in directory {}.\nThe known peptide file\
-must be a fasta file and have the extension .fna.'.format(knownseqpath)
+        print(f"No known peptide file in directory {knownseqpath}")
+        print(f"The known peptide file must be a fasta file and have the extension .fna."
         exit()
     else:
         for s in known(knownseqfile):
             c = mysqlpop.knownseq(s,config.C['neuropeptide_family'])
             count += c
-    print 'The Known_NP table in the MySQL database is populated'
-    print '{} known peptides were added to the SQLite Known_NP table.\n'.format(
-        count)
+    print("The Known_NP table in the MySQL database is populated")
+    print(f"{count} known peptides were added to the SQLite Known_NP table.\n") 
     

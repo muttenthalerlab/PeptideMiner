@@ -29,14 +29,14 @@ def run(evaluecutoff):
     file_step4 = './02-pipeline/step4.csv'
     matseq = []
 
-    """Find mature sequences"""
+    #Find mature sequences
     for s in sp(file_step4):
         mat = mature.findmat(s,path_fasta(),float(evaluecutoff),
                              config.C['mature_min_length'],config.C['mature_max_length'])
         if mat is not None:
             matseq.append(mat)
 
-    """Output to csv file """
+    #Output to csv file
     filename = './02-pipeline/step5.csv'
     header = ['cdsid_mature#','mature sequence']
     out = []
@@ -45,4 +45,4 @@ def run(evaluecutoff):
             out.append(mm)
 
     output.csv(filename,header,out)
-    print 'The mature peptides were written to the file {}.\n'.format(filename)
+    print(f"The mature peptides were written to the file {filename}.\n")

@@ -11,22 +11,22 @@ Most modules take a 'fields' argument which should be a list.
 
 def seqreads(fields):
         m = config.m
-        
+
         hmm=fields[1]
         transcriptome_name=fields[2]
 
         hmmid_hmm = m.onevalue('id','hmm',{'name':hmm})
-        
+
         if hmmid_hmm is None:
                 m.insert('hmm',{'name':hmm})
                 hmmid_hmm = m.onevalue('id','hmm',{'name':hmm})
-                print 'The pHMM "{}" has been added to the SQLite hmm table with ID "{}".'.format(hmm,hmmid_hmm)
+                print(f"The pHMM [{hmm}] has been added to the SQLite hmm table with ID [{hmmid_hmm}].")
 
         readid = m.onevalue('id','seqreads',{'name':fields[0],'hmmid':hmmid_hmm})
 
-        """If the read already exists and was found with the same pHMM, then it will not be added again"""
+        #If the read already exists and was found with the same pHMM, then it will not be added again
         if readid:
-                print 'The read "{}" already exists in the SQLite seqreads table with the pHMM id "{}" and readid "{}"'.format(fields[0],hmmid_hmm,readid)
+                print(f"Read [{fields[0]}] already exists in the SQLite seqreads table with the pHMM id [{hmmid_hmm}] and readid {readid}")
                 return int(0)
         else:
                 m.insert('seqreads',{'name':fields[0],'hmmid':hmmid_hmm,'transcriptome':transcriptome_name,'evalue':fields[3],'signalseq_length':0,'precursor':fields[4]})
@@ -63,9 +63,9 @@ def matseq(cdsid,seq):
         
         mature_unique = m.onevalue('id','mature',{'cds_id':cdsid,'matseq':seq})
         
-        """Check if the entry hasn't been entered before with the specified cds id and mature sequence"""
+        #Check if the entry hasn't been entered before with the specified cds id and mature sequence
         if mature_unique:
-                print 'The mature sequence {} already exists in the mature table with readid {}.'.format(seq,cdsid)
+                print(f"The mature sequence {seq} already exists in the mature table with readid {cdsid}.")
                 return int(0)
         else:
                 m.insert('mature',{'cds_id':cdsid,'matseq':seq})
@@ -81,33 +81,34 @@ def nodups(cdsid,seq):
         id_unique = m.onevalue('id','noduplicates',{'transcriptome':transc_seqreads,'matseq':seq})
 
         if id_unique:
-                print 'The read {} already exists in noduplicates with transcriptome {} and matseq {}.'.format(cdsid,transc_seqreads,seq)
+                print(f"The read {cdsid} already exists in noduplicates with transcriptome {transc_seqreads} and matseq {seq}.")
 
-                """update 'mature' table with existing id from 'noduplicates' table"""
+                #update 'mature' table with existing id from 'noduplicates' table
                 m.update('mature',{'noduplicates_id':id_unique},'matseq="{}"'.format(seq))
-                print 'The read {} in the mature table has been updated with the noduplicates_id {}.'.format(cdsid,id_unique)
+                print(f"The read {cdsid} in the mature table has been updated with the noduplicates_id {id_unique}.")
                 return int(0)
         else:
                 m.insert('noduplicates',{'hmm_id':hmmid_seqreads,'transcriptome':transc_seqreads,'matseq':seq})
-                """update 'mature' table with new id from 'noduplicates' table"""
+                #update 'mature' table with new id from 'noduplicates' table
                 noduplicates_ID = m.onevalue('id','noduplicates',{'matseq':seq})
                 m.update('mature',{'noduplicates_id':noduplicates_ID},'matseq="{}"'.format(seq))
                 return int(1)
 
-def knownseq(fields,neuropeptide_family):#fields = [species,accession,name,seq]
+def knownseq(fields,neuropeptide_family):
+        #fields = [species,accession,name,seq]
         m = config.m
         
         familyid = m.onevalue('id','neuropeptide_family',{'name':neuropeptide_family})
         
         if familyid is None:
-                print 'Insert new family id'
+                print('Insert new family id')
                 m.insert('neuropeptide_family',{'name':neuropeptide_family})
                 familyid = m.onevalue('id','neuropeptide_family',{'name':neuropeptide_family})
 
         known_unique = m.onevalue('id','known_NP',{'familyid':familyid,'accession':fields[1],'name':fields[2]})
 
         if known_unique:
-            print 'The sequence {} for the neuropeptide family {} already exists.'.format(fields[1],neuropeptide_family)
+            print(f"The sequence {fields[1]} for the neuropeptide family {neuropeptide_family} already exists.")
             return int(0)
         else:
             m.insert('known_NP',{'name':fields[2],'familyid':familyid,'species':fields[0],'sequence':fields[3],'accession':fields[1]})
@@ -126,7 +127,7 @@ def annotated(fields):
         annotated_unique = m.onevalue('id','annotated',{'novel_id':hit,'knownNP_id':known})
 
         if annotated_unique:
-                print 'The hit with id {} has already been entered in the annotated table with the knownNP_id {}.'.format(hit,known)
+                print(f"The hit with id {hit} has already been entered in the annotated table with the knownNP_id {known}.")
                 return int(0)
         else:
                 m.insert('annotated',{'novel_id':hit,'knownNP_id':known,'pid':PID,'evalue':Evalue,'length_alignment':length})

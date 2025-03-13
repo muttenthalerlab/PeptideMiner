@@ -7,9 +7,9 @@ SQLite DB output module.
 
 def hmmid(hmmname):
         m = config.m
-        
+
         for res in m.selectall(('id'),'hmm',("name='{}'".format(hmmname))):
-            return str(res[0])
+                return str(res[0])
 
 
 def seqreads():

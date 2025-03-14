@@ -1,6 +1,7 @@
 import os
 import subprocess as sub
-import fasta_parse,config,output
+
+import .fasta_parse,.config,output
 
 
 """

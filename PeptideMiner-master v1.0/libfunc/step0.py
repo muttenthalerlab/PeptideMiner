@@ -61,7 +61,7 @@ def combine(out_path,query):
 def run():
     #Set up paths to profile-HMMs, query database and output
     query_path = config.C['query_path']
-    hmm_dir = f'{config.C['path']}/data/02-pHMM'
+    hmm_dir = f"{config.C['path']}/data/02-pHMM"
     out_dir = './01-hmmsearch'
     hmmsearchout = './01-hmmsearch/00-step0_hmmsearchoutput.txt'
 

@@ -15,8 +15,8 @@ def known(file):
     accession = ''
     name = ''
     seq = ''
-    with open(file) as f:
-        for l in f.readline():
+    with open(file, "r") as f:
+        for l in f:
             if l.startswith('>'):
                 S.append([species,accession,name,seq])
                 species = l.strip().split('[')[-1].replace(']','').split('(')[0]

@@ -33,6 +33,8 @@ class mysql:
 			fields = ",".join(fields)
 
 		query = f"select {fields}"
+
+		print(f" [        ] {tables}")
 		if type(tables) != str:
 			if type(tables) == dict:
 				listtab = []
@@ -45,6 +47,7 @@ class mysql:
 		if tables != '':
 			query = f"{query} from {tables}"
 
+		print(f" [        ] {where}")
 		if type(where) != str:
 			if type(where) == dict:
 				listw = []

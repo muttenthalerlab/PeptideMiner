@@ -128,6 +128,7 @@ class mysql:
 		sqlIns  = f"insert into {table} "
 		sqlIns += f" ({','.join(entered_values.keys())}) "
 		sqlIns += f" values ({','.join([str(v) for v in entered_values.values()])})"
+		print(f" [-----] {sqlIns}")
 		if not self.test:
 			self.execute(sqlIns)
 

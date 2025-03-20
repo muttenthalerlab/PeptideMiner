@@ -8,7 +8,7 @@ Support module for Step 7.
 
 def make(knownseqfile):
     #Create a ncbi db of knownseqfile
-    blastdb = os.popen(f'{0}/makeblastdb -in {knownseqfile} -dbtype prot -hash_index -out {knownseqfile}')
+    blastdb = os.popen(f'makeblastdb -in {knownseqfile} -dbtype prot -hash_index -out {knownseqfile}')
     # blastdb = os.popen(f'{0}/makeblastdb -in {knownseqfile} -dbtype prot -hash_index -out {knownseqfile}'.format(
     #     config.C['ncbi_path'],))
 

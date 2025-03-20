@@ -48,11 +48,11 @@ class mysql:
 		if type(where) != str:
 			if type(where) == dict:
 				listw = []
-				for (k,v) in where.iteritems():
-					if re.search('^[a-z]{1,4}\.[A-za-z_]+$',str(v)): # refer another field
-						listw.append(f"{k}={v}")
+				for k in where:
+					if re.search('^[a-z]{1,4}\.[A-za-z_]+$',str(where[k])): # refer another field
+						listw.append(f"{k}={where[k]}")
 					else:
-						listw.append("{k}=\"{1}\"".format(k,re.sub("\"","\\\"",str(v))))
+						listw.append("{k}=\"{1}\"".format(k,re.sub("\"","\\\"",str(where[k]))))
 				where = " and ".join(listw)
 			else:
 				where = " and ".join(where)

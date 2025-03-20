@@ -31,5 +31,5 @@ if not [f for f in os.listdir('./') if f.endswith('.db')]:
     os.popen('{0} sqlite.db < {1}'.format(sqlite3_path,structure))
 
 """Set up the sqlite interface"""
-import mydb
+from libfunc import mydb
 m = mydb.mysql()

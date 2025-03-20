@@ -1,5 +1,5 @@
 import sys
-import config,output,mysqlout
+from libfunc import config,output,mysqlout
 
 
 """

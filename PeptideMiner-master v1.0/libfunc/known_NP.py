@@ -15,7 +15,7 @@ def known(file):
     accession = ''
     name = ''
     seq = ''
-    with open(file, "r", encode='latin-1') as f:
+    with open(file, "r", encoding='latin-1') as f:
         for l in f:
             if l.startswith('>'):
                 S.append([species,accession,name,seq])

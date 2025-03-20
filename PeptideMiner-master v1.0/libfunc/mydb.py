@@ -36,8 +36,8 @@ class mysql:
 		if type(tables) != str:
 			if type(tables) == dict:
 				listtab = []
-				for (k,v) in tables.iteritems():
-					listtab.append(f"{k} {v}")
+				for k in tables:
+					listtab.append(f"{k} {tables[k]}")
 				tables = ",".join(listtab)
 			else:
 				tables = ",".join(tables)
@@ -117,12 +117,12 @@ class mysql:
 	
 	def insert (self,table,values):
 		entered_values = dict()
-		for (k,v) in values.iteritems():
-			if v == None:
+		for k in values:
+			if values[k] == None:
 				continue
-			elif not re.search("^(LAST_INSERT_ID|NOW)\(\)",str(v)):
-				v = re.sub('\\\\','\\\\\\\\',str(v))
-				values[k] = "'{0}'".format(re.sub('\'','\\\\\'',str(v)))
+			elif not re.search("^(LAST_INSERT_ID|NOW)\(\)",str(values[k])):
+				values[k] = re.sub('\\\\','\\\\\\\\',str(values[k]))
+				values[k] = "'{0}'".format(re.sub('\'','\\\\\'',str(values[k])))
 			entered_values[k] = values[k]
 
 		sqlIns  = f"insert into {table} "

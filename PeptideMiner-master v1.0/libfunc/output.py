@@ -1,5 +1,5 @@
 import os
-import config
+from libfunc import config
 
 
 """

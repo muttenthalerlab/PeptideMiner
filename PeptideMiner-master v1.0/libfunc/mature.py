@@ -1,4 +1,4 @@
-from libfunc import proregion,config
+from libfunc import proregion, config
 
 """
 Step 5 support module.

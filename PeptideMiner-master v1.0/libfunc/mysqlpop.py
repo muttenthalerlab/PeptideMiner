@@ -1,6 +1,6 @@
 import sys
 from sys import argv, stderr
-import config,mydb
+from libfunc import config,mydb
 
 """
 SQLite DB population module.

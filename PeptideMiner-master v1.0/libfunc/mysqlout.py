@@ -1,5 +1,5 @@
 import sys
-import config
+from libfunc import config
 
 """
 SQLite DB output module.

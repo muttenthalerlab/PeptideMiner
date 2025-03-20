@@ -1,4 +1,4 @@
-import mydb
+from libfunc import mydb
 
 """
 Step 2 support module.

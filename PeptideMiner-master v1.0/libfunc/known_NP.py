@@ -1,5 +1,5 @@
 import os
-import mysqlpop,config
+from libfunc import mysqlpop, config
 
 
 """

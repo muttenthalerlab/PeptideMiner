@@ -1,4 +1,5 @@
-import config,step5
+
+from libfunc import config, step5
 
 """
 Step 5 continued.

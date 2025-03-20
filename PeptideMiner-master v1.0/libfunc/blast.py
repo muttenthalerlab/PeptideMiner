@@ -1,5 +1,5 @@
 import os
-import config,output
+from libfunc import config,output
 
 """
 BLAST module.

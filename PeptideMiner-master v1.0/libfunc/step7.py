@@ -1,4 +1,4 @@
-import mysqlpop,config,mysqlout,output,blast
+from libfunc import mysqlpop,config,mysqlout,output,blast
 
 
 """

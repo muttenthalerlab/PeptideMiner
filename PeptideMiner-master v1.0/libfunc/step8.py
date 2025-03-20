@@ -1,6 +1,6 @@
 import os
 import datetime
-import config,mysqlout,output
+from libfunc import config,mysqlout,output
 
 """
 step 8

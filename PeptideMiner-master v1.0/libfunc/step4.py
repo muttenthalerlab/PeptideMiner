@@ -1,4 +1,4 @@
-import signalp,config,mysqlpop,output
+from libfunc import signalp,config,mysqlpop,output
 
 
 """

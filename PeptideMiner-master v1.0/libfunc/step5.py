@@ -1,4 +1,4 @@
-import config,mature,output
+from libfunc import config,mature,output
 
 """
 Step 5

@@ -1,4 +1,4 @@
-import config,mysqlpop,output,mysqlout
+from libfunc import config,mysqlpop,output,mysqlout
 
 """
 Step 6

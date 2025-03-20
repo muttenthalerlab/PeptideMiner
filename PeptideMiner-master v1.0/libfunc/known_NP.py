@@ -15,7 +15,7 @@ def known(file):
     accession = ''
     name = ''
     seq = ''
-    with open(file, "r") as f:
+    with open(file, "r", encode='latin-1') as f:
         for l in f:
             if l.startswith('>'):
                 S.append([species,accession,name,seq])
@@ -42,7 +42,7 @@ def known_pop():
         print(f"The known peptide file must be a fasta file and have the extension .fna.")
         exit()
     else:
-        print(f"Reading known peptides file {knownseqfile} from {knownseqpath}")
+        print(f"Reading known peptides file {knownseqfile}")
         for s in known(knownseqfile):
             c = mysqlpop.knownseq(s,config.C['neuropeptide_family'])
             count += c

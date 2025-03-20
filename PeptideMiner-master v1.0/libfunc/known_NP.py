@@ -42,6 +42,7 @@ def known_pop():
         print(f"The known peptide file must be a fasta file and have the extension .fna.")
         exit()
     else:
+        print(f"Reading known peptides file {knownseqfile} from {knownseqpath}")
         for s in known(knownseqfile):
             c = mysqlpop.knownseq(s,config.C['neuropeptide_family'])
             count += c

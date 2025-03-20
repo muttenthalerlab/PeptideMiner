@@ -32,7 +32,7 @@ class mysql:
 		if type(fields) != str:
 			fields = ",".join(fields)
 
-		query = f"select {fields}")
+		query = f"select {fields}"
 		if type(tables) != str:
 			if type(tables) == dict:
 				listtab = []

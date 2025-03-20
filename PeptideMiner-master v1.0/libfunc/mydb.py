@@ -41,7 +41,7 @@ class mysql:
 				tables = ",".join(listtab)
 			else:
 				tables = ",".join(tables)
-
+		print(f" [--------] {tables}")
 		if tables != '':
 			query = f"{query} from {tables}"
 
@@ -56,6 +56,8 @@ class mysql:
 				where = " and ".join(listw)
 			else:
 				where = " and ".join(where)
+		print(f" [--------] {where}")
+				
 		if where != '':
 			query = f"{query} where {where}"
 		if other != '':
@@ -128,7 +130,7 @@ class mysql:
 		sqlIns  = f"insert into {table} "
 		sqlIns += f" ({','.join(entered_values.keys())}) "
 		sqlIns += f" values ({','.join([str(v) for v in entered_values.values()])})"
-		print(f" [-----] {sqlIns}")
+		#print(f" [-----] {sqlIns}")
 		if not self.test:
 			self.execute(sqlIns)
 

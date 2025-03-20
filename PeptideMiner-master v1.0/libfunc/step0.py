@@ -22,8 +22,9 @@ def outcsv(filename,header,lines):
 
 
 def hmmsearch(out_path,hmm_path,q_path): 
-    search = '{0}/hmmsearch --tblout {1}.tbl {2} {3}'.format(
-        config.C['hmmer_path'],out_path,hmm_path,q_path)
+    search = f'hmmsearch --tblout {out_path}.tbl {hmm_path} {q_path}'
+    # search = '{0}/hmmsearch --tblout {1}.tbl {2} {3}'.format(
+    #     config.C['hmmer_path'],out_path,hmm_path,q_path)
 
     run = sub.Popen(search,shell=True,stdout=sub.PIPE,stderr=sub.PIPE)
     

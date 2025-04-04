@@ -41,13 +41,16 @@ class PeptideMiner():
         self.pipeline_dir = os.path.join(self.work_dir,'02-pipeline')
         self.known_pep_dir = os.path.join(self.data_dir,'01-known_seq')
 
+        self.sql_database_file = os.path.join(self.data_dir,'sqlite.db')
+        self.sql_create = os.path.join(self.data_dir,'PeptideMiner_DB.sql')
+
         # Initialise Working Folders
         if not os.path.exists(self.hmmsearch_dir):
             os.makedirs(self.hmmsearch_dir)
         if not os.path.exists(self.pipeline_dir):
             os.makedirs(self.pipeline_dir)
 
-        self.db = sql_connector()
+        self.db = sql_connector(data_file= self.sql_database_file, sql_create= self.sql_create)
 
     def _init_sqllite(self):
         pass
@@ -127,7 +130,7 @@ if __name__ == "__main__":
     # prgParser.add_argument("--plotdir",default=None,required=False, dest="plotdir", action='store', help="Folder for Plots")
     # #prgParser.add_argument("-o","--outdir",default=None,required=False, dest="outdir", action='store', help="Prefix to add to PlateID")
 
-    prgParser.add_argument("-c","--config",default='PeptideMiner.cfg', type=Path,is_config_file=True,help="Path to a configuration file ",)
+    prgParser.add_argument("-c","--config",default='PeptideMiner.cfg', type=Path,is_config_file=True,help="Configuration file",)
 
     try:
         prgArgs = prgParser.parse_args()

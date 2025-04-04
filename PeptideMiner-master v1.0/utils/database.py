@@ -20,18 +20,20 @@ class sql_connector():
 
         # If new database file - create 
         if new_db:
-            logger.error(f" [SQLlite] New Database {self.datafile} using {sql_create}")
+            logger.info(f" [SQLite] New Database {self.datafile} using {sql_create}")
             if os.path.isfile(sql_create):
                 with open(sql_create) as f:
                     sql_script = f.read()
                 self.cur.executescript(sql_script)
+        else:
+            logger.info(f" [SQLite] Database {self.datafile} ")
 
         self.test = False
         self.verbose = False
         self.e = None
 
     def last_error (self):
-        logger.error(f" [SQLlite] Last Error: {self.e}")
+        logger.error(f" [SQLite] Last Error: {self.e}")
 
     def execute (self,query):
         try:
@@ -40,7 +42,7 @@ class sql_connector():
             return 1
         except sqlite3.Error as e:
             self.e = e
-            logger.error(f" [SQLlite] Error: {e} from query {query}")
+            logger.error(f" [SQLite] Error: {e} from query {query}")
             return 0
 
     def __build_query__ (self,fields='',tables='',where='',other=''):
@@ -159,7 +161,7 @@ class sql_connector():
         if not self.test:
             self.execute(query)
         if self.test and self.verbose:
-            ogger.info(query)
+            logger.info(query)
 	
     def update (self,table,values,where=''):
         query = "update {0} set ".format(table)

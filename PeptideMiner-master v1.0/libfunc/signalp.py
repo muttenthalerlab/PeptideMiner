@@ -1,4 +1,5 @@
 import re,sys,os,random
+import subprocess
 
 """
 Step 4 support module.
@@ -16,6 +17,9 @@ def create_temp_fasta (sequence,name='seq'):
 def find (sequence,signalp,cutoff):
     #Run signalp; for signalp-4.1"""
 	tmp_seq_file = create_temp_fasta(sequence)
+    # cmd = f"{signalp} -t euk -U {cutoff} -u {cutoff} {tmp_seq_file}".format(signalp,,cutoff)"
+    # p = subprocess.run(cmd,shell=True,capture_output=False, text=True)
+
 	signalp = os.popen("{0} -t euk -U {2} -u {2} {1}".format(signalp,tmp_seq_file,cutoff))
 	
 	#Parse output"""

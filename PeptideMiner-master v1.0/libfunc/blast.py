@@ -34,7 +34,7 @@ def blastp(blastdb, queryfile, outfile):
     # blastp = os.popen('{0}/blastp -db {1} -query {2} -outfmt 10 -out {3}'.format(
     #     config.C['ncbi_path'],blastdb,queryfile,outfile))
     print('  [BLAST] BLASTp complete.')
-    return p.stout
+    return
 
 
 def file(file):

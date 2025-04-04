@@ -1,5 +1,5 @@
 import datetime,os,sys
-
+import subprocess
 """
 This script runs when config.py is imported into main.py
 
@@ -28,7 +28,9 @@ if not [f for f in os.listdir('./') if f.endswith('.db')]:
     print(' [Sqlite] Creating database')
     sqlite3_path = C['sqlite3_path']
     structure = '{}/data/PeptideMiner.sql'.format(C['path'])
-    os.popen('{0} sqlite.db < {1}'.format(sqlite3_path,structure))
+    cmd = f"{sqlite3_path} sqlite.db < {structure}"
+    p = subprocess.run(cmd,shell=True,capture_output=False, text=True)
+    #os.popen('{0} sqlite.db < {1}'.format(sqlite3_path,structure))
 
 """Set up the sqlite interface"""
 from libfunc import mydb

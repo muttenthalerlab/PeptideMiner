@@ -30,7 +30,6 @@ Populate the known_NP and neuropeptide_family table in the sqlite database
 known_NP.known_pop()
 
 
-
 """
 Step 0
 hmmsearch 

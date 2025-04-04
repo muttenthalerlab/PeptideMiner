@@ -29,7 +29,7 @@ def check(knownseqfile):
 def blastp(blastdb, queryfile, outfile):
     print(' [BLAST] Running BLASTp...')
     cmd = f"blastp -db {blastdb} -query {queryfile} -outfmt 10 -out {outfile}"
-    p = subprocess.run(cmd,shell=True,capture_output=True, text=True)
+    p = subprocess.run(cmd,shell=True,capture_output=False, text=True)
     #blastp = os.popen(f'blastp -db {blastdb} -query {queryfile} -outfmt 10 -out {outfile}')
     # blastp = os.popen('{0}/blastp -db {1} -query {2} -outfmt 10 -out {3}'.format(
     #     config.C['ncbi_path'],blastdb,queryfile,outfile))

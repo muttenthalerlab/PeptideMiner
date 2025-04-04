@@ -1,4 +1,5 @@
 import os
+import subprocess
 from libfunc import config,output
 
 """
@@ -27,12 +28,13 @@ def check(knownseqfile):
 
 def blastp(blastdb, queryfile, outfile):
     print(' [BLAST] Running BLASTp...')
-    blastp = os.popen(f'blastp -db {blastdb} -query {queryfile} -outfmt 10 -out {outfile}')
+    cmd = f"blastp -db {blastdb} -query {queryfile} -outfmt 10 -out {outfile}"
+    p = subprocess.run(cmd,shell=True,capture_output=True, text=True)
+    #blastp = os.popen(f'blastp -db {blastdb} -query {queryfile} -outfmt 10 -out {outfile}')
     # blastp = os.popen('{0}/blastp -db {1} -query {2} -outfmt 10 -out {3}'.format(
     #     config.C['ncbi_path'],blastdb,queryfile,outfile))
     print('  [BLAST] BLASTp complete.')
-
-    return blastp
+    return p.stout
 
 
 def file(file):

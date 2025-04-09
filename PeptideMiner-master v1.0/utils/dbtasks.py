@@ -17,6 +17,6 @@ def upload_known_peptides(DB,family_name,species,accession,seq_name,seq):
     peptide_id = DB.onevalue('id','known_NP',{'familyid':family_id,'accession':accession,'name':seq_name})
     if peptide_id is None:
       DB.insert('known_NP',{'name':seq_name,'familyid':family_id,'species':species,'sequence':seq,'accession':accession})
-      logger.error(f" [SQLlite] Table [known_NP new {seq_name} for {species}")
+      logger.error(f" [SQLlite] Table [known_NP] new {seq_name} for {species}")
       return(1)
     return(0)

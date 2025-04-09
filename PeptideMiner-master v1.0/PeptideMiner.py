@@ -56,12 +56,17 @@ class PeptideMiner():
         pass
 
     # -------------------------------------------
-    def read_known_peptides(self,FastA_File, Family_Name):
+    def read_known_peptides(self,Family_Name):
     # -------------------------------------------
+
+        pep_dir = os.path.join(self.known_pep_dir,Family_Name)
+        for k in os.listdir(pep_dir):
+            if k.endswith('.fna'):
+                FastA_File = os.path.join(pep_dir,k)
+
         if os.path.isfile(FastA_File):
             logger.info(f" [Knonw Peptides] Reading {FastA_File}")
             dict_Seq = self.read_fasta_file(FastA_File)
-
             self.n_known_peptide = 0
             for k in dict_Seq:
                 # Parsing Fast Header
@@ -74,7 +79,6 @@ class PeptideMiner():
 
                 upload_known_peptides(self.db, Family_Name, species,accession,name,dict_Seq[k])
                 self.n_known_peptide += 1
-            logger.info(f" [Knonw Peptides] Reading {FastA_File}")
         else:
             logger.error(f" [Knonw Peptides] {self.n_known_peptide} peptide uploaded")
 
@@ -91,29 +95,44 @@ class PeptideMiner():
             with open(FastA_File) as f:
                 for line in f:
                     if line.startswith('>'):
-                        kSeq = line[:1]
+                        kSeq = line[1:]
                         dict_Seq[kSeq] = "" 
                     else:
                         dict_Seq[kSeq] += line.strip()
         return(dict_Seq)
 
 
-
+    def run_hmmsearch(self):
+        if self.n_known_peptide > 0:
+            pass
 
 # --------------------------------------------------------------------------------------
 def main(prgArgs):
 # --------------------------------------------------------------------------------------
     
-    pWork = PeptideMiner()
-    pWork.read_known_peptides('')
+    pWork = PeptideMiner(WorkDir=prgArgs.workdir, DataDir=prgArgs.datadir)
+    pWork.read_known_peptides(prgArgs.peptide_family)
+    pWork.run_hmmsearch()
 
 
 #==============================================================================
 if __name__ == "__main__":
 
     # ArgParser -------------------------------------------------------------
-    prgParser = configargparse.ArgumentParser(prog='PeptideMiner', 
-                                description="U")
+    prgParser = configargparse.ArgumentParser(prog='PeptideMiner', description=" PeptideMiner")
+
+    prgParser.add_argument("--work_dir",default=None,required=False, dest="workdir", action='store', help="Working Folder")
+    prgParser.add_argument("--data_dir",default=None,required=False, dest="datadir", action='store', help="Data Folder")
+    prgParser.add_argument("--cds_min_length",default=None,required=False, dest="cds_min_length", action='store', help="CDS min length")
+
+    prgParser.add_argument("--sp_cutoff",default=None,required=False, dest="sp_cutoff", action='store', help="SignalP cutoff")
+    prgParser.add_argument("--sp_min_length",default=None,required=False, dest="sp_min_length", action='store', help="SignalP min length")
+
+    prgParser.add_argument("--mature_min_length",default=None,required=False, dest="mature_min_length", action='store', help="Mature peptide min length")
+    prgParser.add_argument("--mature_max_length",default=None,required=False, dest="mature_max_length", action='store', help="Mature peptide max length")
+    prgParser.add_argument("--mature_evalue_cutoff",default=None,required=False, dest="mature_evalue_cutoff", action='store', help="Mature peptide cutoff")
+
+    prgParser.add_argument("--peptide_family",default=None,required=False, dest="peptide_family", action='store', help="Peptide family")
     # prgParser.add_argument("-t",default=None,required=True, dest="table", action='store', help="Table to upload [TestPlate]")
     # prgParser.add_argument("--upload",default=False,required=False, dest="upload", action='store_true', help="Upload data to dj Database")
     # prgParser.add_argument("--overwrite",default=False,required=False, dest="overwrite", action='store_true', help="Overwrite existing data")

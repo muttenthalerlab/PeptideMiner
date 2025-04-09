@@ -12,21 +12,22 @@ Interface to SQLite DB.
 class sql_connector():
 #=======================================================================	
     def __init__ (self, data_file= 'sqlite.db', sql_create= 'sqlite_create.sql'):
-        self.datafile = data_file
+        self.database = data_file
 
-        new_db =  os.path.isfile(self.datafile)
-        self.con = sqlite3.connect(self.datafile)
+        new_db = not os.path.isfile(self.database)
+
+        self.con = sqlite3.connect(self.database)
         self.cur = self.con.cursor()
 
         # If new database file - create 
         if new_db:
-            logger.info(f" [SQLite] New Database {self.datafile} using {sql_create}")
             if os.path.isfile(sql_create):
+                logger.info(f" [SQLite] New Database {self.database} using {sql_create}")
                 with open(sql_create) as f:
                     sql_script = f.read()
                 self.cur.executescript(sql_script)
         else:
-            logger.info(f" [SQLite] Database {self.datafile} ")
+            logger.info(f" [SQLite] Database {self.database} ")
 
         self.test = False
         self.verbose = False

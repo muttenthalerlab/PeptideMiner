@@ -35,12 +35,17 @@ class PeptideMiner():
 
     def __init__(self, WorkDir='.', DataDir='data'):
         
-        self.work_dir = WorkDir
+        # Data Folders
         self.data_dir = DataDir
+        self.known_pep_dir = os.path.join(self.data_dir,'01-known_seq')
+        self.hmm_dir = os.path.join(self.data_dir,'02-pHMM')
+
+        # Work Folders
+        self.work_dir = WorkDir
         self.hmmsearch_dir = os.path.join(self.work_dir,'01-hmmsearch')
         self.pipeline_dir = os.path.join(self.work_dir,'02-pipeline')
-        self.known_pep_dir = os.path.join(self.data_dir,'01-known_seq')
-
+        
+        
         self.sql_database_file = os.path.join(self.data_dir,'sqlite.db')
         self.sql_create = os.path.join(self.data_dir,'PeptideMiner_DB.sql')
 
@@ -58,14 +63,15 @@ class PeptideMiner():
     # -------------------------------------------
     def read_known_peptides(self,Family_Name):
     # -------------------------------------------
-
-        pep_dir = os.path.join(self.known_pep_dir,Family_Name)
+        self.family_name = Family_Name
+        
+        pep_dir = os.path.join(self.known_pep_dir,self.family_name)
         for k in os.listdir(pep_dir):
             if k.endswith('.fna'):
                 FastA_File = os.path.join(pep_dir,k)
 
         if os.path.isfile(FastA_File):
-            logger.info(f" [Knonw Peptides] Reading {FastA_File}")
+            logger.info(f" [Known Peptides] {self.family_name} - Reading {FastA_File}")
             dict_Seq = self.read_fasta_file(FastA_File)
             self.n_known_peptide = 0
             for k in dict_Seq:
@@ -77,10 +83,10 @@ class PeptideMiner():
                 accession = k.split('_')[0][1:]
                 name = ' '.join(k.split('[')[0].split('_')[1:])
 
-                upload_known_peptides(self.db, Family_Name, species,accession,name,dict_Seq[k])
+                upload_known_peptides(self.db, self.family_name, species,accession,name,dict_Seq[k])
                 self.n_known_peptide += 1
         else:
-            logger.error(f" [Knonw Peptides] {self.n_known_peptide} peptide uploaded")
+            logger.error(f" [Known Peptides] {self.family_name} - {self.n_known_peptide} peptide uploaded")
 
 
     # ----------------------------------------------------------
@@ -102,9 +108,27 @@ class PeptideMiner():
         return(dict_Seq)
 
 
-    def run_hmmsearch(self):
-        if self.n_known_peptide > 0:
-            pass
+    # ----------------------------------------------------------
+    def run_hmmsearch(self, Query):
+        
+        #query_path = config.C['query_path']
+        #hmm_dir = self.hmm_dir
+        #out_dir = self.hmmsearch_dir
+        hmm_search_out = os.path.join(self.hmmsearch_dir,'00-step0_hmmsearchoutput.txt') 
+
+        # Check if hmmsearch has been run before
+        csv_Files = [f for f in os.listdir(self.hmmsearch_dir) if f.endswith('csv')]
+        
+        #Get a list of the profile-HMMs available for the desired family
+        HMM_Files = [h for h in os.listdir(self.hmm_dir) if h.startswith(self.family_name)]
+        logger.info(f" [HMM Search] {self.family_name} - HMM Files : {HMM_Files}")
+        
+        #For each Query (fna) file run hmmsearch
+        Query_Files = [q for q in os.listdir(Query) if q.endswith('fna')]
+        for qry_file in Query_Files:
+            
+            dict_Fasta = self.read_fasta_file(os.path.join(Query,qry_file))
+            logger.info(f" [HMM Search] {self.family_name} - HMM Query : {qry_file} with {len(dict_Fasta)} sequences")
 
 # --------------------------------------------------------------------------------------
 def main(prgArgs):
@@ -112,7 +136,7 @@ def main(prgArgs):
     
     pWork = PeptideMiner(WorkDir=prgArgs.workdir, DataDir=prgArgs.datadir)
     pWork.read_known_peptides(prgArgs.peptide_family)
-    pWork.run_hmmsearch()
+    pWork.run_hmmsearch(prgArgs.querydir)
 
 
 #==============================================================================
@@ -133,11 +157,14 @@ if __name__ == "__main__":
     prgParser.add_argument("--mature_evalue_cutoff",default=None,required=False, dest="mature_evalue_cutoff", action='store', help="Mature peptide cutoff")
 
     prgParser.add_argument("--peptide_family",default=None,required=False, dest="peptide_family", action='store', help="Peptide family")
+    prgParser.add_argument("--query",default=None,required=False, dest="querydir", action='store', help="Query folder of fasta file")
+    
     # prgParser.add_argument("-t",default=None,required=True, dest="table", action='store', help="Table to upload [TestPlate]")
     # prgParser.add_argument("--upload",default=False,required=False, dest="upload", action='store_true', help="Upload data to dj Database")
     # prgParser.add_argument("--overwrite",default=False,required=False, dest="overwrite", action='store_true', help="Overwrite existing data")
     # prgParser.add_argument("--user",default='J.Zuegg',required=False, dest="appuser", action='store', help="AppUser to Upload data")
-    # prgParser.add_argument("--test",default=0,required=False, dest="test", action='store', help="Number of entries to test")
+    # prgParser.add_argument("--test",default=0,required=False, dest="te
+    # st", action='store', help="Number of entries to test")
 #    prgParser.add_argument("--new",default=False,required=False, dest="new", action='store_true', help="Not migrated entries only")
 
 #    prgParser.add_argument("-d","--directory",default=None,required=False, dest="directory", action='store', help="Directory or Folder to parse")

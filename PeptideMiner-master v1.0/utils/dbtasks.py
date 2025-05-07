@@ -26,11 +26,11 @@ def upload_known_peptides(DB,family_name,species,accession,seq_name,seq):
 
 
 # -----------------------------------------------------------------------
-def run_hmmsearch(OutPut,HmmFile,Query):
+def run_hmmsearch(Output,HmmFile,Query):
 # -----------------------------------------------------------------------
-    cmd = f"hmmsearch --tblout {OutPut}.tbl {HmmFile} {Query}" 
+    cmd = f"hmmsearch --tblout {Output}.tbl {HmmFile} {Query}" 
     
-    logger.info(f" [HMM Search] -> {OutPut}.tbl")
+    logger.info(f" [HMM Search] -> {Output}.tbl")
     p = subprocess.run(cmd,shell=True,capture_output=True, text=True)
     ret = p.stdout
     

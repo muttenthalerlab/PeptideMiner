@@ -109,56 +109,62 @@ class PeptideMiner():
 
 
     # ----------------------------------------------------------
-    def run_hmmsearch(self, Query):
+    def run_hmmsearch(self, Query, Overwrite=False):
         
         #query_path = config.C['query_path']
         #hmm_dir = self.hmm_dir
         #out_dir = self.hmmsearch_dir
         hmm_search_out = os.path.join(self.hmmsearch_dir,'00-step0_hmmsearchoutput.txt') 
-
+        hmm_search = []
+        
         # Check if hmmsearch has been run before
         csv_Files = [f for f in os.listdir(self.hmmsearch_dir) if f.endswith('csv')]
         
-        #Get a list of the profile-HMMs available for the desired family
-        HMM_Files = [h for h in os.listdir(self.hmm_dir) if h.startswith(self.family_name)]
-        logger.info(f" [HMM Search] {self.family_name} - HMM Files : {HMM_Files}")
+        if len(csv_Files)==0 or Overwrite:
         
-        #For each Query (fna) file run hmmsearch
-        Query_Files = [q for q in os.listdir(Query) if q.endswith('fna')]
-        for qry_file in Query_Files:
+            #Get a list of the profile-HMMs available for the desired family
+            HMM_Files = [h for h in os.listdir(self.hmm_dir) if h.startswith(self.family_name)]
+            logger.info(f" [HMM Search] {self.family_name} - HMM Files : {HMM_Files}")
             
-            dict_Fasta = self.read_fasta_file(os.path.join(Query,qry_file))
-            logger.info(f" [HMM Search] {self.family_name} - HMM Query : {qry_file} with {len(dict_Fasta)} sequences")
-
-            for hmm in HMM_Files:
-                hmm_out = f"{hmm.split('.')[0]}.{qry_file.replace('.fna','')}"
+            #For each Query (fna) file run hmmsearch
+            Query_Files = [q for q in os.listdir(Query) if q.endswith('fna')]
+            for qry_file in Query_Files:
                 
-                _ret = run_hmmsearch(os.path.join(self.hmmsearch_dir,hmm_out),os.path.join(self.hmm_dir,hmm),os.path.join(Query,qry_file))
-                                
-                # df_hmm = pd.read_csv(f"{os.path.join(self.hmmsearch_dir,hmm_out)}.tbl",sep='\t',comment='#')
-                # df_hmm.columns = ["ID", "accession", "query_name", "accession", "full_E-value", "full_score", "full_bias", 
-                #                 "dom_E-value", "dom_score", "dom_bias", "exp", "reg", "clu", "ov", "env", "dom", "rep", 
-                #                 "inc", "desc_target"]
-                # print(df_hmm)
-                
-                # Combine HMM Search Output with Sequence into CSV file
-                csv_header =["ID", "accession", "query_name", "accession", "full_E-value", "full_score", "full_bias", 
-                            "dom_E-value", "dom_score", "dom_bias", "exp", "reg", "clu", "ov", "env", "dom", "rep", 
-                            "inc", "desc_target", "sequence"]
+                dict_Fasta = self.read_fasta_file(os.path.join(Query,qry_file))
+                logger.info(f" [HMM Search] {self.family_name} - HMM Query : {qry_file} with {len(dict_Fasta)} sequences")
 
-                csv_file = open(f"{os.path.join(self.hmmsearch_dir,hmm_out)}.csv", "w")
-                csv_file.writelines(','.join(csv_header))         
-                for line in open(f"{os.path.join(self.hmmsearch_dir,hmm_out)}.tbl", "r").readlines():
-                    if not line.startswith("#"):
-                        ll = line.replace(',','').strip().split()
+                for hmm in HMM_Files:
+                    hmm_out = f"{hmm.split('.')[0]}.{qry_file.replace('.fna','')}"
+                    
+                    # Run HMM Search 
+                    _ret = run_hmmsearch(os.path.join(self.hmmsearch_dir,hmm_out),os.path.join(self.hmm_dir,hmm),os.path.join(Query,qry_file))
+                    hmm_search.append(_ret)
+                                                
+                    # Combine HMM Search Output with Sequence into CSV file
+                    logger.info(f" [HMM Search] -> {hmm_out}.csv")
+                    csv_header =["ID", "accession", "query_name", "accession", "full_E-value", "full_score", "full_bias", 
+                                "dom_E-value", "dom_score", "dom_bias", "exp", "reg", "clu", "ov", "env", "dom", "rep", 
+                                "inc", "desc_target", "sequence"]
 
-                        for ID in dict_Fasta:
-                            """if ID in .tbl matches an ID in fastaDict, then print"""
-                            if str(ID).startswith(str(ll[0])):
-                                csv_line = ",".join(ll[:18]) + "," + " ".join(ll[18:]) + "," + str(dict_Fasta[ID])
-                                csv_file.writelines(csv_line)
-                csv_file.close()
-                
+                    csv_file = open(f"{os.path.join(self.hmmsearch_dir,hmm_out)}.csv", "w")
+                    csv_file.writelines(','.join(csv_header))         
+                    for line in open(f"{os.path.join(self.hmmsearch_dir,hmm_out)}.tbl", "r").readlines():
+                        if not line.startswith("#"):
+                            ll = line.replace(',','').strip().split()
+                            for ID in dict_Fasta:
+                                #If ID in .tbl matches an ID in fastaDict
+                                if str(ID).startswith(str(ll[0])):
+                                    csv_line = ",".join(ll[:18]) + "," + " ".join(ll[18:]) + "," + str(dict_Fasta[ID])
+                                    csv_file.writelines(csv_line)
+                    csv_file.close()
+            
+            # Output logfiles
+            with open(hmm_search_out,'w') as out:
+                for line in hmm_search:
+                    out.writelines(line)
+        else:
+            logger.info(f" [HMM Search] Exists {csv_Files}")
+                    
 # --------------------------------------------------------------------------------------
 def main(prgArgs):
 # --------------------------------------------------------------------------------------

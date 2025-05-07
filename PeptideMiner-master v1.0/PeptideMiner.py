@@ -134,7 +134,6 @@ class PeptideMiner():
                 hmm_out = f"{hmm.split('.')[0]}.{qry_file.replace('.fna','')}"
                 
                 _ret = run_hmmsearch(os.path.join(self.hmmsearch_dir,hmm_out),os.path.join(self.hmm_dir,hmm),os.path.join(Query,qry_file))                
-                print(_ret)
                 
 # --------------------------------------------------------------------------------------
 def main(prgArgs):

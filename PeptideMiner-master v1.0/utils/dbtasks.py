@@ -4,7 +4,6 @@ import subprocess
 import logging
 logger = logging.getLogger(__name__)
 
-
 # -----------------------------------------------------------------------
 def upload_known_peptides(DB,family_name,species,accession,seq_name,seq):
 # -----------------------------------------------------------------------
@@ -24,18 +23,3 @@ def upload_known_peptides(DB,family_name,species,accession,seq_name,seq):
       return(1)
     return(0)
 
-
-# -----------------------------------------------------------------------
-def run_hmmsearch(Output,HmmFile,Query):
-# -----------------------------------------------------------------------
-    cmd = f"hmmsearch --tblout {Output}.tbl {HmmFile} {Query}" 
-    
-    logger.info(f" [HMM Search] -> {Output}.tbl")
-    p = subprocess.run(cmd,shell=True,capture_output=True, text=True)
-    ret = p.stdout
-    
-    # run = sub.Popen(_cmd,shell=True,stdout=sub.PIPE,stderr=sub.PIPE)
-    # stdout,stderr = run.communicate()
-    #return [stdout,stderr]
-    
-    return [ret]

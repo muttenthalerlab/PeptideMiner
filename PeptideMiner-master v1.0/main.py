@@ -33,7 +33,7 @@ known_NP.known_pop() # Done
 Step 0
 hmmsearch 
 """
-if not output.check_hmm_has_run():
+if not output.check_hmm_has_run(): # Done
     print(' [PeptideMiner] Running step 0')
     step0.run()
 

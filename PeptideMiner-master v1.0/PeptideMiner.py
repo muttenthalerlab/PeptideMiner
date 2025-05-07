@@ -136,7 +136,7 @@ class PeptideMiner():
                 _ret = run_hmmsearch(os.path.join(self.hmmsearch_dir,hmm_out),os.path.join(self.hmm_dir,hmm),os.path.join(Query,qry_file))
                                 
                 # Combine HMM Search Out put with Sequence
-                for l in open(f"{hmm_out}.tbl", "r").readlines():
+                for l in open(f"{os.path.join(self.hmmsearch_dir,hmm_out)}.tbl", "r").readlines():
                     if not l.startswith("#"):
                         ll = l.replace(',','').strip().split()
 

@@ -29,7 +29,6 @@ def addsequence_hmmsearch(hmmsearch_dir,hmmsearch_file,dict_Fasta):
                 "dom_E-value", "dom_score", "dom_bias", "exp", "reg", "clu", "ov", "env", "dom", "rep", 
                 "inc", "desc_target", "sequence"]
     
-
     with open(f"{os.path.join(hmmsearch_dir,hmmsearch_file)}.csv", 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(csv_header)
@@ -43,17 +42,6 @@ def addsequence_hmmsearch(hmmsearch_dir,hmmsearch_file,dict_Fasta):
                             ll.append(dict_Fasta[ID])
                             writer.writerow(ll)
 
-    # csv_file = open(f"{os.path.join(hmmsearch_dir,hmmsearch_file)}.csv", "w")
-    # csv_file.writelines(','.join(csv_header))         
-    # for line in open(f"{os.path.join(hmmsearch_dir,hmmsearch_file)}.tbl", "r").readlines():
-    #     if not line.startswith("#"):
-    #         ll = line.replace(',','').strip().split()
-    #         for ID in dict_Fasta:
-    #             #If ID in .tbl matches an ID in fastaDict
-    #             if str(ID).startswith(str(ll[0])):
-    #                 csv_line = ",".join(ll[:18]) + "," + " ".join(ll[18:]) + "," + str(dict_Fasta[ID])
-    #                 csv_file.writelines(csv_line)
-    # csv_file.close()
     return(f"{hmmsearch_file}.csv")
 
 
@@ -64,30 +52,12 @@ def filter_hmmsearch(hmmsearch_dir,hmmsearch_csv,hmm_name, transcriptome_name):
         reader = csv.DictReader(f)
         hmm_search = list(reader)
 
-    print(hmm_search)    
-    # E=[]
-    # csv_file = str(input_file).split('/')[-1]
-    # hmm = str(csv_file).split('.')[0]
-    # transcriptome_name = '.'.join(str(csv_file).split('.')[1:-1])
-
-    # first_line = True
-    # with open(input_file) as f:
-    #     for l in f:
-    #         fields = l.strip().split(',')
-    #         if first_line:
-    #             first_line = False 
-    #             continue
-    #         E.append([fields[0],hmm,transcriptome_name,fields[4],fields[19]])
-
-    # #Isolate readnames in the table and keep only the unique ones
-    # nodup = set([i[0] for i in E])
+    hmm_search_sort = sorted(hmm_search, key=lambda d: d['full_E-value'])
+    unique_id = set([i['ID'] for i in hmm_search_sort])
     
-    # S = []
-    # for r in nodup:
-    #     #Isolate lines where the r == readname
-    #     b = [i for i in E if i[0] == r]
+    lowest_hmm_search = {}
+    for hmm in hmm_search_sort:
+        if hmm['ID'] not in lowest_hmm_search:
+            lowest_hmm_search[hmm['ID']] = [hmm['ID'],hmm_name, transcriptome_name, hmm['full_E-value'],hmm['sequence']]
+    return(lowest_hmm_search)
         
-    #     #Sort list accroding to evalue
-    #     b.sort(key=lambda i:float(i[3]))
-    #     S.append(b[0])
-    # return S

@@ -44,7 +44,7 @@ Step 1
 Loops through hmmsearch output files and populates the SQLite DB.
 Returns a list of hmmid per transcriptome database in output folder.
 """
-if not output.check_step_has_run('step1'):
+if not output.check_step_has_run('step1'): #Done
     print(' [PeptideMiner]  Running step 1')
     step1.run()
 
@@ -54,7 +54,7 @@ if not output.check_step_has_run('step1'):
 Step 2
 Output seqreads table to .csv file.
 """
-if not output.check_step_has_run('step2'):
+if not output.check_step_has_run('step2'): #Done
     print(' [PeptideMiner] Running step 2')
     step2.run()
 

@@ -7,7 +7,7 @@ import datetime
 import csv
 
 from utils.database import sql_connector
-from utils.dbtasks import upload_known_peptides
+from utils.dbtasks import upload_known_peptides, upload_hmmsearch, get_seqreads
 from utils.hmmtasks import run_hmmsearch,addsequence_hmmsearch,filter_hmmsearch
 
 # import pandas as pd
@@ -48,6 +48,7 @@ class PeptideMiner():
         
         # Pipeline
         self.hmm_search_files = []
+        #self.seq_id_dict = {}
 
         # Initialise Working Folders
         if not os.path.exists(self.hmmsearch_dir):
@@ -145,23 +146,6 @@ class PeptideMiner():
                     # Add Seqeunce infor to HMM Search Output CSV file
                     addsequence_hmmsearch(self.hmmsearch_dir,hmm_out,dict_Fasta)
                     self.hmm_search_files.append(f"{hmm_out}.csv")
-
-                    # logger.info(f" [HMM Search] -> {hmm_out}.csv")
-                    # csv_header =["ID", "accession", "query_name", "accession", "full_E-value", "full_score", "full_bias", 
-                    #             "dom_E-value", "dom_score", "dom_bias", "exp", "reg", "clu", "ov", "env", "dom", "rep", 
-                    #             "inc", "desc_target", "sequence"]
-
-                    # csv_file = open(f"{os.path.join(self.hmmsearch_dir,hmm_out)}.csv", "w")
-                    # csv_file.writelines(','.join(csv_header))         
-                    # for line in open(f"{os.path.join(self.hmmsearch_dir,hmm_out)}.tbl", "r").readlines():
-                    #     if not line.startswith("#"):
-                    #         ll = line.replace(',','').strip().split()
-                    #         for ID in dict_Fasta:
-                    #             #If ID in .tbl matches an ID in fastaDict
-                    #             if str(ID).startswith(str(ll[0])):
-                    #                 csv_line = ",".join(ll[:18]) + "," + " ".join(ll[18:]) + "," + str(dict_Fasta[ID])
-                    #                 csv_file.writelines(csv_line)
-                    # csv_file.close()
             
             # Output logfiles
             with open(hmm_search_outfile,'w') as out:
@@ -174,12 +158,51 @@ class PeptideMiner():
     def read_hmmsearch(self, Overwrite=False):
         
         if len(self.hmm_search_files)>0:
+            logger.info(f" [HMM Search] Files: {len(self.hmm_search_files)}")
+            
+            hmm_id_dict = {}
+            seq_id_dict = {}
+                        
             for hmm in  self.hmm_search_files:
-                _hmm_lst = hmm.split('.')
+                _hmm_lst = hmm.split('.')                
                 hmm_name = _hmm_lst[0]
                 transcriptome_name =_hmm_lst[1]
-                filter_hmmsearch(self.hmmsearch_dir,hmm,hmm_name,transcriptome_name)         
-    
+                
+                hmm_lstdict = filter_hmmsearch(self.hmmsearch_dir,hmm,hmm_name,transcriptome_name)
+                for id in hmm_lstdict:
+                    evalue = hmm_lstdict[id][3]
+                    sequence = hmm_lstdict[id][4]
+                    hmm_id, sqeq_id = upload_hmmsearch(self.db,hmm_name,transcriptome_name,id,evalue,sequence)
+
+                    hmm_id_dict[hmm_id] = [hmm_id,hmm_name,transcriptome_name]
+                    seq_id_dict[sqeq_id] = [sqeq_id,sequence,hmm_id,hmm_name]
+                    
+        # Pipeline CSV Log
+        csv_filename = '01_hmmsearch_hmm.csv'
+        with open(os.path.join(self.pipeline_dir,csv_filename),'w',newline='') as csvfile:
+            csvwriter = csv.writer(csvfile)
+            csv_header=['hmm_id','hmm_name','transcriptome']
+            csvwriter.writerow(csv_header)
+            for key in hmm_id_dict:
+                csvwriter.writerow(hmm_id_dict[key])
+        logger.info(f" [HMM Search] HMM_ID: {len(hmm_id_dict)} -> {csv_filename}")
+
+        csv_filename = '02_hmmsearch_seq.csv'
+        with open(os.path.join(self.pipeline_dir,csv_filename),'w',newline='') as csvfile:
+            csvwriter = csv.writer(csvfile)
+            csv_header=['seq_id','sequence','hmm_id','hmm_name']
+            csvwriter.writerow(csv_header)
+            for key in seq_id_dict:
+                csvwriter.writerow(seq_id_dict[key])
+        logger.info(f" [HMM Search] Seq_ID: {len(seq_id_dict)} -> {csv_filename}")
+
+
+     # ---------------------------------------------------------
+    def read_cds(self, Overwrite=False):
+        seq_id_dict = get_seqreads(self.db)
+        print(seq_id_dict)  
+
+       
 # --------------------------------------------------------------------------------------
 def main(prgArgs):
 # --------------------------------------------------------------------------------------
@@ -188,6 +211,7 @@ def main(prgArgs):
     pWork.read_known_peptides(prgArgs.peptide_family)
     pWork.hmmsearch(prgArgs.querydir)
     pWork.read_hmmsearch()
+    pWork.read_cds()
 
 
 #==============================================================================

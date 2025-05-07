@@ -149,7 +149,7 @@ class PeptideMiner():
                 csv_file = open(f"{os.path.join(self.hmmsearch_dir,hmm_out)}.csv", "w")
                 csv_file.writelines(','.join(csv_header))         
                 for line in open(f"{os.path.join(self.hmmsearch_dir,hmm_out)}.tbl", "r").readlines():
-                    if not l.startswith("#"):
+                    if not line.startswith("#"):
                         ll = line.replace(',','').strip().split()
 
                         for ID in dict_Fasta:

@@ -163,7 +163,7 @@ class PeptideMiner():
                 for line in hmm_search:
                     out.writelines(line)
         else:
-            logger.info(f" [HMM Search] Exists {csv_Files}")
+            logger.info(f" [HMM Search] Exists {csv_Files} in {self.hmmsearch_dir}")
                     
 # --------------------------------------------------------------------------------------
 def main(prgArgs):

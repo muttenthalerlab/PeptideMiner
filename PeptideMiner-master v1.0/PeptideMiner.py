@@ -7,7 +7,7 @@ import datetime
 import csv
 
 from utils.database import sql_connector
-from utils.dbtasks import upload_known_peptides
+from utils.dbtasks import upload_known_peptides, run_hmmsearch
 
 # import pandas as pd
 # import numpy as np
@@ -130,6 +130,12 @@ class PeptideMiner():
             dict_Fasta = self.read_fasta_file(os.path.join(Query,qry_file))
             logger.info(f" [HMM Search] {self.family_name} - HMM Query : {qry_file} with {len(dict_Fasta)} sequences")
 
+            for hmm in HMM_Files:
+                hmm_out = f"{hmm.split('.')[0]}.{qry_file.replace('.fna','')}"
+                
+                _ret = run_hmmsearch(os.path.join(self.hmmsearch_dir,hmm_out),os.path.join(self.hmm_dir,hmm),os.path.join(Query,qry_file))                
+                print(_ret)
+                
 # --------------------------------------------------------------------------------------
 def main(prgArgs):
 # --------------------------------------------------------------------------------------

@@ -9,7 +9,7 @@ import csv
 from utils.database import sql_connector
 from utils.dbtasks import upload_known_peptides, run_hmmsearch
 
-# import pandas as pd
+import pandas as pd
 # import numpy as np
 # from functools import reduce
 
@@ -135,6 +135,12 @@ class PeptideMiner():
                 
                 _ret = run_hmmsearch(os.path.join(self.hmmsearch_dir,hmm_out),os.path.join(self.hmm_dir,hmm),os.path.join(Query,qry_file))
                                 
+                df_hmm = pd.read_csv(f"{os.path.join(self.hmmsearch_dir,hmm_out)}.tbl",sep='\t',comment='#')
+                df_hmm.columns = ["ID", "accession", "query_name", "accession", "full_E-value", "full_score", "full_bias", 
+                                "dom_E-value", "dom_score", "dom_bias", "exp", "reg", "clu", "ov", "env", "dom", "rep", 
+                                "inc", "desc_target"]
+                print(df_hmm)
+                
                 # Combine HMM Search Out put with Sequence
                 for l in open(f"{os.path.join(self.hmmsearch_dir,hmm_out)}.tbl", "r").readlines():
                     if not l.startswith("#"):

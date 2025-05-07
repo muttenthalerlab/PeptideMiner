@@ -98,7 +98,7 @@ class PeptideMiner():
         dict_Seq = {}
         kSeq = None
         if os.path.isfile(FastA_File):
-            with open(FastA_File) as f:
+            with open(FastA_File,encoding='latin-1') as f:
                 for line in f:
                     if line.startswith('>'):
                         kSeq = line[1:]

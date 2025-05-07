@@ -20,14 +20,13 @@ from libfunc import config,mydb,output,mature,known_NP,blast,mysqlout,matseq_con
 Create the 01-hmmsearch directory for the hmmsearch output and
 create the 02-pipeline directory for the pipeline output
 """
-output.check_dir_exists()
-
+output.check_dir_exists() # Done
 
 
 """
 Populate the known_NP and neuropeptide_family table in the sqlite database
 """
-known_NP.known_pop()
+known_NP.known_pop() # Done
 
 
 """

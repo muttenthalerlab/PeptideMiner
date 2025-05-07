@@ -9,7 +9,7 @@ import csv
 from utils.database import sql_connector
 from utils.dbtasks import upload_known_peptides, run_hmmsearch
 
-import pandas as pd
+# import pandas as pd
 # import numpy as np
 # from functools import reduce
 
@@ -135,24 +135,29 @@ class PeptideMiner():
                 
                 _ret = run_hmmsearch(os.path.join(self.hmmsearch_dir,hmm_out),os.path.join(self.hmm_dir,hmm),os.path.join(Query,qry_file))
                                 
-                df_hmm = pd.read_csv(f"{os.path.join(self.hmmsearch_dir,hmm_out)}.tbl",sep='\t',comment='#')
-                df_hmm.columns = ["ID", "accession", "query_name", "accession", "full_E-value", "full_score", "full_bias", 
-                                "dom_E-value", "dom_score", "dom_bias", "exp", "reg", "clu", "ov", "env", "dom", "rep", 
-                                "inc", "desc_target"]
-                print(df_hmm)
+                # df_hmm = pd.read_csv(f"{os.path.join(self.hmmsearch_dir,hmm_out)}.tbl",sep='\t',comment='#')
+                # df_hmm.columns = ["ID", "accession", "query_name", "accession", "full_E-value", "full_score", "full_bias", 
+                #                 "dom_E-value", "dom_score", "dom_bias", "exp", "reg", "clu", "ov", "env", "dom", "rep", 
+                #                 "inc", "desc_target"]
+                # print(df_hmm)
                 
-                # Combine HMM Search Out put with Sequence
-                for l in open(f"{os.path.join(self.hmmsearch_dir,hmm_out)}.tbl", "r").readlines():
+                # Combine HMM Search Output with Sequence into CSV file
+                csv_header =["ID", "accession", "query_name", "accession", "full_E-value", "full_score", "full_bias", 
+                            "dom_E-value", "dom_score", "dom_bias", "exp", "reg", "clu", "ov", "env", "dom", "rep", 
+                            "inc", "desc_target", "sequence"]
+
+                csv_file = open(f"{os.path.join(self.hmmsearch_dir,hmm_out)}.csv", "w")
+                csv_file.writelines(','.join(csv_header))         
+                for line in open(f"{os.path.join(self.hmmsearch_dir,hmm_out)}.tbl", "r").readlines():
                     if not l.startswith("#"):
-                        ll = l.replace(',','').strip().split()
+                        ll = line.replace(',','').strip().split()
 
                         for ID in dict_Fasta:
                             """if ID in .tbl matches an ID in fastaDict, then print"""
                             if str(ID).startswith(str(ll[0])):
-                        
-                                line = ",".join(ll[:18]) + "," + " ".join(ll[18:]) + "," + str(dict_Fasta[ID])
-                                print(line)
-                                #out.append(line)
+                                csv_line = ",".join(ll[:18]) + "," + " ".join(ll[18:]) + "," + str(dict_Fasta[ID])
+                                csv_file.writelines(csv_line)
+                csv_file.close()
                 
 # --------------------------------------------------------------------------------------
 def main(prgArgs):

@@ -65,7 +65,7 @@ Step 3
 Identification of protein coding sequences (CDS) in hmmsearch hits.
 Outputs a .csv file of the CDS table.
 """
-if not output.check_step_has_run('step3'):
+if not output.check_step_has_run('step3'): #Done
     print(' [PeptideMiner] Running step 3')
     step3.run()
 

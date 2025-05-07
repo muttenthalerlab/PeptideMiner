@@ -46,7 +46,7 @@ class sql_connector():
             logger.error(f" [SQLite] Error: {e} from query {query}")
             return 0
 
-    def __build_query__ (self,fields='',tables='',where='',other=''):
+    def __build_query__ (self,tables='',fields='',where='',other=''):
         if type(fields) != str:
             fields = ",".join(fields)
 
@@ -83,15 +83,15 @@ class sql_connector():
             logger.info(query)
         return query
 
-    def onerow (self,fields='',tables='',where='',other=''):
-        self.execute(self.__build_query__(fields,tables,where,other))
+    def onerow (self,tables='',fields='',where='',other=''):
+        self.execute(self.__build_query__(tables,fields,where,other))
         return self.cur.fetchone()
 	
     def nextrow (self):
         return self.cur.fetchone()
 
-    def onevalue (self,fields='',tables='',where='',other=''):
-        row = self.onerow(fields,tables,where,other)
+    def onevalue (self,tables='',fields='',where='',other=''):
+        row = self.onerow(tables,fields,where,other)
         if row:
             return row[0]
         return None
@@ -106,8 +106,8 @@ class sql_connector():
             resd[fields[i]] = res[i]
         return resd
 
-    def onerow_dict (self,fields='',tables='',where='',other=''):
-        res = self.onerow(fields,tables,where,other)
+    def onerow_dict (self,tables='',fields='',where='',other=''):
+        res = self.onerow(tables,fields,where,other)
         if not res:
             return None
         return self.__row_dict__(fields,res)
@@ -115,13 +115,13 @@ class sql_connector():
     def nextrow_dict (self,fields):
         return self.__row_dict__(fields,self.cur.fetchone())
 	
-    def selectall (self,fields='',tables='',where='',other=''):
-        if self.execute(self.__build_query__(fields,tables,where,other)):
+    def selectall (self,tables='',fields='',where='',other=''):
+        if self.execute(self.__build_query__(tables,fields,where,other)):
             return self.cur.fetchall()
         return None
 
-    def selectall_dict (self,fields='',tables='',where='',other=''):
-        res = self.selectall(fields,tables,where,other)
+    def selectall_dict (self,tables='',fields='',where='',other=''):
+        res = self.selectall(tables,fields,where,other)
         if not res:
             return None
         resd = []

@@ -7,7 +7,7 @@ import datetime
 import csv
 
 from utils.database import sql_connector
-from utils.dbtasks import upload_known_peptides, upload_hmmsearch, get_seqreads
+from utils.dbtasks import upload_known_peptides, upload_hmmsearch, upload_cds, get_seqreads
 from utils.hmmtasks import run_hmmsearch,addsequence_hmmsearch,filter_hmmsearch
 
 # import pandas as pd
@@ -48,6 +48,7 @@ class PeptideMiner():
         
         # Pipeline
         self.hmm_search_files = []
+        self.cds_lst = []
         #self.seq_id_dict = {}
 
         # Initialise Working Folders
@@ -197,10 +198,47 @@ class PeptideMiner():
         logger.info(f" [HMM Search] Seq_ID: {len(seq_id_dict)} -> {csv_filename}")
 
 
-     # ---------------------------------------------------------
-    def read_cds(self, Overwrite=False):
-        seq_id_dict = get_seqreads(self.db)
-        print(seq_id_dict)  
+    # ---------------------------------------------------------
+    def read_cds(self, CDS_Min_Length, Overwrite=False):
+
+        # ??? All Sequences or just from the specific hmm_id
+        seq_id_dict = get_seqreads(self.db) 
+
+        self.cds_lst = []
+        for seq_id in seq_id_dict:
+            
+            for seq_seg in seq_id['precursor'].split('*'):
+                n_cds = 0
+                seq_M = seq_seg
+                
+                if len(seq_seg) >= CDS_Min_Length and 'M' in seq_seg:
+                    seq_M = seq_seg[seq_seg.index('M'):]
+                    if len(seq_M) >= CDS_Min_Length:
+                        n_cds += 1                
+                        self.cds_lst.append({'seq_id':seq_id['id'],'n_cds':n_cds,'cds':seq_M})
+                
+        for cds in self.cds_lst:
+            cds_id = upload_cds(self.db,cds['cds'],cds['seq_id'])
+            cds['cds_id'] = cds_id   
+                    
+        csv_filename = '03_cds_seq.csv'
+        with open(os.path.join(self.pipeline_dir,csv_filename),'w',newline='') as csvfile:
+            csvwriter = csv.writer(csvfile)
+            csv_header=['cds_id','n_cds','cds']
+            csvwriter.writerow(csv_header)
+            for cds in self.cds_lst:
+                csvwriter.writerow([cds['cds_id'],cds['n_cds'],cds['cds']])
+        logger.info(f" [HMM Search] CDS: {len(self.cds_lst)} -> {csv_filename}")
+
+        
+    # ---------------------------------------------------------
+    def signalp_cds(self, SignalP_Cutoff, SignalP_Min_Length,Overwrite=False):
+
+        if len(self.cds_lst) > 0:
+            
+
+  
+
 
        
 # --------------------------------------------------------------------------------------
@@ -211,8 +249,8 @@ def main(prgArgs):
     pWork.read_known_peptides(prgArgs.peptide_family)
     pWork.hmmsearch(prgArgs.querydir)
     pWork.read_hmmsearch()
-    pWork.read_cds()
-
+    pWork.read_cds(int(prgArgs.cds_min_length))
+    pWork.signalp_cds(float(prgArgs.sp_cutoff),int(prgArgs.sp_min_length))
 
 #==============================================================================
 if __name__ == "__main__":

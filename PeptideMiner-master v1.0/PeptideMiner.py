@@ -7,8 +7,9 @@ import datetime
 import csv
 
 from utils.database import sql_connector
-from utils.dbtasks import upload_known_peptides, upload_hmmsearch, upload_cds, get_seqreads
-from utils.hmmtasks import run_hmmsearch,addsequence_hmmsearch,filter_hmmsearch
+from utils.db_tasks import upload_known_peptides, upload_hmmsearch, upload_cds, get_seqreads
+from utils.hmm_tasks import run_hmmsearch,addsequence_hmmsearch,filter_hmmsearch
+from utils.signalp_tasks import run_signalp
 
 # import pandas as pd
 # import numpy as np
@@ -88,7 +89,7 @@ class PeptideMiner():
                 accession = k.split('_')[0][1:]
                 name = ' '.join(k.split('[')[0].split('_')[1:])
 
-                upload_known_peptides(self.db, self.family_name, species,accession,name,dict_Seq[k])
+                family_id,peptide_id = upload_known_peptides(self.db, self.family_name, species,accession,name,dict_Seq[k])
                 self.n_known_peptide += 1
         else:
             logger.error(f" [Known Peptides] {self.family_name} - {self.n_known_peptide} peptide uploaded")
@@ -177,7 +178,10 @@ class PeptideMiner():
 
                     hmm_id_dict[hmm_id] = [hmm_id,hmm_name,transcriptome_name]
                     seq_id_dict[sqeq_id] = [sqeq_id,sequence,hmm_id,hmm_name]
-                    
+
+        logger.info(f" [HMM Search] HMM's: {len(hmm_id_dict)} uploaded")
+        logger.info(f" [HMM Search] Seq's: {len(seq_id_dict)} uploaded")
+            
         # Pipeline CSV Log
         csv_filename = '01_hmmsearch_hmm.csv'
         with open(os.path.join(self.pipeline_dir,csv_filename),'w',newline='') as csvfile:
@@ -186,7 +190,7 @@ class PeptideMiner():
             csvwriter.writerow(csv_header)
             for key in hmm_id_dict:
                 csvwriter.writerow(hmm_id_dict[key])
-        logger.info(f" [HMM Search] HMM_ID: {len(hmm_id_dict)} -> {csv_filename}")
+        logger.info(f" [HMM Search] HMM's -> {csv_filename} ({len(hmm_id_dict)})")
 
         csv_filename = '02_hmmsearch_seq.csv'
         with open(os.path.join(self.pipeline_dir,csv_filename),'w',newline='') as csvfile:
@@ -195,7 +199,7 @@ class PeptideMiner():
             csvwriter.writerow(csv_header)
             for key in seq_id_dict:
                 csvwriter.writerow(seq_id_dict[key])
-        logger.info(f" [HMM Search] Seq_ID: {len(seq_id_dict)} -> {csv_filename}")
+        logger.info(f" [HMM Search] Seq's -> {csv_filename} ({len(seq_id_dict)})")
 
 
     # ---------------------------------------------------------
@@ -220,7 +224,8 @@ class PeptideMiner():
         for cds in self.cds_lst:
             cds_id = upload_cds(self.db,cds['cds'],cds['seq_id'])
             cds['cds_id'] = cds_id   
-                    
+        logger.info(f" [HMM Search] CDS: {len(self.cds_lst)} uploded")
+
         csv_filename = '03_cds_seq.csv'
         with open(os.path.join(self.pipeline_dir,csv_filename),'w',newline='') as csvfile:
             csvwriter = csv.writer(csvfile)
@@ -228,15 +233,15 @@ class PeptideMiner():
             csvwriter.writerow(csv_header)
             for cds in self.cds_lst:
                 csvwriter.writerow([cds['cds_id'],cds['n_cds'],cds['cds']])
-        logger.info(f" [HMM Search] CDS: {len(self.cds_lst)} -> {csv_filename}")
+        logger.info(f" [HMM Search] CDS -> {csv_filename} ({len(self.cds_lst)} )")
 
         
     # ---------------------------------------------------------
-    def signalp_cds(self, SignalP_Cutoff, SignalP_Min_Length,Overwrite=False):
+    def signalp_cds(self, SignalP_Cutoff, SignalP_Min_Length,Signal_Path=None, Overwrite=False):
 
         if len(self.cds_lst) > 0:
-            
-
+            for cds in self.cds_lst:        
+                run_signalp(f"{cds['cds_id']}_{cds['n_cds']:02d}",cds['cds'],SignalP_Cutoff,Signal_Path)
   
 
 
@@ -247,10 +252,17 @@ def main(prgArgs):
     
     pWork = PeptideMiner(WorkDir=prgArgs.workdir, DataDir=prgArgs.datadir)
     pWork.read_known_peptides(prgArgs.peptide_family)
+    # Steps 0, 1, 2
     pWork.hmmsearch(prgArgs.querydir)
     pWork.read_hmmsearch()
+
+    # Step 3, 4
     pWork.read_cds(int(prgArgs.cds_min_length))
-    pWork.signalp_cds(float(prgArgs.sp_cutoff),int(prgArgs.sp_min_length))
+    pWork.signalp_cds(float(prgArgs.signalp_cutoff),int(prgArgs.signalp_min_length),prgArgs.signalp_path)
+
+    # Step 5, 6
+
+    # Step 7, 8
 
 #==============================================================================
 if __name__ == "__main__":
@@ -262,8 +274,9 @@ if __name__ == "__main__":
     prgParser.add_argument("--data_dir",default=None,required=False, dest="datadir", action='store', help="Data Folder")
     prgParser.add_argument("--cds_min_length",default=None,required=False, dest="cds_min_length", action='store', help="CDS min length")
 
-    prgParser.add_argument("--sp_cutoff",default=None,required=False, dest="sp_cutoff", action='store', help="SignalP cutoff")
-    prgParser.add_argument("--sp_min_length",default=None,required=False, dest="sp_min_length", action='store', help="SignalP min length")
+    prgParser.add_argument("--signalp_cutoff",default=None,required=False, dest="signalp_cutoff", action='store', help="SignalP cutoff")
+    prgParser.add_argument("--signalp_min_length",default=None,required=False, dest="signalp_min_length", action='store', help="SignalP min length")
+    prgParser.add_argument("--signalp_path",default=None,required=False, dest="signalp_path", action='store', help="SignalP executable")
 
     prgParser.add_argument("--mature_min_length",default=None,required=False, dest="mature_min_length", action='store', help="Mature peptide min length")
     prgParser.add_argument("--mature_max_length",default=None,required=False, dest="mature_max_length", action='store', help="Mature peptide max length")

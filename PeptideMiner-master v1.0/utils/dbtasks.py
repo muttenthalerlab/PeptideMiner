@@ -30,7 +30,7 @@ def run_hmmsearch(OutPut,HmmFile,Query):
 # -----------------------------------------------------------------------
     cmd = f"hmmsearch --tblout {OutPut}.tbl {HmmFile} {Query}" 
     
-    logger.info(f"[HMM Search] {Query} {HmmFile} -> {OutPut}")
+    logger.info(f" [HMM Search] -> {OutPut}.tbl")
     p = subprocess.run(cmd,shell=True,capture_output=True, text=True)
     ret = p.stdout
     

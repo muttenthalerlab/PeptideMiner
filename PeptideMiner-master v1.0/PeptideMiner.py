@@ -133,7 +133,20 @@ class PeptideMiner():
             for hmm in HMM_Files:
                 hmm_out = f"{hmm.split('.')[0]}.{qry_file.replace('.fna','')}"
                 
-                _ret = run_hmmsearch(os.path.join(self.hmmsearch_dir,hmm_out),os.path.join(self.hmm_dir,hmm),os.path.join(Query,qry_file))                
+                _ret = run_hmmsearch(os.path.join(self.hmmsearch_dir,hmm_out),os.path.join(self.hmm_dir,hmm),os.path.join(Query,qry_file))
+                                
+                # Combine HMM Search Out put with Sequence
+                for l in open(f"{hmm_out}.tbl", "r").readlines():
+                    if not l.startswith("#"):
+                        ll = l.replace(',','').strip().split()
+
+                        for ID in dict_Fasta:
+                            """if ID in .tbl matches an ID in fastaDict, then print"""
+                            if str(ID).startswith(str(ll[0])):
+                        
+                                line = ",".join(ll[:18]) + "," + " ".join(ll[18:]) + "," + str(dict_Fasta[ID])
+                                print(line)
+                                #out.append(line)
                 
 # --------------------------------------------------------------------------------------
 def main(prgArgs):

@@ -16,11 +16,16 @@ def run_signalp(seq_id,sequence,cutoff,signal_path,temp_path='/tmp'):
     out_file = os.path.join(temp_path,f"{seq_id}.out")
     logger.info(f" [SingalP] -> ")
     # SignalP 4.1  : eukariotic 
-    cmd = f"{signal_path} -t euk -U {cutoff} -u {cutoff} {seq_file} "
+    cmd = f"{signal_path} -t euk -M -U {cutoff} -u {cutoff} {seq_file} "
     p = subprocess.run(cmd,shell=True,capture_output=True, text=True)
     ret = p.stdout
-    
-    signalp_header = ['name','Cmax','CMax_pos','Ymax','Ymax_pos','Smax','Smax_pos','Smean','D','?','Dmaxcut','Networks-used']
-    signalp_dict = dict(zip(signalp_header,ret.splitlines()[2].split()))
+    os.remove(seq_file)
 
-    print(signalp_dict)
+    signalp_header = ['name','Cmax','CMax_pos','Ymax','Ymax_pos','Smax','Smax_pos','Smean','Dscore','SP','Dmaxcut','Networks-used']
+    signalp_dict = dict(zip(signalp_header,ret.splitlines()[2].split()))
+    if signalp_dict['SP'] == 'Y':
+        signalp_pos = int(signalp_dict['CMax_pos'])
+        
+
+
+

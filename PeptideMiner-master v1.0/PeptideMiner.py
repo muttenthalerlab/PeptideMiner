@@ -7,7 +7,7 @@ import datetime
 import csv
 
 from utils.database import sql_connector
-from utils.db_tasks import upload_known_peptides, upload_hmmsearch, upload_cds, get_seqreads
+from utils.db_tasks import upload_known_peptides, upload_hmmsearch, upload_cds, update_seqreads_signalp, get_seqreads
 from utils.hmm_tasks import run_hmmsearch,addsequence_hmmsearch,filter_hmmsearch
 from utils.signalp_tasks import run_signalp
 
@@ -239,13 +239,35 @@ class PeptideMiner():
     # ---------------------------------------------------------
     def signalp_cds(self, SignalP_Cutoff, SignalP_Min_Length,Signal_Path=None, Overwrite=False):
 
+        maturepep_lst = []
         if len(self.cds_lst) > 0:
-            for cds in self.cds_lst:        
-                run_signalp(f"{cds['cds_id']}_{cds['n_cds']:02d}",cds['cds'],SignalP_Cutoff,Signal_Path)
+            for cds in self.cds_lst:
+                signalp_pos = 0
+                mature_seq = cds['cds']
+                         
+                signalp_dict = run_signalp(f"{cds['cds_id']}_{cds['n_cds']:02d}",cds['cds'],SignalP_Cutoff,Signal_Path)
   
+                if signalp_dict['SP'] == 'Y':
+                    signalp_pos = int(signalp_dict['CMax_pos'])
+                    mature_seq = cds['cds'][signalp_pos:]
+                    if len(mature_seq) >= SignalP_Min_Length:
+                        maturepep_lst.append({'cds_id':cds['cds_id'],'signalp_pos':signalp_pos,'mature_peptide':mature_seq})
+                    else:
+                        # ???? Not sure
+                        maturepep_lst.append({'cds_id':cds['cds_id'],'signalp_pos':signalp_pos,'mature_peptide':cds['cds']})
 
+                update_seqreads_signalp(self.db,cds['cds_id'],signalp_pos)
 
-       
+        csv_filename = '04_mature_peptides.csv'
+        with open(os.path.join(self.pipeline_dir,csv_filename),'w',newline='') as csvfile:
+            csvwriter = csv.writer(csvfile)
+            csv_header=['cds_id','signal peptide position','mature peptide']
+            csvwriter.writerow(csv_header)
+            for mpep in maturepep_lst:
+                csvwriter.writerow([mpep['cds_id'],mpep['signalp_pos'],mpep['mature_peptide']])
+        logger.info(f" [SignalP] Mature peptides -> {csv_filename} ({len(self.maturepep_lst)} )")
+
+      
 # --------------------------------------------------------------------------------------
 def main(prgArgs):
 # --------------------------------------------------------------------------------------

@@ -23,9 +23,8 @@ def run_signalp(seq_id,sequence,cutoff,signal_path,temp_path='/tmp'):
 
     signalp_header = ['name','Cmax','CMax_pos','Ymax','Ymax_pos','Smax','Smax_pos','Smean','Dscore','SP','Dmaxcut','Networks-used']
     signalp_dict = dict(zip(signalp_header,ret.splitlines()[2].split()))
-    if signalp_dict['SP'] == 'Y':
-        signalp_pos = int(signalp_dict['CMax_pos'])
-        
+    return(signalp_dict)
+
 
 
 

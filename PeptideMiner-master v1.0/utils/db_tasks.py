@@ -67,6 +67,11 @@ def upload_cds(DB,cds,seq_id,verbose=0):
 
 
 # -----------------------------------------------------------------------
+def update_seqreads_signalp(DB,cds_id,pos):
+# -----------------------------------------------------------------------
+    DB.update('seqreads',{'signalseq_length':pos},f'cds_id={cds_id}')
+
+# -----------------------------------------------------------------------
 def get_hmmid(DB,hmm_name):
 # -----------------------------------------------------------------------
     for res in DB.selectall('hmm',('id'),(f"name='{hmm_name}'")):

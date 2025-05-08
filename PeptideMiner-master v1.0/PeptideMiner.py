@@ -247,7 +247,7 @@ class PeptideMiner():
 
         csv_dir = self.pipeline_dir
         csv_filename = '04_mature_peptides.csv'
-        csv_header=['cds_id','signalp_pos','mature mature_peptide']
+        csv_header=['cds_id','signalp_pos','mature_peptide']
 
         if os.path.isfile(os.path.join(csv_dir,csv_filename)):
             self.maturepep_lst = []

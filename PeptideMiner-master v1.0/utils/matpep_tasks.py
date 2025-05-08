@@ -246,7 +246,7 @@ class alignment:
         print(cmd)
         p = subprocess.run(cmd,shell=True,capture_output=True, text=True)
         self.fasta36_out = p.stdout.splitlines()
-        print(self.fasta36_out)
+        # print(self.fasta36_out)
         os.remove(tmp_seq_file)
 		
     def __str__ (self):
@@ -267,13 +267,13 @@ class alignment:
                 record = 0
             if re.search(r"^>>",line):
                 if res is not None:
-                    res.parse_ali()
+                    res.parse_alignment()
                 res = result(line.lstrip(">"))
                 self.results.append(res)
                 record = 1
             elif re.search(r"^>--",line):
                 if res is not None:
-                    res.parse_ali()
+                    res.parse_alignment()
                 res = result(name=res.name,dbid=res.dbid,lenseq=res.lenseq)
                 self.results.append(res)
                 record = 1
@@ -286,7 +286,7 @@ class alignment:
             elif record:
                 res.ali = f"{res.ali}\n{line}"
         if res is not None:
-            res.parse_ali()
+            res.parse_alignment()
 
 # -----------------------------------------------------------------------
 class result:
@@ -352,13 +352,13 @@ class result:
                 else:
                     self.frame = -1*((self.lenseq-self.start_l) % 3 + 1)
 
-    def parse_ali (self):
+    def parse_alignment(self):
         lines = self.ali.split("\n")
         ali1 = []
         ali2 = []
         alim = []
         if len(lines) > 3:
-            nb_clust_ali = (len(lines)-2)/6
+            nb_clust_ali = int((len(lines)-2)/6)
             for i in range(0,nb_clust_ali):
                 linenum = i*6 + 2
                 a1 = lines[linenum+1][7:]

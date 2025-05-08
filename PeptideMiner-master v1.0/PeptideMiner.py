@@ -287,7 +287,7 @@ class PeptideMiner():
 
 
     # ---------------------------------------------------------
-    def select_mature(self,E_Cutoff):
+    def select_mature(self,E_Cutoff,Min_Length,Max_Length):
         for mpep in self.maturepep_lst:
             mpep_seq = mpep['mature_peptide']
             best = {'result':None, 'score': None}
@@ -314,8 +314,10 @@ class PeptideMiner():
                     cterm = Cterm(seq[2])
                     mature_sequences.append(nterm['sequence']+seq[1]+cterm['sequence'])
                 mature_sequences = list(set(mature_sequences))
-                
-                print(mature_sequences)
+
+                for i,seq in enumerate(mature_sequences):
+                    print(seq)
+                #print(mature_sequences)
 
 
 
@@ -335,7 +337,7 @@ def main(prgArgs):
     pWork.signalp_cds(float(prgArgs.signalp_cutoff),int(prgArgs.signalp_min_length),prgArgs.signalp_path)
 
     # Step 5, 6
-    pWork.select_mature(float(prgArgs.mature_evalue_cutoff))
+    pWork.select_mature(float(prgArgs.mature_evalue_cutoff,prgArgs.mature_min_length,prgArgs.mature_max_length))
 
     # Step 7, 8
 

@@ -211,7 +211,7 @@ class PeptideMiner():
 
         csv_dir = self.pipeline_dir
         csv_filename = '03_cds_seq.csv'
-        csv_header=['cds_id','n_cds','cds']
+        csv_header=['cds_id','seq_id','n_cds','cds']
 
         # ??? All Sequences or just from the specific hmm_id
         seq_id_dict = get_seqreads(self.db) 
@@ -235,7 +235,7 @@ class PeptideMiner():
         logger.info(f" [HMM Search] CDS: {len(self.cds_lst)} uploded")
 
         with open(os.path.join(csv_dir,csv_filename),'w',newline='') as f:
-            csvwriter = csv.DictWriter(f, fieldnames=csv_filename)                
+            csvwriter = csv.DictWriter(f, fieldnames=csv_header)                
             csvwriter.writeheader()
             for cds in self.cds_lst:
                 csvwriter.writerow(cds)
@@ -278,7 +278,7 @@ class PeptideMiner():
 
             
             with open(os.path.join(csv_dir,csv_filename),'w',newline='') as f:
-                csvwriter = csv.DictWriter(f, fieldnames=csv_filename)                
+                csvwriter = csv.DictWriter(f, fieldnames=csv_header)                
                 csvwriter.writeheader()
                 for mpep in self.maturepep_lst:
                     csvwriter.writerow(mpep)

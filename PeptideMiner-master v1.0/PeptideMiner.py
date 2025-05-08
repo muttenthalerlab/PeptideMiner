@@ -53,6 +53,7 @@ class PeptideMiner():
         self.hmm_search_files = []
         self.cds_lst = []
         self.maturepep_lst = []
+        self.matureseq_lst = []
         #self.seq_id_dict = {}
 
         # Initialise Working Folders
@@ -288,6 +289,12 @@ class PeptideMiner():
 
     # ---------------------------------------------------------
     def select_mature(self,E_Cutoff,Min_Length,Max_Length):
+        csv_dir = self.pipeline_dir
+        csv_filename = '05_mature_sequences.csv'
+        csv_header=['cds_id','mature_sequence']
+
+        self.matureseq_lst = []
+        
         for mpep in self.maturepep_lst:
             mpep_seq = mpep['mature_peptide']
             best = {'result':None, 'score': None}
@@ -305,19 +312,29 @@ class PeptideMiner():
                         best['score']  = score
                         for r in mpep_ali.results:
                             if float(r.E) < E_Cutoff:
-                                sequences.append([mpep_seq[:r.start_q-1],mpep_seq[r.start_q-1:r.end_q],mpep_seq[r.end_q:]])
+                                sequences.append({'before_seq':mpep_seq[:r.start_q-1],
+                                                  'mid_seq':   mpep_seq[r.start_q-1:r.end_q],
+                                                  'after_seq': mpep_seq[r.end_q:]})
 
             if len(sequences) >0:
                 mature_sequences = []
                 for seq in sequences:
-                    nterm = Nterm(seq[0])
-                    cterm = Cterm(seq[2])
-                    mature_sequences.append(nterm['sequence']+seq[1]+cterm['sequence'])
+                    nterm = Nterm(seq['before_seq'])
+                    cterm = Cterm(seq['after_seq'])
+                    mature_sequences.append(nterm['sequence']+seq['mid_seq']+cterm['sequence'])
                 mature_sequences = list(set(mature_sequences))
 
                 for i,seq in enumerate(mature_sequences):
-                    print(seq)
-                #print(mature_sequences)
+                    if len(seq) >= Min_Length and len(seq) <= Max_Length:
+                        self.matureseq_lst.append({'cds_id':mpep['cds_id'],'mature_sequence':seq})
+
+
+        with open(os.path.join(csv_dir,csv_filename),'w',newline='') as f:
+            csvwriter = csv.DictWriter(f, fieldnames=csv_header)                
+            csvwriter.writeheader()
+            for mpep in self.matureseq_lst:
+                csvwriter.writerow(mpep)
+        logger.info(f" [Fasta36] MatSequences: -> {csv_filename} ({len(self.matureseq_lst)} )")
 
 
 

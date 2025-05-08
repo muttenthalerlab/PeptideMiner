@@ -78,23 +78,24 @@ class PeptideMiner():
         pep_dir = os.path.join(self.known_pep_dir,self.family_name)
         for k in os.listdir(pep_dir):
             if k.endswith('.fna'):
-                FastA_File = os.path.join(pep_dir,k)
+                self.known_peptide.append(os.path.join(pep_dir,k))
 
-        if os.path.isfile(FastA_File):
-            logger.info(f" [Known Peptides] {self.family_name} - Reading {FastA_File}")
-            dict_Seq = self.read_fasta_file(FastA_File)
-            self.n_known_peptide = 0
-            for k in dict_Seq:
-                # Parsing Fast Header
-                #>P13204_ANFB [Bos taurus]
-                #>acession_name [specie]
-                #
-                species = k.strip().split('[')[-1].replace(']','').split('(')[0]
-                accession = k.split('_')[0][1:]
-                name = ' '.join(k.split('[')[0].split('_')[1:])
+        for fna_file in self.known_peptide:
+            if os.path.isfile(fna_file):
+                logger.info(f" [Known Peptides] {self.family_name} - Reading {fna_file}")
+                dict_Seq = self.read_fasta_file(fna_file)
+                self.n_known_peptide = 0
+                for k in dict_Seq:
+                    # Parsing Fast Header
+                    #>P13204_ANFB [Bos taurus]
+                    #>acession_name [specie]
+                    #
+                    species = k.strip().split('[')[-1].replace(']','').split('(')[0]
+                    accession = k.split('_')[0][1:]
+                    name = ' '.join(k.split('[')[0].split('_')[1:])
 
-                family_id,peptide_id = upload_known_peptides(self.db, self.family_name, species,accession,name,dict_Seq[k])
-                self.n_known_peptide += 1
+                    family_id,peptide_id = upload_known_peptides(self.db, self.family_name, species,accession,name,dict_Seq[k])
+                    self.n_known_peptide += 1
         else:
             logger.error(f" [Known Peptides] {self.family_name} - {self.n_known_peptide} peptide uploaded")
 

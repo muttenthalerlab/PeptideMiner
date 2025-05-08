@@ -325,7 +325,9 @@ class PeptideMiner():
 def main(prgArgs):
 # --------------------------------------------------------------------------------------
     
-    pWork = PeptideMiner(WorkDir=prgArgs.workdir, DataDir=prgArgs.datadir)
+    pWork = PeptideMiner(WorkDir=prgArgs.workdir, 
+                         DataDir=prgArgs.datadir)
+    
     pWork.read_known_peptides(prgArgs.peptide_family)
 
     # Steps 0, 1, 2
@@ -334,10 +336,15 @@ def main(prgArgs):
 
     # Step 3, 4
     pWork.read_cds(int(prgArgs.cds_min_length))
-    pWork.signalp_cds(float(prgArgs.signalp_cutoff),int(prgArgs.signalp_min_length),prgArgs.signalp_path)
+
+    pWork.signalp_cds(float(prgArgs.signalp_cutoff),
+                      int(prgArgs.signalp_min_length),
+                      prgArgs.signalp_path)
 
     # Step 5, 6
-    pWork.select_mature(float(prgArgs.mature_evalue_cutoff,prgArgs.mature_min_length,prgArgs.mature_max_length))
+    pWork.select_mature(float(prgArgs.mature_evalue_cutoff),
+                        int(prgArgs.mature_min_length),
+                        int(prgArgs.mature_max_length))
 
     # Step 7, 8
 

@@ -243,7 +243,7 @@ class alignment:
     def run_fasta36(self):
         tmp_seq_file = create_temp_fasta(self.qry_sequence)
         cmd = f"fasta36 -f {self.gap_penalty} -z 0 -E {self.evalue} -q {tmp_seq_file} {self.lib_file} "
-        print(cmd)
+        #print(cmd)
         p = subprocess.run(cmd,shell=True,capture_output=True, text=True, encoding='latin-1')
         self.fasta36_out = p.stdout.splitlines()
         # print(self.fasta36_out)

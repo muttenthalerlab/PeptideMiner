@@ -239,7 +239,7 @@ class PeptideMiner():
             csvwriter.writeheader()
             for cds in self.cds_lst:
                 csvwriter.writerow(cds)
-        logger.info(f" [HMM Search] CDS -> {csv_filename} ({len(self.cds_lst)} )")
+        logger.info(f" [HMM Search] CDS: -> {csv_filename} ({len(self.cds_lst)} )")
 
         
     # ---------------------------------------------------------
@@ -255,7 +255,7 @@ class PeptideMiner():
                 csvreader = csv.DictReader(f)
                 for row in csvreader:
                     self.maturepep_lst.append(row)
-            logger.info(f" [SignalP] Mature peptides {csv_filename} -> ({len(self.maturepep_lst)} )")
+            logger.info(f" [SignalP] MatPeptides: {csv_filename} -> ({len(self.maturepep_lst)} )")
         else:
             self.maturepep_lst = []
             if len(self.cds_lst) > 0:
@@ -282,7 +282,7 @@ class PeptideMiner():
                 csvwriter.writeheader()
                 for mpep in self.maturepep_lst:
                     csvwriter.writerow(mpep)
-            logger.info(f" [SignalP] Mature peptides -> {csv_filename} ({len(self.maturepep_lst)} )")
+            logger.info(f" [SignalP] MatPeptides: -> {csv_filename} ({len(self.maturepep_lst)} )")
 
 
     # ---------------------------------------------------------
@@ -309,7 +309,7 @@ def main(prgArgs):
     pWork.signalp_cds(float(prgArgs.signalp_cutoff),int(prgArgs.signalp_min_length),prgArgs.signalp_path)
 
     # Step 5, 6
-    #pWork.select_mature()
+    pWork.select_mature()
 
     # Step 7, 8
 

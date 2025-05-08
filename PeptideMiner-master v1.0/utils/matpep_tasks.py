@@ -41,36 +41,38 @@ def find_regions (sequence,fasta,dir_fasta,ecutoff):
     if best_r is None: return []
     return sequences
 
+# -----------------------------------------------------------------------
 def Nterm (sequence,use_isolated=1):
-	cleavages = []
-	Furin_cleav  = re.compile("^(.*)([KR][KR].R)(.*)$")
-	RRGC_cleav   = re.compile("^(.*)(RR.)(G)$")
-	KRR_cleav    = re.compile("^(.*)(KR)(R.*)$")
-	LVLK_cleav   = re.compile("^(.*)([LV]..L..K)(.*)$")
-	LSR_cleav    = re.compile("^(.*)(L..S.R)(.*)$")
-	LENDKR_cleav = re.compile("^(.*)(L.[END]KR)(.*)$")
-	LKR_cleav    = re.compile("^(.*)(L..[KR])(.*)$")
-	KR_cleav     = re.compile("^(.*)(KR)(.*)$")
-	RR_cleav     = re.compile("^(.*)(RR)(.*)$")
-	KK_cleav     = re.compile("^(.*)(KK)(.*)$")
-	KE_cleav     = re.compile("^(.*)(KE)(.?)$")
-	ER_cleav     = re.compile("^(.*)(ER)(.*)$")
-	E_R_cleav    = re.compile("^(.*)(E...R)(.*)$")
-	E__R_cleav   = re.compile("^(.*)(E.....R)(.*)$")
-	RKtoR_cleav  = re.compile("^(.*)([RK].{0,5}R)(.*)$")
-	DtoR_cleav   = re.compile("^(.*)(D.{0,6}R)(.*)$")
-	RMVL_cleav   = re.compile("^(.*)([RM].VL)(.*)$")
+# -----------------------------------------------------------------------
+    cleavages = []
+    Furin_cleav  = re.compile("^(.*)([KR][KR].R)(.*)$")
+    RRGC_cleav   = re.compile("^(.*)(RR.)(G)$")
+    KRR_cleav    = re.compile("^(.*)(KR)(R.*)$")
+    LVLK_cleav   = re.compile("^(.*)([LV]..L..K)(.*)$")
+    LSR_cleav    = re.compile("^(.*)(L..S.R)(.*)$")
+    LENDKR_cleav = re.compile("^(.*)(L.[END]KR)(.*)$")
+    LKR_cleav    = re.compile("^(.*)(L..[KR])(.*)$")
+    KR_cleav     = re.compile("^(.*)(KR)(.*)$")
+    RR_cleav     = re.compile("^(.*)(RR)(.*)$")
+    KK_cleav     = re.compile("^(.*)(KK)(.*)$")
+    KE_cleav     = re.compile("^(.*)(KE)(.?)$")
+    ER_cleav     = re.compile("^(.*)(ER)(.*)$")
+    E_R_cleav    = re.compile("^(.*)(E...R)(.*)$")
+    E__R_cleav   = re.compile("^(.*)(E.....R)(.*)$")
+    RKtoR_cleav  = re.compile("^(.*)([RK].{0,5}R)(.*)$")
+    DtoR_cleav   = re.compile("^(.*)(D.{0,6}R)(.*)$")
+    RMVL_cleav   = re.compile("^(.*)([RM].VL)(.*)$")
 
-	m = Furin_cleav.search(sequence)
-	if m:
-		cleavages.append(cleavage('Furin',m))
-		sequence = m.group(3)
-	m = RRGC_cleav.search(sequence)
-	if m:
-		cleavages.append(cleavage('RR.GC',m))
-		sequence = 'G'
-	# GIIIA impose un cleavage KR|R et donc montre une plus grande affinite sur KR
-	# que sur RR (ou alors deux enzymes et une cynetiquement plus rapide).
+    m = Furin_cleav.search(sequence)
+    if m:
+        cleavages.append(cleavage('Furin',m))
+        sequence = m.group(3)
+    m = RRGC_cleav.search(sequence)
+    if m:
+        cleavages.append(cleavage('RR.GC',m))
+        sequence = 'G'
+    # GIIIA impose un cleavage KR|R et donc montre une plus grande affinite sur KR
+    # que sur RR (ou alors deux enzymes et une cynetiquement plus rapide).
 #	m = KRR_cleav.search(sequence) # new
 #	if m:
 #		cleavages.append(cleavage('KRR',m))
@@ -80,99 +82,101 @@ def Nterm (sequence,use_isolated=1):
 #		cleavages.append(cleavage('KR',m))
 #		sequence = m.group(3)
 
-	# PIIIA proves that the lowest number of residues between RK and R is selected
-	# GIIIA proves that K is prefered to R
+    # PIIIA proves that the lowest number of residues between RK and R is selected
+    # GIIIA proves that K is prefered to R
 
-	m = LVLK_cleav.search(sequence)
-	if m:
-		cleavages.append(cleavage('[LV]..L..K',m))
-		sequence = m.group(3)
-	m = LSR_cleav.search(sequence)
-	if m:
-		cleavages.append(cleavage('L..S.R',m))
-		sequence = m.group(3)
-	m = LENDKR_cleav.search(sequence)
-	if m:
-		cleavages.append(cleavage('L.[END]KR',m))
-		sequence = m.group(3)
-	m = LKR_cleav.search(sequence)
-	if m:
-		cleavages.append(cleavage('L..[KR]',m))
-		sequence = m.group(3)
-	m = KR_cleav.search(sequence)
-	if m:
-		cleavages.append(cleavage('KR',m))
-		sequence = m.group(3)
-	m = RR_cleav.search(sequence)
-	if m:
-		cleavages.append(cleavage('RR',m))
-		sequence = m.group(3)
-	m = KK_cleav.search(sequence)
-	if m and use_isolated:
-		cleavages.append(cleavage('KK',m))
-		sequence = m.group(3)
-	m = KE_cleav.search(sequence)
-	if m and use_isolated:
-		cleavages.append(cleavage('KE',m))
-		sequence = m.group(3)
+    m = LVLK_cleav.search(sequence)
+    if m:
+        cleavages.append(cleavage('[LV]..L..K',m))
+        sequence = m.group(3)
+    m = LSR_cleav.search(sequence)
+    if m:
+        cleavages.append(cleavage('L..S.R',m))
+        sequence = m.group(3)
+    m = LENDKR_cleav.search(sequence)
+    if m:
+        cleavages.append(cleavage('L.[END]KR',m))
+        sequence = m.group(3)
+    m = LKR_cleav.search(sequence)
+    if m:
+        cleavages.append(cleavage('L..[KR]',m))
+        sequence = m.group(3)
+    m = KR_cleav.search(sequence)
+    if m:
+        cleavages.append(cleavage('KR',m))
+        sequence = m.group(3)
+    m = RR_cleav.search(sequence)
+    if m:
+        cleavages.append(cleavage('RR',m))
+        sequence = m.group(3)
+    m = KK_cleav.search(sequence)
+    if m and use_isolated:
+        cleavages.append(cleavage('KK',m))
+        sequence = m.group(3)
+    m = KE_cleav.search(sequence)
+    if m and use_isolated:
+        cleavages.append(cleavage('KE',m))
+        sequence = m.group(3)
 
-	# EbeforeR find with spacing 3 and 5
-	m = ER_cleav.search(sequence)
-	if m:
-		cleavages.append(cleavage('ER',m))
-		sequence = m.group(3)
-	m = E_R_cleav.search(sequence)
-	if m:
-		cleavages.append(cleavage('E...R',m))
-		sequence = m.group(3)
-	m = E__R_cleav.search(sequence)
-	if m:
-		cleavages.append(cleavage('E.....R',m))
-		sequence = m.group(3)
+    # EbeforeR find with spacing 3 and 5
+    m = ER_cleav.search(sequence)
+    if m:
+        cleavages.append(cleavage('ER',m))
+        sequence = m.group(3)
+    m = E_R_cleav.search(sequence)
+    if m:
+        cleavages.append(cleavage('E...R',m))
+        sequence = m.group(3)
+    m = E__R_cleav.search(sequence)
+    if m:
+        cleavages.append(cleavage('E.....R',m))
+        sequence = m.group(3)
 
-	m = RKtoR_cleav.search(sequence)
-	if m:
-		if m.group(2) == 'RPR':
-			pre = "{0}{1}".format(m.group(2),m.group(3))
-			tp = m.group(1)
-			m2 = RKtoR_cleav.search(tp)
-			if m2: # remove RPR case for Pl14a
-				cleavages.append(cleavage('R(K)toR',m))
-				sequence = "{0}{1}".format(m2.group(3),pre)
-		else:
-			cleavages.append(cleavage('R(K)toR',m))
-			sequence = m.group(3)
+    m = RKtoR_cleav.search(sequence)
+    if m:
+        if m.group(2) == 'RPR':
+            pre = "{0}{1}".format(m.group(2),m.group(3))
+            tp = m.group(1)
+            m2 = RKtoR_cleav.search(tp)
+            if m2: # remove RPR case for Pl14a
+                cleavages.append(cleavage('R(K)toR',m))
+                sequence = "{0}{1}".format(m2.group(3),pre)
+        else:
+            cleavages.append(cleavage('R(K)toR',m))
+            sequence = m.group(3)
 
-	m = DtoR_cleav.search(sequence)
-	if m: # new one only for MrIIIG
-		cleavages.append(cleavage('DtoR',m))
-		sequence = m.group(3)
+    m = DtoR_cleav.search(sequence)
+    if m: # new one only for MrIIIG
+        cleavages.append(cleavage('DtoR',m))
+        sequence = m.group(3)
 
-	m = RMVL_cleav.search(sequence)
-	if m and use_isolated:
-		cleavages.append(cleavage('[RM].VL',m))
-		sequence = m.group(3)
+    m = RMVL_cleav.search(sequence)
+    if m and use_isolated:
+        cleavages.append(cleavage('[RM].VL',m))
+        sequence = m.group(3)
 
-	return {'sequence':sequence,'cleavages':cleavages}
+    return {'sequence':sequence,'cleavages':cleavages}
 
+# -----------------------------------------------------------------------
 def Cterm (sequence,use_isolated=1):
-	cleavages = []
-	KR_cleav    = re.compile("(.*?)([KR][KR])(.*)")
-	RTIL_cleav  = re.compile("(.*?)(RT[IL])(.*)$")
+# -----------------------------------------------------------------------
+    cleavages = []
+    KR_cleav    = re.compile("(.*?)([KR][KR])(.*)")
+    RTIL_cleav  = re.compile("(.*?)(RT[IL])(.*)$")
 #	ER_cleav    = re.compile("^(.*)ER(.*)$")
 #	RKtoR_cleav = re.compile("^(.*)([RK].{0,6}R)(.*)$")
 #	RKtoK_cleav = re.compile("^(.*)([RK].{0,6}K)(.*)$")
 #	EtoR_cleav  = re.compile("^(.*)(E.{0,6}R)(.*)$")
 #	RtoE_cleav  = re.compile("^(.*)([RK].{0,6}E)(.*)$")
 
-	m = KR_cleav.search(sequence)
-	if m:
-		cleavages.append(cleavage('KR',m))
-		sequence = m.group(1)
-	m = RTIL_cleav.search(sequence)
-	if m and use_isolated:
-		cleavages.append(cleavage('RT[IL]',m))
-		sequence = m.group(1)
+    m = KR_cleav.search(sequence)
+    if m:
+        cleavages.append(cleavage('KR',m))
+        sequence = m.group(1)
+    m = RTIL_cleav.search(sequence)
+    if m and use_isolated:
+        cleavages.append(cleavage('RT[IL]',m))
+        sequence = m.group(1)
 # Commenting those lines or MIVA cleavage
 #	m = ER_cleav.search(sequence)
 #	if m:
@@ -194,36 +198,42 @@ def Cterm (sequence,use_isolated=1):
 #	if m:
 #		cleavages.append(cleavage('EafterR',m))
 #		sequence = m.group(1)
-	return {'sequence':sequence,'cleavages':cleavages}
+    return {'sequence':sequence,'cleavages':cleavages}
 
+# -----------------------------------------------------------------------
 def CPE (sequence):
-	CPE_cleav   = re.compile("(.+[^KR])([KR]+)$")
-	m = CPE_cleav.search(sequence)
-	if m:
-		return m
+# -----------------------------------------------------------------------
+    CPE_cleav   = re.compile("(.+[^KR])([KR]+)$")
+    m = CPE_cleav.search(sequence)
+    if m:
+        return m
 
+# -----------------------------------------------------------------------
 def PAM (sequence):
-	PAM_cleav   = re.compile("(.+)(G)$")
-	m = PAM_cleav.search(sequence)
-	if m:
-		return m
+# -----------------------------------------------------------------------
+    PAM_cleav   = re.compile("(.+)(G)$")
+    m = PAM_cleav.search(sequence)
+    if m:
+        return m
 
+# -----------------------------------------------------------------------
 class cleavage:
-	def __init__ (self,name,m):
-		self.name = name
-		self.sequence = m.group(2)
-		self.pre = m.group(1)
-		self.post = m.group(3)
+# -----------------------------------------------------------------------
+    def __init__ (self,name,m):
+        self.name = name
+        self.sequence = m.group(2)
+        self.pre = m.group(1)
+        self.post = m.group(3)
 
-	def __str__ (self):
-		return(f"  {self.name} cleavage: {self.pre} - {self.sequence} - {self.post}")
+    def __str__ (self):
+        return(f"  {self.name} cleavage: {self.pre} - {self.sequence} - {self.post}")
 
 def create_temp_fasta (sequence,name='seq'):
-	tmp_seq_file = f"/tmp/seq_{random.randint(1,10e9)}.fasta"
-	tmp = open(tmp_seq_file,'w')
-	tmp.write(f">{name}\n{sequence}")
-	tmp.close()
-	return tmp_seq_file
+    tmp_seq_file = f"/tmp/seq_{random.randint(1,10e9)}.fasta"
+    tmp = open(tmp_seq_file,'w')
+    tmp.write(f">{name}\n{sequence}")
+    tmp.close()
+    return tmp_seq_file
 
 # -----------------------------------------------------------------------
 class alignment:
@@ -233,7 +243,7 @@ class alignment:
         self.evalue = evalue
         self.qry_sequence = qry_sequence
         self.lib_file = lib_file
-		
+
         self.fasta36_out = []
         self.results = []
 
@@ -248,7 +258,7 @@ class alignment:
         self.fasta36_out = p.stdout.splitlines()
         # print(self.fasta36_out)
         os.remove(tmp_seq_file)
-		
+
     def __str__ (self):
         res_str = f"{len(self.results)} Result(s)"
         for i in range(0,len(self.results)):

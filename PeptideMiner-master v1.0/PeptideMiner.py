@@ -10,7 +10,7 @@ from utils.database import sql_connector
 from utils.db_tasks import upload_known_peptides, upload_hmmsearch, upload_cds, update_seqreads_signalp, get_seqreads
 from utils.hmm_tasks import run_hmmsearch,addsequence_hmmsearch,filter_hmmsearch
 from utils.signalp_tasks import run_signalp
-from utils.matpep_tasks import alignment
+from utils.matpep_tasks import alignment, Nterm, Cterm
 
 # import pandas as pd
 # import numpy as np
@@ -287,12 +287,35 @@ class PeptideMiner():
 
 
     # ---------------------------------------------------------
-    def select_mature(self):
+    def select_mature(self,E_Cutoff):
         for mpep in self.maturepep_lst:
+            mpep_seq = mpep['mature_peptide']
+            best = {'result':None, 'score': None}
+            sequences = []
+
             for filename in self.known_peptide:
-                mpep_ali = alignment(mpep['mature_peptide'],filename)
-                for r in mpep_ali.results:
-                    print(r)
+                mpep_ali = alignment(mpep_seq,filename)
+
+                if len(mpep_ali.results) > 0:
+                    # Get best alignment and check if <E_Cutoff
+                    r = mpep_ali.results[0]
+                    score = r.lenseq - r.overlap
+                    if float(r.E) < E_Cutoff and (best['result'] is None or best['score'] > score):
+                        best['result'] = r
+                        best['score']  = score
+                        for r in mpep_ali.results:
+                            if float(r.E) < E_Cutoff:
+                                sequences.append([mpep_seq[:r.start_q-1],mpep_seq[r.start_q-1:r.end_q],mpep_seq[r.end_q:]])
+
+            if len(sequences) >0:
+                mature_sequences = []
+                for seq in sequences:
+                    nterm = Nterm(seq[0])
+                    cterm = Cterm(seq[2])
+                    mature_sequences.append(nterm['sequence']+seq[1]+cterm['sequence'])
+                mature_sequences = list(set(mature_sequences))
+                
+                print(mature_sequences)
 
 
 
@@ -312,7 +335,7 @@ def main(prgArgs):
     pWork.signalp_cds(float(prgArgs.signalp_cutoff),int(prgArgs.signalp_min_length),prgArgs.signalp_path)
 
     # Step 5, 6
-    pWork.select_mature()
+    pWork.select_mature(float(prgArgs.mature_evalue_cutoff))
 
     # Step 7, 8
 

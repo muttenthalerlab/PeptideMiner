@@ -291,7 +291,7 @@ class PeptideMiner():
         for mpep in self.maturepep_lst:
             for filename in self.known_peptide:
                 mpep_ali = alignment(mpep['mature_peptide'],filename)
-                print(len(mpep_ali))
+                print(len(mpep_ali.results))
 
 
 

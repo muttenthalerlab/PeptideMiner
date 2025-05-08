@@ -14,7 +14,7 @@ def run_signalp(seq_id,sequence,cutoff,signal_path,temp_path='/tmp'):
         tmp.write(f">{seq_id}\n{sequence}")
     
     out_file = os.path.join(temp_path,f"{seq_id}.out")
-    logger.info(f" [SingalP] -> ")
+    logger.info(f" [SingalP] -> {seq_id}")
     # SignalP 4.1  : eukariotic 
     cmd = f"{signal_path} -t euk -M -U {cutoff} -u {cutoff} {seq_file} "
     p = subprocess.run(cmd,shell=True,capture_output=True, text=True)
@@ -23,6 +23,8 @@ def run_signalp(seq_id,sequence,cutoff,signal_path,temp_path='/tmp'):
 
     signalp_header = ['name','Cmax','CMax_pos','Ymax','Ymax_pos','Smax','Smax_pos','Smean','Dscore','SP','Dmaxcut','Networks-used']
     signalp_dict = dict(zip(signalp_header,ret.splitlines()[2].split()))
+
+    logger.info(f" [SingalP] -> {seq_id} {signalp_dict['SP']} at {signalp_dict['CMax_pos']}")
     return(signalp_dict)
 
 

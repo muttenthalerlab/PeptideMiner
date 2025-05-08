@@ -265,7 +265,7 @@ class PeptideMiner():
             csvwriter.writerow(csv_header)
             for mpep in maturepep_lst:
                 csvwriter.writerow([mpep['cds_id'],mpep['signalp_pos'],mpep['mature_peptide']])
-        logger.info(f" [SignalP] Mature peptides -> {csv_filename} ({len(self.maturepep_lst)} )")
+        logger.info(f" [SignalP] Mature peptides -> {csv_filename} ({len(maturepep_lst)} )")
 
       
 # --------------------------------------------------------------------------------------

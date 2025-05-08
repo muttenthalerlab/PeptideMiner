@@ -34,7 +34,7 @@ def upload_hmmsearch(DB,hmm_name,transcriptome_name,id,evalue,sequence, verbose=
 
     if hmm_id is None:
         DB.insert('hmm',{'name':hmm_name})
-        hmm_id = DB.onevalue('id','hmm',{'name':hmm_name})
+        hmm_id = DB.onevalue('hmm','id',{'name':hmm_name})
         if verbose > 0:
             logger.info(f" [SQLlite] Table [hmm] new {hmm_name} ({hmm_id})")
 
@@ -69,7 +69,7 @@ def upload_cds(DB,cds,seq_id,verbose=0):
 # -----------------------------------------------------------------------
 def get_hmmid(DB,hmm_name):
 # -----------------------------------------------------------------------
-    for res in DB.selectall(('id'),'hmm',(f"name='{hmm_name}'")):
+    for res in DB.selectall('hmm',('id'),(f"name='{hmm_name}'")):
         return str(res[0])
     
 # -----------------------------------------------------------------------

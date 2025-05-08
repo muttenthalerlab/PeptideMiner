@@ -237,7 +237,6 @@ class alignment:
         self.fasta36_out = []
         self.results = []
 
-        print(qry_sequence,lib_file)
         self.run_fasta36()
         self.read_results()
         
@@ -247,6 +246,7 @@ class alignment:
         print(cmd)
         p = subprocess.run(cmd,shell=True,capture_output=True, text=True)
         self.fasta36_out = p.stdout.splitlines()
+        print(self.fasta36_out)
         os.remove(tmp_seq_file)
 		
     def __str__ (self):

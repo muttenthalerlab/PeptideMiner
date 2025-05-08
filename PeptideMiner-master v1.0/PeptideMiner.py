@@ -289,7 +289,7 @@ class PeptideMiner():
     # ---------------------------------------------------------
     def select_mature(self):
         for mpep in self.maturepep_lst:
-            for filename in [self.known_peptide]:
+            for filename in self.known_peptide:
                 mpep_ali = alignment(mpep['mature_peptide'],filename)
 
 

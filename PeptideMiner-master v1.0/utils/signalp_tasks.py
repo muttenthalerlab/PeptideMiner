@@ -21,6 +21,6 @@ def run_signalp(seq_id,sequence,cutoff,signal_path,temp_path='/tmp'):
     ret = p.stdout
     
     signalp_header = ['name','Cmax','CMax_pos','Ymax','Ymax_pos','Smax','Smax_pos','Smean','D','?','Dmaxcut','Networks-used']
-    signalp_dict = zip(signalp_header,ret.splitlines()[2])
+    signalp_dict = dict(zip(signalp_header,ret.splitlines()[2]))
 
     print(signalp_dict)

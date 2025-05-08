@@ -75,7 +75,7 @@ if not output.check_step_has_run('step3'): #Done
 Step 4
 Predicts signal peptides in CDS using SignalP.
 """
-if not output.check_step_has_run('step4'):
+if not output.check_step_has_run('step4'): #Done
     print(' [PeptideMiner] Running step 4')
     step4.run()
 

@@ -10,6 +10,7 @@ from utils.database import sql_connector
 from utils.db_tasks import upload_known_peptides, upload_hmmsearch, upload_cds, update_seqreads_signalp, get_seqreads
 from utils.hmm_tasks import run_hmmsearch,addsequence_hmmsearch,filter_hmmsearch
 from utils.signalp_tasks import run_signalp
+from utils.matpep_tasks import alignment
 
 # import pandas as pd
 # import numpy as np
@@ -48,8 +49,10 @@ class PeptideMiner():
         self.pipeline_dir = os.path.join(self.work_dir,'02-pipeline')
         
         # Pipeline
+        self.knownpep_lst = []
         self.hmm_search_files = []
         self.cds_lst = []
+        self.maturepep_lst = []
         #self.seq_id_dict = {}
 
         # Initialise Working Folders
@@ -70,6 +73,7 @@ class PeptideMiner():
     def read_known_peptides(self,Family_Name):
     # -------------------------------------------
         self.family_name = Family_Name
+        self.known_peptide = []
         
         pep_dir = os.path.join(self.known_pep_dir,self.family_name)
         for k in os.listdir(pep_dir):
@@ -205,6 +209,10 @@ class PeptideMiner():
     # ---------------------------------------------------------
     def read_cds(self, CDS_Min_Length, Overwrite=False):
 
+        csv_dir = self.pipeline_dir
+        csv_filename = '03_cds_seq.csv'
+        csv_header=['cds_id','n_cds','cds']
+
         # ??? All Sequences or just from the specific hmm_id
         seq_id_dict = get_seqreads(self.db) 
 
@@ -226,54 +234,72 @@ class PeptideMiner():
             cds['cds_id'] = cds_id   
         logger.info(f" [HMM Search] CDS: {len(self.cds_lst)} uploded")
 
-        csv_filename = '03_cds_seq.csv'
-        with open(os.path.join(self.pipeline_dir,csv_filename),'w',newline='') as csvfile:
-            csvwriter = csv.writer(csvfile)
-            csv_header=['cds_id','n_cds','cds']
-            csvwriter.writerow(csv_header)
+        with open(os.path.join(csv_dir,csv_filename),'w',newline='') as f:
+            csvwriter = csv.DictWriter(f, fieldnames=csv_filename)                
+            csvwriter.writeheader()
             for cds in self.cds_lst:
-                csvwriter.writerow([cds['cds_id'],cds['n_cds'],cds['cds']])
+                csvwriter.writerow(cds)
         logger.info(f" [HMM Search] CDS -> {csv_filename} ({len(self.cds_lst)} )")
 
         
     # ---------------------------------------------------------
     def signalp_cds(self, SignalP_Cutoff, SignalP_Min_Length,Signal_Path=None, Overwrite=False):
 
-        maturepep_lst = []
-        if len(self.cds_lst) > 0:
-            for cds in self.cds_lst:
-                signalp_pos = 0
-                mature_seq = cds['cds']
-                         
-                signalp_dict = run_signalp(f"{cds['cds_id']}_{cds['n_cds']:02d}",cds['cds'],SignalP_Cutoff,Signal_Path)
-  
-                if signalp_dict['SP'] == 'Y':
-                    signalp_pos = int(signalp_dict['CMax_pos'])
-                    mature_seq = cds['cds'][signalp_pos:]
-                    if len(mature_seq) >= SignalP_Min_Length:
-                        maturepep_lst.append({'cds_id':cds['cds_id'],'signalp_pos':signalp_pos,'mature_peptide':mature_seq})
-                    else:
-                        # ???? Not sure
-                        maturepep_lst.append({'cds_id':cds['cds_id'],'signalp_pos':signalp_pos,'mature_peptide':cds['cds']})
-
-                update_seqreads_signalp(self.db,cds['cds_id'],signalp_pos)
-
+        csv_dir = self.pipeline_dir
         csv_filename = '04_mature_peptides.csv'
-        with open(os.path.join(self.pipeline_dir,csv_filename),'w',newline='') as csvfile:
-            csvwriter = csv.writer(csvfile)
-            csv_header=['cds_id','signal peptide position','mature peptide']
-            csvwriter.writerow(csv_header)
-            for mpep in maturepep_lst:
-                csvwriter.writerow([mpep['cds_id'],mpep['signalp_pos'],mpep['mature_peptide']])
-        logger.info(f" [SignalP] Mature peptides -> {csv_filename} ({len(maturepep_lst)} )")
+        csv_header=['cds_id','signalp_pos','mature mature_peptide']
 
-      
+        if os.path.isfile(os.path.join(csv_dir,csv_filename)):
+            self.maturepep_lst = []
+            with open(os.path.join(csv_dir,csv_filename)) as f:
+                csvreader = csv.DictReader(f)
+                for row in csvreader:
+                    self.maturepep_lst.append(row)
+            logger.info(f" [SignalP] Mature peptides {csv_filename} -> ({len(self.maturepep_lst)} )")
+        else:
+            self.maturepep_lst = []
+            if len(self.cds_lst) > 0:
+                for cds in self.cds_lst:
+                    signalp_pos = 0
+                    mature_seq = cds['cds']
+                            
+                    signalp_dict = run_signalp(f"{cds['cds_id']}_{cds['n_cds']:02d}",cds['cds'],SignalP_Cutoff,Signal_Path)
+    
+                    if signalp_dict['SP'] == 'Y':
+                        signalp_pos = int(signalp_dict['CMax_pos'])
+                        mature_seq = cds['cds'][signalp_pos:]
+                        if len(mature_seq) >= SignalP_Min_Length:
+                            self.maturepep_lst.append({'cds_id':cds['cds_id'],'signalp_pos':signalp_pos,'mature_peptide':mature_seq})
+                        else:
+                            # ???? Not sure
+                            self.maturepep_lst.append({'cds_id':cds['cds_id'],'signalp_pos':signalp_pos,'mature_peptide':cds['cds']})
+
+                    update_seqreads_signalp(self.db,cds['cds_id'],signalp_pos)
+
+            
+            with open(os.path.join(csv_dir,csv_filename),'w',newline='') as f:
+                csvwriter = csv.DictWriter(f, fieldnames=csv_filename)                
+                csvwriter.writeheader()
+                for mpep in self.maturepep_lst:
+                    csvwriter.writerow(mpep)
+            logger.info(f" [SignalP] Mature peptides -> {csv_filename} ({len(self.maturepep_lst)} )")
+
+
+    # ---------------------------------------------------------
+    def select_mature(self):
+        for mpep in self.maturepep_lst:
+            for filename in [self.known_peptide]:
+                mpep_ali = alignment(mpep['mature_peptide'],filename)
+
+
+
 # --------------------------------------------------------------------------------------
 def main(prgArgs):
 # --------------------------------------------------------------------------------------
     
     pWork = PeptideMiner(WorkDir=prgArgs.workdir, DataDir=prgArgs.datadir)
     pWork.read_known_peptides(prgArgs.peptide_family)
+
     # Steps 0, 1, 2
     pWork.hmmsearch(prgArgs.querydir)
     pWork.read_hmmsearch()
@@ -283,6 +309,7 @@ def main(prgArgs):
     pWork.signalp_cds(float(prgArgs.signalp_cutoff),int(prgArgs.signalp_min_length),prgArgs.signalp_path)
 
     # Step 5, 6
+    #pWork.select_mature()
 
     # Step 7, 8
 

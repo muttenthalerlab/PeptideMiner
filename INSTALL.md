@@ -10,7 +10,7 @@ Readme.txt file for PeptideMiner
 # 1. Installation
 1.1. Create conda enviroment for PeptideMiner:
 
-conda create -n PeptideMiner -c bioconda -c conda-forge -c defaults hmmer blast sqlite python=3.10
+conda create -n PeptideMiner -c bioconda -c conda-forge -c defaults hmmer blast sqlite fasta3 python=3.10
 conda activate PeptideMiner
 
 1.2 Installing fast36

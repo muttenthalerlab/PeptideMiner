@@ -246,7 +246,6 @@ class alignment:
         print(cmd)
         p = subprocess.run(cmd,shell=True,capture_output=True, text=True, encoding='latin-1')
         self.fasta36_out = p.stdout.splitlines()
-        p.close()
         # print(self.fasta36_out)
         os.remove(tmp_seq_file)
 		

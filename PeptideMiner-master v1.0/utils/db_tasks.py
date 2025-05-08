@@ -12,7 +12,7 @@ def upload_known_peptides(DB,family_name,species,accession,seq_name,seq, verbose
     family_id = DB.onevalue('neuropeptide_family','id',{'name':family_name})
     if family_id is None:
         DB.insert('neuropeptide_family',{'name':family_name})
-        family_id = DB.onevalue('id','neuropeptide_family',{'name':family_name})
+        family_id = DB.onevalue('neuropeptide_family','id',{'name':family_name})
         if verbose > 0:
             logger.info(f" [SQLlite] Table [neuropeptide_family] new {family_name} ({family_id})")
 

@@ -13,7 +13,7 @@ def run_signalp(seq_id,sequence,cutoff,signal_path,temp_path='/tmp'):
     with open(seq_file,'w') as tmp:
         tmp.write(f">{seq_id}\n{sequence}")
     
-    logger.info(f" [SingalP] -> {Output}.tbl")
+    logger.info(f" [SingalP] -> ")
     # SignalP 4.1  : eukariotic 
     cmd = f"{signal_path} -t euk -U {cutoff} -u {cutoff} {seq_file}"
     p = subprocess.run(cmd,shell=True,capture_output=True, text=True)

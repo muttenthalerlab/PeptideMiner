@@ -49,6 +49,14 @@ class PeptideMiner():
         self.pipeline_dir = os.path.join(self.work_dir,'02-pipeline')
         
         # Pipeline
+        self.pipeline_csv = {
+            '01': {'csv_file': '01_hmmsearch_hmm.csv',    'csv_header' : ['hmm_id','hmm_name','transcriptome']},
+            '02': {'csv_file': '02_hmmsearch_seq.csv',    'csv_header' : ['seq_id','sequence','hmm_id','hmm_name']},
+            '03': {'csv_file': '03_cds_seq.csv',          'csv_header' : ['cds_id','seq_id','n_cds','cds']},
+            '04': {'csv_file': '04_mature_peptides.csv',  'csv_header' : ['cds_id','signalp_pos','mature_peptide']},
+            '05': {'csv_file': '05_mature_sequences.csv', 'csv_header' : ['cds_id','mature_sequence']},
+        }
+ 
         self.knownpep_lst = []
         self.hmm_search_files = []
         self.cds_lst = []
@@ -294,7 +302,7 @@ class PeptideMiner():
         csv_header=['cds_id','mature_sequence']
 
         self.matureseq_lst = []
-        
+
         for mpep in self.maturepep_lst:
             mpep_seq = mpep['mature_peptide']
             best = {'result':None, 'score': None}
@@ -334,7 +342,7 @@ class PeptideMiner():
             csvwriter.writeheader()
             for mpep in self.matureseq_lst:
                 csvwriter.writerow(mpep)
-        logger.info(f" [Fasta36] MatSequences: -> {csv_filename} ({len(self.matureseq_lst)} )")
+        logger.info(f" [Fasta36] MatSequences: (E:{E_Cutoff} Length: {Min_Length}-{Max_Length}) -> {csv_filename} ({len(self.matureseq_lst)} )")
 
 
 

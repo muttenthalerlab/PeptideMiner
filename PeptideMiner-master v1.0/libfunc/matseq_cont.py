@@ -25,7 +25,7 @@ def question():
             
             if question2 == 'y':
                 ecutoff = input('You said yes. Please type in the ecutoff value you would like to use: ')
-                print("The new mature ecutoff is {ecutoff}")
+                print(f"The new mature ecutoff is {ecutoff}")
                 step5.run(float(ecutoff))
                 continue
             

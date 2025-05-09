@@ -488,7 +488,7 @@ def main(prgArgs):
 
     # Step 7, 8
     pWork.run_blast()
-    pWork.summary()
+    pWork.summary(prgArgs.peptide_family)
 
 #==============================================================================
 if __name__ == "__main__":

@@ -414,8 +414,14 @@ class PeptideMiner():
         # Run and Parse BlastP query
         run_blastp_query(os.path.join(csv_dir,blast_filename),os.path.join(csv_dir,qry_fasta),os.path.join(csv_dir,qry_out))
         blastp_out = parse_blastp_query(os.path.join(csv_dir,qry_out))
-
-        print(blastp_out)
+        unq_qry_names = set([b['qry_name'] for b in blastp_out])
+        unq_qry = []
+        for qn in unq_qry_names:
+            _q = [i for i in blastp_out if i['qry_name'] == qn]
+            _q.sort(key=lambda i:float(i['evalue']))
+            unq_qry.append = _q[0]
+        
+        print(unq_qry)
 
 
 

@@ -419,7 +419,7 @@ class PeptideMiner():
         for qn in unq_qry_names:
             _q = [i for i in blastp_out if i['qry_name'] == qn]
             _q.sort(key=lambda i:float(i['evalue']))
-            unq_qry.append = _q[0]
+            unq_qry.append(q[0])
         
         print(unq_qry)
 

@@ -88,7 +88,7 @@ def upload_noduplicates(DB,cds_id,seq, verbose=0):
         nodup_id = DB.onevalue('noduplicates','id',{'matseq':seq})
 
     # Update 'mature' table with new id from 'noduplicates' table
-    DB.update('mature',{'noduplicates_id':nodup_id},f'matseq="{seq}"')
+    DB.update('mature',{'noduplicates_id':nodup_id},f"matseq='{seq}'")
     return(nodup_id)
 
 # -----------------------------------------------------------------------

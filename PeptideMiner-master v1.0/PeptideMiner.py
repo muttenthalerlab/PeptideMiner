@@ -430,14 +430,15 @@ class PeptideMiner():
             _nid = a['qry_name'].split(':')[0]
             _kid = a['subject_name'].split(':')[0]
             upload_annotations(self.db,_nid,_kid,float(a['pct_identity']),float(a['evalue']),int(a['length']))
+        logger.info(f" [BlastP] Annotations {len(self.blastp_annotations)} uploded")
 
         # Write CSV file
+        logger.info(f" [BlastP] Annotations -> {csv_filename} ({len(self.blastp_annotations)})")
         with open(os.path.join(csv_dir,csv_filename),'w',newline='') as f:
             csvwriter = csv.DictWriter(f, fieldnames=BLASTP_QRY_HEADER)                
             csvwriter.writeheader()
             for a in self.blastp_annotations:
                 csvwriter.writerow(a)
-        logger.info(f" [BlastP] Annotations -> {csv_filename} ({len(self.blastp_annotations)})")
 
 
 # --------------------------------------------------------------------------------------

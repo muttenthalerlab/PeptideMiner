@@ -7,7 +7,8 @@ import datetime
 import csv
 
 from utils.database import sql_connector
-from utils.db_tasks import upload_known_peptides, upload_hmmsearch, upload_cds, update_seqreads_signalp, get_seqreads
+from utils.db_tasks import (upload_known_peptides, upload_hmmsearch, upload_cds, update_seqreads_signalp, 
+                            upload_matureseq, upload_noduplicates, get_seqreads)
 from utils.hmm_tasks import run_hmmsearch,addsequence_hmmsearch,filter_hmmsearch
 from utils.signalp_tasks import run_signalp
 from utils.matpep_tasks import alignment, Nterm, Cterm
@@ -55,6 +56,7 @@ class PeptideMiner():
             '03': {'csv_file': '03_cds_seq.csv',          'csv_header' : ['cds_id','seq_id','n_cds','cds']},
             '04': {'csv_file': '04_mature_peptides.csv',  'csv_header' : ['cds_id','signalp_pos','mature_peptide']},
             '05': {'csv_file': '05_mature_sequences.csv', 'csv_header' : ['cds_id','mature_sequence']},
+            '06': {'csv_file': '06_mature_sequences.csv', 'csv_header' : ['id','hmm_id','transcriptome','matseq']},
         }
  
         self.knownpep_lst = []
@@ -348,9 +350,13 @@ class PeptideMiner():
             csvwriter.writeheader()
             for mpep in self.matureseq_lst:
                 csvwriter.writerow(mpep)
-        logger.info(f" [Fasta36] MatureSeq: (E:{E_Cutoff} Length: {Min_Length}-{Max_Length}) -> {csv_filename} ({len(self.matureseq_lst)} )")
+        logger.info(f" [Fasta36] MatureSeq: CutOffs: E-value:{E_Cutoff} Length: {Min_Length}-{Max_Length}) -> {csv_filename} ({len(self.matureseq_lst)} sequences)")
 
-
+    # ---------------------------------------------------------
+    def upload_mature(self):
+        for matseq in self.matureseq_lst:
+            upload_matureseq(matseq['cds_id'],matseq['mature_sequence'])
+            upload_noduplicates(matseq['cds_id'],matseq['mature_sequence'])
 
 # --------------------------------------------------------------------------------------
 def main(prgArgs):
@@ -376,6 +382,7 @@ def main(prgArgs):
     pWork.select_mature(float(prgArgs.mature_evalue_cutoff),
                         int(prgArgs.mature_min_length),
                         int(prgArgs.mature_max_length))
+    pWork.upload_mature()
 
     # Step 7, 8
 

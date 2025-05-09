@@ -29,15 +29,15 @@ def upload_known_peptides(DB,family_name,species,accession,seq_name,seq, verbose
 # -----------------------------------------------------------------------
 def upload_hmmsearch(DB,hmm_name,transcriptome_name,id,evalue,sequence, verbose=0):
 # -----------------------------------------------------------------------
-
+    # Check id for HMM name
     hmm_id = DB.onevalue('hmm','id',{'name':hmm_name})
-
     if hmm_id is None:
         DB.insert('hmm',{'name':hmm_name})
         hmm_id = DB.onevalue('hmm','id',{'name':hmm_name})
         if verbose > 0:
             logger.info(f" [SQLlite] Table [hmm] new {hmm_name} ({hmm_id})")
 
+    # Check id for Sequences
     seqreads_id = DB.onevalue('seqreads','id',{'name':id,'hmmid':hmm_id})
     if seqreads_id is None:
         DB.insert('seqreads',{'name':id,'hmmid':hmm_id,'transcriptome':transcriptome_name,'evalue':evalue,'signalseq_length':0,'precursor':sequence})
@@ -65,6 +65,32 @@ def upload_cds(DB,cds,seq_id,verbose=0):
     return cds_id
 
 
+# -----------------------------------------------------------------------
+def upload_matureseq(DB,cds_id,seq, verbose=0):
+# -----------------------------------------------------------------------        
+    mature_id = DB.onevalue('mature','id',{'cds_id':cds_id,'matseq':seq})
+    if mature_id is None:
+        DB.insert('mature',{'cds_id':cds_id,'matseq':seq})
+        mature_id = DB.onevalue('mature','id',{'cds_id':cds_id,'matseq':seq})
+        if verbose > 0:
+            logger.info(f" [SQLlite] Table [mature] new {mature_id} {len(seq)} AA ")
+    return mature_id
+
+# -----------------------------------------------------------------------
+def upload_noduplicates(DB,cds_id,seq, verbose=0):
+# -----------------------------------------------------------------------        
+    transcriptome_cdsid = DB.onevalue('seqreads','transcriptome',{'cds_id':cds_id})
+    hmmid_cdsid = DB.onevalue('seqreads','hmmid',{'cds_id':cds_id})
+
+    nodup_id = DB.onevalue('noduplicates','id',{'transcriptome':transcriptome_cdsid,'matseq':seq})
+    if nodup_id is None:
+        DB.insert('noduplicates',{'hmm_id':hmmid_cdsid,'transcriptome':transcriptome_cdsid,'matseq':seq})
+        
+        nodup_id = DB.onevalue('noduplicates','id',{'matseq':seq})
+    # Update 'mature' table with new id from 'noduplicates' table
+    DB.update('mature',{'noduplicates_id':nodup_id},f'matseq="{seq}"')
+
+    return(nodup_id)
 
 # -----------------------------------------------------------------------
 def update_seqreads_signalp(DB,cds_id,pos):

@@ -8,7 +8,8 @@ import csv
 
 from utils.database import sql_connector
 from utils.db_tasks import (upload_known_peptides, upload_hmmsearch, upload_cds, update_seqreads_signalp, 
-                            upload_matureseq, upload_noduplicates, get_seqreads)
+                            upload_matureseq, upload_noduplicates, 
+                            get_seqreads, get_noduplicates)
 from utils.hmm_tasks import run_hmmsearch,addsequence_hmmsearch,filter_hmmsearch
 from utils.signalp_tasks import run_signalp
 from utils.matpep_tasks import alignment, Nterm, Cterm
@@ -59,6 +60,7 @@ class PeptideMiner():
             '06': {'csv_file': '06_mature_sequences.csv', 'csv_header' : ['id','hmm_id','transcriptome','matseq']},
         }
  
+        self.hmm_id_dict = {}
         self.knownpep_lst = []
         self.hmm_search_files = []
         self.cds_lst = []
@@ -178,7 +180,7 @@ class PeptideMiner():
         if len(self.hmm_search_files)>0:
             logger.info(f" [HMM Search] Files: {len(self.hmm_search_files)}")
             
-            hmm_id_dict = {}
+            self.hmm_id_dict = {}
             seq_id_dict = {}
                         
             for hmm in  self.hmm_search_files:
@@ -192,7 +194,7 @@ class PeptideMiner():
                     sequence = hmm_lstdict[id][4]
                     hmm_id, sqeq_id = upload_hmmsearch(self.db,hmm_name,transcriptome_name,id,evalue,sequence)
 
-                    hmm_id_dict[hmm_id] = [hmm_id,hmm_name,transcriptome_name]
+                    self.hmm_id_dict[hmm_id] = [hmm_id,hmm_name,transcriptome_name]
                     seq_id_dict[sqeq_id] = [sqeq_id,sequence,hmm_id,hmm_name]
 
         logger.info(f" [HMM Search] HMM's: {len(hmm_id_dict)} uploaded")
@@ -204,9 +206,9 @@ class PeptideMiner():
             csvwriter = csv.writer(csvfile)
             csv_header=['hmm_id','hmm_name','transcriptome']
             csvwriter.writerow(csv_header)
-            for key in hmm_id_dict:
-                csvwriter.writerow(hmm_id_dict[key])
-        logger.info(f" [HMM Search] HMM's -> {csv_filename} ({len(hmm_id_dict)})")
+            for key in self.hmm_id_dict:
+                csvwriter.writerow(self.hmm_id_dict[key])
+        logger.info(f" [HMM Search] HMM's -> {csv_filename} ({len(self.hmm_id_dict)})")
 
         csv_filename = '02_hmmsearch_seq.csv'
         with open(os.path.join(self.pipeline_dir,csv_filename),'w',newline='') as csvfile:
@@ -359,6 +361,12 @@ class PeptideMiner():
             upload_matureseq(self.db,matseq['cds_id'],matseq['mature_sequence'],verbose=1)
             upload_noduplicates(self.db,matseq['cds_id'],matseq['mature_sequence'],verbose=1)
 
+        _seq = []
+        for hmm_id in self.hmm_id_dict:
+            _seq += get_noduplicates(hmm_id)
+        print(_seq)
+
+        
 # --------------------------------------------------------------------------------------
 def main(prgArgs):
 # --------------------------------------------------------------------------------------

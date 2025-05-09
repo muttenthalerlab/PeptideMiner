@@ -101,6 +101,14 @@ def get_hmmid(DB,hmm_name):
 # -----------------------------------------------------------------------
     for res in DB.selectall('hmm',('id'),(f"name='{hmm_name}'")):
         return str(res[0])
+
+# -----------------------------------------------------------------------
+def get_noduplicates(DB,hmm_id):
+# -----------------------------------------------------------------------    
+    out = []
+    for res in DB.selectall('noduplicates',('id','hmm_id','transcriptome','matseq'),(f"hmm_id={hmm_id}")):
+        out.append({'id':res[0], 'hmm_id': res[1], 'transcriptome': res[2], 'matseq': res[3]})
+    return out
     
 # -----------------------------------------------------------------------
 def get_seqreads(DB):

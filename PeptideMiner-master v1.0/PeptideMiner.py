@@ -341,7 +341,7 @@ class PeptideMiner():
                     if len(seq) >= Min_Length and len(seq) <= Max_Length:
                         self.matureseq_lst.append({'cds_id':mpep['cds_id'],'mature_sequence':seq})
 
-        logger.info(f" [Fasta36] MatureSeq: E-values Q1: {np.quantile(evalues,0.25)} Mean: {np.mean(evalues)} Q3: {np.quantile(evalues,0.75)}")
+        logger.info(f" [Fasta36] MatureSeq: E-values GeoMean: {np.geomean(evalues):.5f} [Q1: {np.quantile(evalues,0.25):.5f} Mean: {np.mean(evalues):.5f} Q3: {np.quantile(evalues,0.75):.5f} ]")
 
         with open(os.path.join(csv_dir,csv_filename),'w',newline='') as f:
             csvwriter = csv.DictWriter(f, fieldnames=csv_header)                

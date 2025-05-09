@@ -432,7 +432,7 @@ class PeptideMiner():
             csvwriter.writeheader()
             for qry in self.blastp_annotations:
                 csvwriter.writerow(qry)
-        logger.info(f" [BlastP] Annotations -> {csv_filename} ({len(self.unq_qry)})")
+        logger.info(f" [BlastP] Annotations -> {csv_filename} ({len(self.blastp_annotations)})")
 
 
 # --------------------------------------------------------------------------------------

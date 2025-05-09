@@ -13,7 +13,7 @@ from utils.db_tasks import (upload_known_peptides, upload_hmmsearch, upload_cds,
 from utils.hmm_tasks import run_hmmsearch,addsequence_hmmsearch,filter_hmmsearch
 from utils.signalp_tasks import run_signalp
 from utils.matpep_tasks import alignment, Nterm, Cterm
-from utils.blast_tasks import make_blastp_db, run_blastp_query, parse_blastp_query
+from utils.blast_tasks import BLASTP_QRY_HEADER, make_blastp_db, run_blastp_query, parse_blastp_query
 
 # import pandas as pd
 import numpy as np
@@ -360,6 +360,7 @@ class PeptideMiner():
 
         logger.info(f" [Fasta36] MatureSeq: E-values GeoMean: {np.exp(np.log(evalues).mean()):.5f} [Q1: {np.quantile(evalues,0.25):.5f} Mean: {np.mean(evalues):.5f} Q3: {np.quantile(evalues,0.75):.5f} ]")
 
+        # Write CSV file
         with open(os.path.join(csv_dir,csv_filename),'w',newline='') as f:
             csvwriter = csv.DictWriter(f, fieldnames=csv_header)                
             csvwriter.writeheader()
@@ -395,6 +396,7 @@ class PeptideMiner():
     def run_blast(self, Overwrite=False):
 
         csv_dir = self.pipeline_dir
+        csv_filename = '07_blastp_annotation.csv'
         blast_filename = '07_known_sequences'
 
         qry_fasta = '06_mature_sequences.fna'
@@ -411,7 +413,7 @@ class PeptideMiner():
         # Make BlastP database
         make_blastp_db(os.path.join(csv_dir,blast_filename))
 
-        # Run and Parse BlastP query
+        # Run and Parse BlastP query for unique qry_names with lowest evalue
         run_blastp_query(os.path.join(csv_dir,blast_filename),os.path.join(csv_dir,qry_fasta),os.path.join(csv_dir,qry_out))
         blastp_out = parse_blastp_query(os.path.join(csv_dir,qry_out))
         unq_qry_names = set([b['qry_name'] for b in blastp_out])
@@ -421,8 +423,14 @@ class PeptideMiner():
             _q.sort(key=lambda i:float(i['evalue']))
             unq_qry.append(_q[0])
         
-        print(unq_qry)
-
+        # 
+        # Write CSV file
+        with open(os.path.join(csv_dir,csv_filename),'w',newline='') as f:
+            csvwriter = csv.DictWriter(f, fieldnames=BLASTP_QRY_HEADER)                
+            csvwriter.writeheader()
+            for qry in unq_qry:
+                csvwriter.writerow(qry)
+        logger.info(f" [BlastP] Annotations -> {csv_filename} ({len(self.unq_qry)})")
 
 
 # --------------------------------------------------------------------------------------

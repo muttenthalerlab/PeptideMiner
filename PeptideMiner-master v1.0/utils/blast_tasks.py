@@ -5,6 +5,11 @@ import subprocess
 import logging
 logger = logging.getLogger(__name__)
 
+BLASTP_QRY_HEADER = ['qry_name','subject_name',
+                     'pct_identity','length','n_mismatch','n_gap',
+                     'q_start','q_end','s_start','s_end',
+                     'evalue','hitscore']
+
 # -----------------------------------------------------------------------
 def make_blastp_db(FileName, Overwrite=False, verbose=0):
 # -----------------------------------------------------------------------
@@ -30,15 +35,15 @@ def run_blastp_query(BlastDB, QueryFasta, QueryOut):
 # -----------------------------------------------------------------------
 def parse_blastp_query(QueryOut):
 # -----------------------------------------------------------------------
-    BlastP_Header = ['qry_name','subject_name',
-                     'pct_identity','length','n_mismatch','n_gap',
-                     'q_start','q_end','s_start','s_end',
-                     'evalue','hitscore']
+    # BlastP_Header = ['qry_name','subject_name',
+    #                  'pct_identity','length','n_mismatch','n_gap',
+    #                  'q_start','q_end','s_start','s_end',
+    #                  'evalue','hitscore']
     
     qry_outlst = []
     if os.path.isfile(QueryOut):
         with open(QueryOut,'r') as f:
-            csvreader = csv.DictReader(f, fieldnames= BlastP_Header)
+            csvreader = csv.DictReader(f, fieldnames= BLASTP_QRY_HEADER)
             for row in csvreader:
                 qry_outlst.append(row)
     return(qry_outlst)

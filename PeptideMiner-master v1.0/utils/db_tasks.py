@@ -145,7 +145,7 @@ def get_summary_familyname(DB,FamilyName):
     summary_header = ['hit id','hit name','pHMM name','hit query DB','hmmsearch evalue','hit sequence','hit CDS','hit signal peptide length',
                     'hit mature sequence','pBLAST known sequence accession','pBLAST known sequence','pBLAST %ID','pBLAST length','pBLAST evalue']
 
-    family_id = get_fammilyid(FamilyName)
+    family_id = get_fammilyid(DB,FamilyName)
 
     sql_tables = ('known_NP k','neuropeptide_family n','annotated a','noduplicates o','seqreads s', 'cds c','mature m','hmm h')
     sql_fields = ('s.id','s.name','h.name','s.transcriptome','s.evalue','s.precursor','c.sequence','s.signalseq_length',

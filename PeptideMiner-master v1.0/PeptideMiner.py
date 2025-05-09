@@ -13,7 +13,7 @@ from utils.db_tasks import (upload_known_peptides, upload_hmmsearch, upload_cds,
 from utils.hmm_tasks import run_hmmsearch,addsequence_hmmsearch,filter_hmmsearch
 from utils.signalp_tasks import run_signalp
 from utils.matpep_tasks import alignment, Nterm, Cterm
-from utils.blast_tasks import make_blastp_db
+from utils.blast_tasks import make_blastp_db, run_blastp_search
 
 # import pandas as pd
 import numpy as np
@@ -394,18 +394,26 @@ class PeptideMiner():
     # ---------------------------------------------------------
     def run_blast(self, Overwrite=False):
 
-
-        # Write Fasta file
         csv_dir = self.pipeline_dir
         blast_filename = '07_known_sequences'
+
+        qry_fasta = '06_mature_sequences.fna'
+        qry_out = '07_blastp_qry.csv'
+        
+        # Write Fasta file
         _fasta = {}
         for s in self.knownpep_lst:
             _name = ":".join([str(s['family_id']),str(s['peptide_id']),s['species'],s['name'],s['accession']])
             _fasta[_name] = s['sequence']
         logger.info(f" [BlastP] MatureSeq: -> {blast_filename}.fna")
-        self.write_fasta_file(os.path.join(csv_dir,f"{blast_filename}.fna"),_fasta)
+        self.write_fasta_file(f"{os.path.join(csv_dir,blast_filename)}.fna",_fasta)
 
+        # Make BlastP database
         make_blastp_db(os.path.join(csv_dir,blast_filename))
+
+        run_blastp_search(os.path.join(csv_dir,blast_filename),os.path.join(csv_dir,qry_fasta),os.path.join(csv_dir,qry_out))
+
+
 
 # --------------------------------------------------------------------------------------
 def main(prgArgs):

@@ -354,9 +354,10 @@ class PeptideMiner():
 
     # ---------------------------------------------------------
     def upload_mature(self):
+        logger.info(f" [Fasta36] MatureSeq: Uploading sequences)")
         for matseq in self.matureseq_lst:
-            upload_matureseq(matseq['cds_id'],matseq['mature_sequence'])
-            upload_noduplicates(matseq['cds_id'],matseq['mature_sequence'])
+            upload_matureseq(self.db,matseq['cds_id'],matseq['mature_sequence'])
+            upload_noduplicates(self.db,matseq['cds_id'],matseq['mature_sequence'])
 
 # --------------------------------------------------------------------------------------
 def main(prgArgs):

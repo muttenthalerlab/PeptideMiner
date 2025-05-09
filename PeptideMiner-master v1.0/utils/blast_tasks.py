@@ -12,4 +12,5 @@ def make_blastp_db(FileName, Overwrite=False):
         logger.info(f" [BlastP] DB(Prot) -> {FileName} ")
         p = subprocess.run(cmd,shell=True,capture_output=True, text=True)
         ret = p.stdout
+        print(ret)
     return(ret)

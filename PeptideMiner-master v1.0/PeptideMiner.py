@@ -397,7 +397,7 @@ class PeptideMiner():
 
         # Write Fasta file
         csv_dir = self.pipeline_dir
-        blast_filename = '07_known_sequences.fna'
+        blast_filename = '07_known_sequences'
         _fasta = {}
         for s in self.knownpep_lst:
             _name = ":".join([str(s['family_id']),str(s['peptide_id']),s['species'],s['name'],s['accession']])
@@ -405,7 +405,7 @@ class PeptideMiner():
         logger.info(f" [BlastP] MatureSeq: -> {blast_filename}.fna")
         self.write_fasta_file(os.path.join(csv_dir,f"{blast_filename}.fna"),_fasta)
 
-        make_blastp_db(blast_filename)
+        make_blastp_db(os.path.join(csv_dir,blast_filename))
 
 # --------------------------------------------------------------------------------------
 def main(prgArgs):

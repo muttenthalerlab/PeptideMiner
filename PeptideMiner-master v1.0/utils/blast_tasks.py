@@ -34,12 +34,7 @@ def run_blastp_query(BlastDB, QueryFasta, QueryOut):
 
 # -----------------------------------------------------------------------
 def parse_blastp_query(QueryOut):
-# -----------------------------------------------------------------------
-    # BlastP_Header = ['qry_name','subject_name',
-    #                  'pct_identity','length','n_mismatch','n_gap',
-    #                  'q_start','q_end','s_start','s_end',
-    #                  'evalue','hitscore']
-    
+# -----------------------------------------------------------------------    
     qry_outlst = []
     if os.path.isfile(QueryOut):
         with open(QueryOut,'r') as f:

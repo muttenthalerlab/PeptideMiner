@@ -444,7 +444,7 @@ class PeptideMiner():
     def summary(self, FamilyName, Overwrite=False):
 
         csv_dir = self.pipeline_dir
-        csv_filename = f'08_summery_{FamilyName}.csv'
+        csv_filename = f'08_summary_{FamilyName}.csv'
 
         sum_data = get_summary_familyname(self.db,FamilyName)
         csv_header = list(sum_data[0].keys())
@@ -511,22 +511,9 @@ if __name__ == "__main__":
     prgParser.add_argument("--peptide_family",default=None,required=False, dest="peptide_family", action='store', help="Peptide family")
     prgParser.add_argument("--query",default=None,required=False, dest="querydir", action='store', help="Query folder of fasta file")
     
-    # prgParser.add_argument("-t",default=None,required=True, dest="table", action='store', help="Table to upload [TestPlate]")
     # prgParser.add_argument("--upload",default=False,required=False, dest="upload", action='store_true', help="Upload data to dj Database")
-    # prgParser.add_argument("--overwrite",default=False,required=False, dest="overwrite", action='store_true', help="Overwrite existing data")
+    prgParser.add_argument("--overwrite",default=False,required=False, dest="overwrite", action='store_true', help="Overwrite existing data")
     # prgParser.add_argument("--user",default='J.Zuegg',required=False, dest="appuser", action='store', help="AppUser to Upload data")
-    # prgParser.add_argument("--test",default=0,required=False, dest="te
-    # st", action='store', help="Number of entries to test")
-#    prgParser.add_argument("--new",default=False,required=False, dest="new", action='store_true', help="Not migrated entries only")
-
-#    prgParser.add_argument("-d","--directory",default=None,required=False, dest="directory", action='store', help="Directory or Folder to parse")
-    #prgParser.add_argument("-p","--pivot",default=None,required=False, dest="pivot", action='store', help="Pivot tables")
-#    prgParser.add_argument("--db",default='Local',required=False, dest="database", action='store', help="Database [Local/Work/WorkLinux]")
-    # prgParser.add_argument("-r","--runid",default=None,required=True, dest="runid", action='store', help="RunID")
-    # prgParser.add_argument("-e","--excel",default=None,required=False, dest="excelfile", action='store', help="Excel File")
-    # prgParser.add_argument("-f","--format",default='Check',required=False, dest="pivot", action='store', help="Format of output EXcel")
-    # prgParser.add_argument("--plotdir",default=None,required=False, dest="plotdir", action='store', help="Folder for Plots")
-    # #prgParser.add_argument("-o","--outdir",default=None,required=False, dest="outdir", action='store', help="Prefix to add to PlateID")
 
     prgParser.add_argument("-c","--config",default='PeptideMiner.cfg', type=Path,is_config_file=True,help="Configuration file",)
 

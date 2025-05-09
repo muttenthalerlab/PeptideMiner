@@ -5,6 +5,12 @@ import subprocess
 import logging
 logger = logging.getLogger(__name__)
 
+
+HMM_SEARCH_HEADER =["ID", "accession", "query_name", "accession", "full_E-value", "full_score", "full_bias", 
+                    "dom_E-value", "dom_score", "dom_bias", "exp", "reg", "clu", "ov", "env", "dom", "rep", 
+                    "inc", "desc_target", "sequence"]
+
+
 # -----------------------------------------------------------------------
 def run_hmmsearch(Output,HmmFile,Query):
 # -----------------------------------------------------------------------
@@ -25,13 +31,9 @@ def addsequence_hmmsearch(hmmsearch_dir,hmmsearch_file,dict_Fasta):
 # -----------------------------------------------------------------------
     logger.info(f" [HMM Search] -> {hmmsearch_file}")
     
-    csv_header =["ID", "accession", "query_name", "accession", "full_E-value", "full_score", "full_bias", 
-                "dom_E-value", "dom_score", "dom_bias", "exp", "reg", "clu", "ov", "env", "dom", "rep", 
-                "inc", "desc_target", "sequence"]
-    
     with open(f"{os.path.join(hmmsearch_dir,hmmsearch_file)}.csv", 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
-        writer.writerow(csv_header)
+        writer.writerow(HMM_SEARCH_HEADER)
         
         with open(f"{os.path.join(hmmsearch_dir,hmmsearch_file)}.tbl", "r") as tblfile:
             for line in tblfile.readlines():

@@ -86,10 +86,23 @@ def upload_noduplicates(DB,cds_id,seq, verbose=0):
     if nodup_id is None:
         DB.insert('noduplicates',{'hmm_id':hmmid_cdsid,'transcriptome':transcriptome_cdsid,'matseq':seq})        
         nodup_id = DB.onevalue('noduplicates','id',{'matseq':seq})
+        if verbose > 0:
+            logger.info(f" [SQLlite] Table [noduplicates] new {nodup_id} {len(seq)} AA ")
 
     # Update 'mature' table with new id from 'noduplicates' table
     DB.update('mature',{'noduplicates_id':nodup_id},f"matseq='{seq}'")
     return(nodup_id)
+
+# -----------------------------------------------------------------------
+def upload_annotations(DB,novel_id,known_id,pct_identity,evalue,length, verbose=0):
+# -----------------------------------------------------------------------
+    annotated_id = DB.onevalue('annotated','id',{'novel_id':novel_id,'knownNP_id':known_id})
+    if annotated_id is None:
+        DB.insert('annotated',{'novel_id':novel_id,'knownNP_id':known_id,'pid':pct_identity,'evalue':evalue,'length_alignment':length})
+        annotated_id = DB.onevalue('annotated','id',{'novel_id':novel_id,'knownNP_id':known_id})
+        if verbose > 0:
+            logger.info(f" [SQLlite] Table [annotated] new {annotated_id} {length} AA ")
+    return(annotated_id)
 
 # -----------------------------------------------------------------------
 def update_seqreads_signalp(DB,cds_id,pos):

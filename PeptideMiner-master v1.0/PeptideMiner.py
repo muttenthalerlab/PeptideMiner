@@ -8,7 +8,7 @@ import csv
 
 from utils.database import sql_connector
 from utils.db_tasks import (upload_known_peptides, upload_hmmsearch, upload_cds, update_seqreads_signalp, 
-                            upload_matureseq, upload_noduplicates, 
+                            upload_matureseq, upload_noduplicates, upload_annotations,
                             get_seqreads, get_noduplicates)
 from utils.hmm_tasks import run_hmmsearch,addsequence_hmmsearch,filter_hmmsearch
 from utils.signalp_tasks import run_signalp
@@ -425,13 +425,18 @@ class PeptideMiner():
             _q.sort(key=lambda i:float(i['evalue']))
             self.blastp_annotations.append(_q[0])
         
-        # 
+        # Upload Annotation
+        for a in self.blastp_annotations:
+            _nid = a['qry_name'].split(':')[0]
+            _kid = a['subject_name'].split(':')[0]
+            upload_annotations(self.db,_nid,_kid,float(a['pct_identity']),float(a['evalue']),int(a['length']))
+
         # Write CSV file
         with open(os.path.join(csv_dir,csv_filename),'w',newline='') as f:
             csvwriter = csv.DictWriter(f, fieldnames=BLASTP_QRY_HEADER)                
             csvwriter.writeheader()
-            for qry in self.blastp_annotations:
-                csvwriter.writerow(qry)
+            for a in self.blastp_annotations:
+                csvwriter.writerow(a)
         logger.info(f" [BlastP] Annotations -> {csv_filename} ({len(self.blastp_annotations)})")
 
 

@@ -107,8 +107,11 @@ class PeptideMiner():
                     accession = k.split('_')[0][1:]
                     name = ' '.join(k.split('[')[0].split('_')[1:])
 
-                    family_id,peptide_id = upload_known_peptides(self.db, self.family_name, species,accession,name,dict_Seq[k])
+                    family_id,peptide_id = upload_known_peptides(self.db, self.family_name,species,accession,name,dict_Seq[k])
                     self.n_known_peptide += 1
+                    self.knownpep_lst.append({'family_id':family_id,'peptide_id':peptide_id,
+                                              'species':species,'accession':accession,'name':name,
+                                              'sequence':dict_Seq[k]})
         else:
             logger.error(f" [Known Peptides] {self.family_name} - {self.n_known_peptide} peptide uploaded")
 

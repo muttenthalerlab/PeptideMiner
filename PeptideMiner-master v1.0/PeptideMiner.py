@@ -319,12 +319,11 @@ class PeptideMiner():
                         best['result'] = r
                         best['score']  = score
                         for r in mpep_ali.results:
-                            print(r.E)
                             if float(r.E) < E_Cutoff:
                                 sequences.append({'before_seq':mpep_seq[:r.start_q-1],
                                                   'mid_seq':   mpep_seq[r.start_q-1:r.end_q],
                                                   'after_seq': mpep_seq[r.end_q:],
-                                                  })
+                                                  'e-value': float(r.E)})
 
             if len(sequences) >0:
                 mature_sequences = []
@@ -332,6 +331,7 @@ class PeptideMiner():
                     nterm = Nterm(seq['before_seq'])
                     cterm = Cterm(seq['after_seq'])
                     mature_sequences.append(nterm['sequence']+seq['mid_seq']+cterm['sequence'])
+                    print(f"[{nterm['sequence']}] [{seq['mid_seq']}] [{cterm['sequence']}]")
                 mature_sequences = list(set(mature_sequences))
 
                 for i,seq in enumerate(mature_sequences):

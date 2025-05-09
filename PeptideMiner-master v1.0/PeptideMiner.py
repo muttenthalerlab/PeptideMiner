@@ -67,6 +67,7 @@ class PeptideMiner():
         self.cds_lst = []
         self.maturepep_lst = []
         self.matureseq_lst = []
+        self.blastp_annotations = []
         #self.seq_id_dict = {}
 
         # Initialise Working Folders
@@ -417,18 +418,19 @@ class PeptideMiner():
         run_blastp_query(os.path.join(csv_dir,blast_filename),os.path.join(csv_dir,qry_fasta),os.path.join(csv_dir,qry_out))
         blastp_out = parse_blastp_query(os.path.join(csv_dir,qry_out))
         unq_qry_names = set([b['qry_name'] for b in blastp_out])
-        unq_qry = []
+        
+        self.blastp_annotations = []
         for qn in unq_qry_names:
             _q = [i for i in blastp_out if i['qry_name'] == qn]
             _q.sort(key=lambda i:float(i['evalue']))
-            unq_qry.append(_q[0])
+            self.blastp_annotations.append(_q[0])
         
         # 
         # Write CSV file
         with open(os.path.join(csv_dir,csv_filename),'w',newline='') as f:
             csvwriter = csv.DictWriter(f, fieldnames=BLASTP_QRY_HEADER)                
             csvwriter.writeheader()
-            for qry in unq_qry:
+            for qry in self.blastp_annotations:
                 csvwriter.writerow(qry)
         logger.info(f" [BlastP] Annotations -> {csv_filename} ({len(self.unq_qry)})")
 

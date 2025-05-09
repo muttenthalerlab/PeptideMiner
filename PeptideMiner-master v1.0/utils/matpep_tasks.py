@@ -19,49 +19,49 @@ def find_cys_region (sequence):
         post_seq = m.group(3)
     return pre_seq,sequence,post_seq
 
-# -----------------------------------------------------------------------
-def find_regions (sequence,fasta,dir_fasta,ecutoff):
-# -----------------------------------------------------------------------
-    best_r = None
-    best_score = None
-    for filename in glob.glob("{0}/*.fna*".format(dir_fasta)):
-        name = re.search(r"/(.*)\.fna",filename).group(1)
-        ali = alignment(sequence,fasta,filename)
-        if len(ali.results) == 0: 
-            continue
-        r = ali.results[0]
-        score = r.lenseq - r.overlap
-        if float(r.E) < ecutoff and (best_r is None or best_score > score):
-            best_r = r
-            best_score = score
-            sequences = []
-            for r in ali.results:
-                if float(r.E) < float(ecutoff):
-                    sequences.append([sequence[:r.start_q-1],sequence[r.start_q-1:r.end_q],sequence[r.end_q:]])
-    if best_r is None: return []
-    return sequences
+# # -----------------------------------------------------------------------
+# def find_regions (sequence,fasta,dir_fasta,ecutoff):
+# # -----------------------------------------------------------------------
+#     best_r = None
+#     best_score = None
+#     for filename in glob.glob(f"{dir_fasta}/*.fna*"):
+#         name = re.search(r"/(.*)\.fna",filename).group(1)
+#         ali = alignment(sequence,fasta,filename)
+#         if len(ali.results) == 0: 
+#             continue
+#         r = ali.results[0]
+#         score = r.lenseq - r.overlap
+#         if float(r.E) < ecutoff and (best_r is None or best_score > score):
+#             best_r = r
+#             best_score = score
+#             sequences = []
+#             for r in ali.results:
+#                 if float(r.E) < float(ecutoff):
+#                     sequences.append([sequence[:r.start_q-1],sequence[r.start_q-1:r.end_q],sequence[r.end_q:]])
+#     if best_r is None: return []
+#     return sequences
 
 # -----------------------------------------------------------------------
 def Nterm (sequence,use_isolated=1):
 # -----------------------------------------------------------------------
     cleavages = []
-    Furin_cleav  = re.compile("^(.*)([KR][KR].R)(.*)$")
-    RRGC_cleav   = re.compile("^(.*)(RR.)(G)$")
-    KRR_cleav    = re.compile("^(.*)(KR)(R.*)$")
-    LVLK_cleav   = re.compile("^(.*)([LV]..L..K)(.*)$")
-    LSR_cleav    = re.compile("^(.*)(L..S.R)(.*)$")
-    LENDKR_cleav = re.compile("^(.*)(L.[END]KR)(.*)$")
-    LKR_cleav    = re.compile("^(.*)(L..[KR])(.*)$")
-    KR_cleav     = re.compile("^(.*)(KR)(.*)$")
-    RR_cleav     = re.compile("^(.*)(RR)(.*)$")
-    KK_cleav     = re.compile("^(.*)(KK)(.*)$")
-    KE_cleav     = re.compile("^(.*)(KE)(.?)$")
-    ER_cleav     = re.compile("^(.*)(ER)(.*)$")
-    E_R_cleav    = re.compile("^(.*)(E...R)(.*)$")
-    E__R_cleav   = re.compile("^(.*)(E.....R)(.*)$")
-    RKtoR_cleav  = re.compile("^(.*)([RK].{0,5}R)(.*)$")
-    DtoR_cleav   = re.compile("^(.*)(D.{0,6}R)(.*)$")
-    RMVL_cleav   = re.compile("^(.*)([RM].VL)(.*)$")
+    Furin_cleav  = re.compile(r"^(.*)([KR][KR].R)(.*)$")
+    RRGC_cleav   = re.compile(r"^(.*)(RR.)(G)$")
+    KRR_cleav    = re.compile(r"^(.*)(KR)(R.*)$")
+    LVLK_cleav   = re.compile(r"^(.*)([LV]..L..K)(.*)$")
+    LSR_cleav    = re.compile(r"^(.*)(L..S.R)(.*)$")
+    LENDKR_cleav = re.compile(r"^(.*)(L.[END]KR)(.*)$")
+    LKR_cleav    = re.compile(r"^(.*)(L..[KR])(.*)$")
+    KR_cleav     = re.compile(r"^(.*)(KR)(.*)$")
+    RR_cleav     = re.compile(r"^(.*)(RR)(.*)$")
+    KK_cleav     = re.compile(r"^(.*)(KK)(.*)$")
+    KE_cleav     = re.compile(r"^(.*)(KE)(.?)$")
+    ER_cleav     = re.compile(r"^(.*)(ER)(.*)$")
+    E_R_cleav    = re.compile(r"^(.*)(E...R)(.*)$")
+    E__R_cleav   = re.compile(r"^(.*)(E.....R)(.*)$")
+    RKtoR_cleav  = re.compile(r"^(.*)([RK].{0,5}R)(.*)$")
+    DtoR_cleav   = re.compile(r"^(.*)(D.{0,6}R)(.*)$")
+    RMVL_cleav   = re.compile(r"^(.*)([RM].VL)(.*)$")
 
     m = Furin_cleav.search(sequence)
     if m:
@@ -135,12 +135,12 @@ def Nterm (sequence,use_isolated=1):
     m = RKtoR_cleav.search(sequence)
     if m:
         if m.group(2) == 'RPR':
-            pre = "{0}{1}".format(m.group(2),m.group(3))
+            pre = f"{m.group(2)}{m.group(3)}"
             tp = m.group(1)
             m2 = RKtoR_cleav.search(tp)
             if m2: # remove RPR case for Pl14a
                 cleavages.append(cleavage('R(K)toR',m))
-                sequence = "{0}{1}".format(m2.group(3),pre)
+                sequence = f"{m2.group(3)}{pre}"
         else:
             cleavages.append(cleavage('R(K)toR',m))
             sequence = m.group(3)
@@ -161,13 +161,13 @@ def Nterm (sequence,use_isolated=1):
 def Cterm (sequence,use_isolated=1):
 # -----------------------------------------------------------------------
     cleavages = []
-    KR_cleav    = re.compile("(.*?)([KR][KR])(.*)")
-    RTIL_cleav  = re.compile("(.*?)(RT[IL])(.*)$")
-#	ER_cleav    = re.compile("^(.*)ER(.*)$")
-#	RKtoR_cleav = re.compile("^(.*)([RK].{0,6}R)(.*)$")
-#	RKtoK_cleav = re.compile("^(.*)([RK].{0,6}K)(.*)$")
-#	EtoR_cleav  = re.compile("^(.*)(E.{0,6}R)(.*)$")
-#	RtoE_cleav  = re.compile("^(.*)([RK].{0,6}E)(.*)$")
+    KR_cleav    = re.compile(r"(.*?)([KR][KR])(.*)")
+    RTIL_cleav  = re.compile(r"(.*?)(RT[IL])(.*)$")
+#	ER_cleav    = re.compile(r"^(.*)ER(.*)$")
+#	RKtoR_cleav = re.compile(r"^(.*)([RK].{0,6}R)(.*)$")
+#	RKtoK_cleav = re.compile(r"^(.*)([RK].{0,6}K)(.*)$")
+#	EtoR_cleav  = re.compile(r"^(.*)(E.{0,6}R)(.*)$")
+#	RtoE_cleav  = re.compile(r"^(.*)([RK].{0,6}E)(.*)$")
 
     m = KR_cleav.search(sequence)
     if m:
@@ -203,7 +203,7 @@ def Cterm (sequence,use_isolated=1):
 # -----------------------------------------------------------------------
 def CPE (sequence):
 # -----------------------------------------------------------------------
-    CPE_cleav   = re.compile("(.+[^KR])([KR]+)$")
+    CPE_cleav   = re.compile(r"(.+[^KR])([KR]+)$")
     m = CPE_cleav.search(sequence)
     if m:
         return m
@@ -211,7 +211,7 @@ def CPE (sequence):
 # -----------------------------------------------------------------------
 def PAM (sequence):
 # -----------------------------------------------------------------------
-    PAM_cleav   = re.compile("(.+)(G)$")
+    PAM_cleav   = re.compile(r"(.+)(G)$")
     m = PAM_cleav.search(sequence)
     if m:
         return m
@@ -384,7 +384,7 @@ class result:
                 else:
                     am = "{0}{1}".format(am," "*(len(a1)-len(am)))
                 if i == 0:
-                    blanksearch = re.search("^( *)",am)
+                    blanksearch = re.search(r"^( *)",am)
                     nbblank = len(blanksearch.group(1))
                     a1 = a1[nbblank:]
                     am = am[nbblank:]

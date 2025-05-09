@@ -383,7 +383,7 @@ class PeptideMiner():
         _fasta = {}
         for s in _seq:
             _name = f"{s['id']}_{s['hmm_id']}_{s['transcriptome']}"
-            _fasta[_name] = s['mat_seq']
+            _fasta[_name] = s['matseq']
         logger.info(f" [Fasta36] MatureSeq: -> {fasta_filename}")
         self.write_fasta_file(os.path.join(csv_dir,fasta_filename),_fasta)
 

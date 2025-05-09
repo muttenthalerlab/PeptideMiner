@@ -446,7 +446,7 @@ class PeptideMiner():
         csv_dir = self.pipeline_dir
         csv_filename = f'08_summery_{FamilyName}.csv'
 
-        sum_data = get_summary_familyname(FamilyName)
+        sum_data = get_summary_familyname(self.db,FamilyName)
         csv_header = list(sum_data[0].keys())
         # Write CSV file
 

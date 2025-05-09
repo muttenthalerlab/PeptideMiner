@@ -13,7 +13,7 @@ from utils.db_tasks import (upload_known_peptides, upload_hmmsearch, upload_cds,
 from utils.hmm_tasks import run_hmmsearch,addsequence_hmmsearch,filter_hmmsearch
 from utils.signalp_tasks import run_signalp
 from utils.matpep_tasks import alignment, Nterm, Cterm
-from utils.blast_tasks import make_blastp_db, run_blastp_search
+from utils.blast_tasks import make_blastp_db, run_blastp_query, parse_blastp_query
 
 # import pandas as pd
 import numpy as np
@@ -411,7 +411,11 @@ class PeptideMiner():
         # Make BlastP database
         make_blastp_db(os.path.join(csv_dir,blast_filename))
 
-        run_blastp_search(os.path.join(csv_dir,blast_filename),os.path.join(csv_dir,qry_fasta),os.path.join(csv_dir,qry_out))
+        # Run and Parse BlastP query
+        run_blastp_query(os.path.join(csv_dir,blast_filename),os.path.join(csv_dir,qry_fasta),os.path.join(csv_dir,qry_out))
+        blastp_out = parse_blastp_query(os.path.join(csv_dir,qry_out))
+
+        print(blastp_out)
 
 
 

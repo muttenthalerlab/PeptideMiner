@@ -13,7 +13,7 @@ from utils.signalp_tasks import run_signalp
 from utils.matpep_tasks import alignment, Nterm, Cterm
 
 # import pandas as pd
-# import numpy as np
+import numpy as np
 # from functools import reduce
 
 # Logger ----------------------------------------------------------------
@@ -302,6 +302,7 @@ class PeptideMiner():
         csv_header=['cds_id','mature_sequence']
 
         self.matureseq_lst = []
+        evalues = []
 
         for mpep in self.maturepep_lst:
             mpep_seq = mpep['mature_peptide']
@@ -310,6 +311,8 @@ class PeptideMiner():
 
             for filename in self.known_peptide:
                 mpep_ali = alignment(mpep_seq,filename)
+                for r in mpep_ali.results:
+                    evalues.append(float(r.E))
 
                 if len(mpep_ali.results) > 0:
                     # Get best alignment and check if <E_Cutoff
@@ -331,20 +334,21 @@ class PeptideMiner():
                     nterm = Nterm(seq['before_seq'])
                     cterm = Cterm(seq['after_seq'])
                     mature_sequences.append(nterm['sequence']+seq['mid_seq']+cterm['sequence'])
-                    print(f"[{nterm['sequence']}] [{seq['mid_seq']}] [{cterm['sequence']}]")
+                    #print(f"[{nterm['sequence']}] [{seq['mid_seq']}] [{cterm['sequence']}]")
                 mature_sequences = list(set(mature_sequences))
 
                 for i,seq in enumerate(mature_sequences):
                     if len(seq) >= Min_Length and len(seq) <= Max_Length:
                         self.matureseq_lst.append({'cds_id':mpep['cds_id'],'mature_sequence':seq})
 
+        logger.info(f" [Fasta36] MatureSeq: E-values Q1: {np.quantile(evalues,0.25)} Mean: {np.mean(evalues)} Q3: {np.quantile(evalues,0.75)}")
 
         with open(os.path.join(csv_dir,csv_filename),'w',newline='') as f:
             csvwriter = csv.DictWriter(f, fieldnames=csv_header)                
             csvwriter.writeheader()
             for mpep in self.matureseq_lst:
                 csvwriter.writerow(mpep)
-        logger.info(f" [Fasta36] MatSequences: (E:{E_Cutoff} Length: {Min_Length}-{Max_Length}) -> {csv_filename} ({len(self.matureseq_lst)} )")
+        logger.info(f" [Fasta36] MatureSeq: (E:{E_Cutoff} Length: {Min_Length}-{Max_Length}) -> {csv_filename} ({len(self.matureseq_lst)} )")
 
 
 

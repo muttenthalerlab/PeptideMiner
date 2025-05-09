@@ -13,6 +13,7 @@ from utils.db_tasks import (upload_known_peptides, upload_hmmsearch, upload_cds,
 from utils.hmm_tasks import run_hmmsearch,addsequence_hmmsearch,filter_hmmsearch
 from utils.signalp_tasks import run_signalp
 from utils.matpep_tasks import alignment, Nterm, Cterm
+from utils.blast_tasks import make_blastp_db
 
 # import pandas as pd
 import numpy as np
@@ -385,7 +386,7 @@ class PeptideMiner():
         # Write Fasta file
         _fasta = {}
         for s in _seq:
-            _name = f"{s['id']}_{s['hmm_id']}_{s['transcriptome']}"
+            _name = ":".join([s['id'],s['hmm_id'],s['transcriptome']])
             _fasta[_name] = s['matseq']
         logger.info(f" [Fasta36] MatureSeq: -> {fasta_filename}")
         self.write_fasta_file(os.path.join(csv_dir,fasta_filename),_fasta)
@@ -393,16 +394,19 @@ class PeptideMiner():
     # ---------------------------------------------------------
     def run_blast(self, Overwrite=False):
 
+
         # Write Fasta file
         csv_dir = self.pipeline_dir
-        fasta_filename = '07_known_sequences.fna'
+        blast_filename = '07_known_sequences.fna'
         _fasta = {}
         for s in self.knownpep_lst:
-            _name = f"{s['family_id']}_{s['peptide_id']}_{s['species']}_{s['name']}_{s['accession']}"
+            _name = ":".join([s['family_id'],s['peptide_id'],s['species'],s['name'],s['accession']])
             _fasta[_name] = s['sequence']
-        logger.info(f" [BlastP] MatureSeq: -> {fasta_filename}")
-        self.write_fasta_file(os.path.join(csv_dir,fasta_filename),_fasta)
+        logger.info(f" [BlastP] MatureSeq: -> {blast_filename}.fna")
+        self.write_fasta_file(os.path.join(csv_dir,f"{blast_filename}.fna"),_fasta)
 
+        make_blastp_db(blast_filename)
+        
 # --------------------------------------------------------------------------------------
 def main(prgArgs):
 # --------------------------------------------------------------------------------------

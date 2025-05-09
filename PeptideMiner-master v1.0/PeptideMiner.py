@@ -440,6 +440,25 @@ class PeptideMiner():
             for a in self.blastp_annotations:
                 csvwriter.writerow(a)
 
+    # ---------------------------------------------------------
+    def summary(self, FamilyName, Overwrite=False):
+
+        csv_dir = self.pipeline_dir
+        csv_filename = f'08_summery_{FamilyName}.csv'
+
+        sum_data = get_summary_familyname(FamilyName)
+        csv_header = list(sum_data[0].keys())
+        # Write CSV file
+
+        logger.info(f" [BlastP] Annotations -> {csv_filename} ({len(self.blastp_annotations)})")
+        with open(os.path.join(csv_dir,csv_filename),'w',newline='') as f:
+            csvwriter = csv.DictWriter(f, fieldnames=csv_header)                
+            csvwriter.writeheader()
+            for s in sum_data:
+                csvwriter.writerow(s)
+
+
+
 
 # --------------------------------------------------------------------------------------
 def main(prgArgs):
@@ -465,11 +484,11 @@ def main(prgArgs):
     pWork.select_mature(float(prgArgs.mature_evalue_cutoff),
                         int(prgArgs.mature_min_length),
                         int(prgArgs.mature_max_length))
-    pWork.upload_mature()
+    pWork.upload_mature(prgArgs.peptide_family)
 
     # Step 7, 8
     pWork.run_blast()
-    pWork.
+    pWork.summary()
 
 #==============================================================================
 if __name__ == "__main__":

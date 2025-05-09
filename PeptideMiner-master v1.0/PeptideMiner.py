@@ -197,7 +197,7 @@ class PeptideMiner():
                     self.hmm_id_dict[hmm_id] = [hmm_id,hmm_name,transcriptome_name]
                     seq_id_dict[sqeq_id] = [sqeq_id,sequence,hmm_id,hmm_name]
 
-        logger.info(f" [HMM Search] HMM's: {len(hmm_id_dict)} uploaded")
+        logger.info(f" [HMM Search] HMM's: {len(self.hmm_id_dict)} uploaded")
         logger.info(f" [HMM Search] Seq's: {len(seq_id_dict)} uploaded")
             
         # Pipeline CSV Log
@@ -366,7 +366,7 @@ class PeptideMiner():
             _seq += get_noduplicates(hmm_id)
         print(_seq)
 
-        
+
 # --------------------------------------------------------------------------------------
 def main(prgArgs):
 # --------------------------------------------------------------------------------------

@@ -309,7 +309,7 @@ class PeptideMiner():
 
 
     # ---------------------------------------------------------
-    def select_mature(self,E_Cutoff,Min_Length,Max_Length):
+    def select_mature(self,E_Cutoff,Min_Length,Max_Length, Overwrite=False):
         csv_dir = self.pipeline_dir
         csv_filename = '05_mature_sequences.csv'
         csv_header=['cds_id','mature_sequence']
@@ -364,7 +364,7 @@ class PeptideMiner():
         logger.info(f" [Fasta36] MatureSeq: CutOffs: E-value:{E_Cutoff} Length: {Min_Length}-{Max_Length}) -> {csv_filename} ({len(self.matureseq_lst)} sequences)")
 
     # ---------------------------------------------------------
-    def upload_mature(self):
+    def upload_mature(self, Overwrite=False):
 
         csv_dir = self.pipeline_dir
         fasta_filename = '06_mature_sequences.fna'
@@ -387,6 +387,9 @@ class PeptideMiner():
         logger.info(f" [Fasta36] MatureSeq: -> {fasta_filename}")
         self.write_fasta_file(os.path.join(csv_dir,fasta_filename),_fasta)
 
+    # ---------------------------------------------------------
+    def run_blast(self, Overwrite=False):
+        print(self.knownpep_lst)
 
 # --------------------------------------------------------------------------------------
 def main(prgArgs):
@@ -415,6 +418,7 @@ def main(prgArgs):
     pWork.upload_mature()
 
     # Step 7, 8
+    pWork.run_blast()
 
 #==============================================================================
 if __name__ == "__main__":

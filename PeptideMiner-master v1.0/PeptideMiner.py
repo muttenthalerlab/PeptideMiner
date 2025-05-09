@@ -363,7 +363,7 @@ class PeptideMiner():
 
         _seq = []
         for hmm_id in self.hmm_id_dict:
-            _seq += get_noduplicates(hmm_id)
+            _seq += get_noduplicates(self.db,hmm_id)
         print(_seq)
 
 

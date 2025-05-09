@@ -9,7 +9,7 @@ import csv
 from utils.database import sql_connector
 from utils.db_tasks import (upload_known_peptides, upload_hmmsearch, upload_cds, update_seqreads_signalp, 
                             upload_matureseq, upload_noduplicates, upload_annotations,
-                            get_seqreads, get_noduplicates)
+                            get_seqreads, get_noduplicates, get_summary_familyname)
 from utils.hmm_tasks import run_hmmsearch,addsequence_hmmsearch,filter_hmmsearch
 from utils.signalp_tasks import run_signalp
 from utils.matpep_tasks import alignment, Nterm, Cterm
@@ -469,6 +469,7 @@ def main(prgArgs):
 
     # Step 7, 8
     pWork.run_blast()
+    pWork.
 
 #==============================================================================
 if __name__ == "__main__":

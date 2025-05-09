@@ -116,6 +116,12 @@ def get_hmmid(DB,hmm_name):
         return str(res[0])
 
 # -----------------------------------------------------------------------
+def get_fammilyid(DB,family_name):
+# -----------------------------------------------------------------------
+    for res in DB.selectall('neuropeptide_family',('id'),(f"name='{family_name}'")):
+        return str(res[0])
+
+# -----------------------------------------------------------------------
 def get_noduplicates(DB,hmm_id):
 # -----------------------------------------------------------------------    
     out = []
@@ -130,3 +136,23 @@ def get_seqreads(DB):
     for res in DB.selectall('seqreads s',('id','precursor','hmmid')):
         lst_Dict.append({'id':res[0],'precursor':res[1],'hmmid': res[2]})
     return lst_Dict
+
+
+# -----------------------------------------------------------------------
+def get_summary_familyname(DB,FamilyName):
+# -----------------------------------------------------------------------    
+    summary = []
+    summary_header = ['hit id','hit name','pHMM name','hit query DB','hmmsearch evalue','hit sequence','hit CDS','hit signal peptide length',
+                    'hit mature sequence','pBLAST known sequence accession','pBLAST known sequence','pBLAST %ID','pBLAST length','pBLAST evalue']
+
+    family_id = get_fammilyid(FamilyName)
+
+    sql_tables = ('known_NP k','neuropeptide_family n','annotated a','noduplicates o','seqreads s', 'cds c','mature m','hmm h')
+    sql_fields = ('s.id','s.name','h.name','s.transcriptome','s.evalue','s.precursor','c.sequence','s.signalseq_length',
+                            'o.matseq','k.accession','k.sequence','a.pid','a.length_alignment','a.evalue')
+    sql_where = (f"n.id='{family_id}' and n.id=k.familyid and k.id=a.knownNP_id and a.novel_id=o.id and o.id=m.noduplicates_id and m.cds_id=s.cds_id and s.cds_id=c.id and s.hmmid=h.id")
+
+    for res in DB.selectall(sql_tables,sql_fields,sql_where):
+        _dict = dict(zip(summary_header,res))
+        summary.append(_dict)
+    return(summary)

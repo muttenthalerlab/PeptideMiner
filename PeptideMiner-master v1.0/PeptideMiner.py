@@ -117,7 +117,7 @@ class PeptideMiner():
     @staticmethod
     def read_fasta_file(FastA_File):
         """
-         Reads FastA file into Dictionary with >line as key and sequence as value
+         Reads FastA file into Dict with >line as key and sequence as value
         """
         dict_Seq = {}
         kSeq = None
@@ -131,6 +131,15 @@ class PeptideMiner():
                         dict_Seq[kSeq] += line.strip()
         return(dict_Seq)
 
+    # ----------------------------------------------------------
+    @staticmethod
+    def write_fasta_file(Fasta_File,Fasta_Dict):
+        """
+         Writes FastA file from Dict with >line as key and sequence as value
+        """
+        with open(Fasta_File,'w') as f:
+            for key in Fasta_Dict:
+                f.write(f">{key}\n{Fasta_Dict[key]}\n")
 
     # ---------------------------------------------------------
     def hmmsearch(self, Query, Overwrite=False):
@@ -356,15 +365,27 @@ class PeptideMiner():
 
     # ---------------------------------------------------------
     def upload_mature(self):
+
+        csv_dir = self.pipeline_dir
+        fasta_filename = '06_mature_sequences.fna'
+
         logger.info(f" [Fasta36] MatureSeq: Uploading sequences)")
         for matseq in self.matureseq_lst:
             upload_matureseq(self.db,matseq['cds_id'],matseq['mature_sequence'],verbose=1)
             upload_noduplicates(self.db,matseq['cds_id'],matseq['mature_sequence'],verbose=1)
 
+        # Get NoDuplicates for HMM_ID
         _seq = []
         for hmm_id in self.hmm_id_dict:
             _seq += get_noduplicates(self.db,hmm_id)
-        print(_seq)
+        
+        # Write Fasta file
+        _fasta = {}
+        for s in _seq:
+            _name = f"{s['id']}_{s['hmm_id']}_{s['transcriptome']}"
+            _fasta[_name] = s['mat_seq']
+        logger.info(f" [Fasta36] MatureSeq: -> {fasta_filename}")
+        self.write_fasta_file(os.path.join(csv_dir,fasta_filename),_fasta)
 
 
 # --------------------------------------------------------------------------------------

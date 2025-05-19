@@ -137,8 +137,8 @@ if __name__ == "__main__":
     prgParser.add_argument("--mature_max_length",default=None,required=False, dest="mature_max_length", action='store', help="Mature peptide max length")
     prgParser.add_argument("--mature_evalue_cutoff",default=None,required=False, dest="mature_evalue_cutoff", action='store', help="Mature peptide cutoff")
 
-    prgParser.add_argument("--peptide_family",default=None,required=False, dest="peptide_family", action='store', help="Peptide family")
-    prgParser.add_argument("--query",default=None,required=False, dest="querydir", action='store', help="Query folder of fasta file")
+    prgParser.add_argument("--peptide_family",default=None,required=True, dest="peptide_family", action='store', help="Peptide family")
+    prgParser.add_argument("--query",default=None,required=True, dest="querydir", action='store', help="Query folder of fasta file")
     
     # prgParser.add_argument("--upload",default=False,required=False, dest="upload", action='store_true', help="Upload data to dj Database")
     prgParser.add_argument("--overwrite",default=False,required=False, dest="overwrite", action='store_true', help="Overwrite existing data")

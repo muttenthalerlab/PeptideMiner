@@ -84,8 +84,8 @@ def hmmsearch(PM, Overwrite=False):
         logger.info(f" [HMM Search] {PM.family_name} - HMM Files : {HMM_Files}")
         
         #For each Query (fna) file run hmmsearch
-        Query_Files = [q for q in os.listdir(PM.query_dir) if q.endswith('fna')]
-        for qry_file in Query_Files:
+        PM.hmm_query_files = [q for q in os.listdir(PM.query_dir) if q.endswith('fna')]
+        for qry_file in PM.hmm_query_files:
             
             dict_Fasta = PM.read_fasta_file(os.path.join(PM.query_dir,qry_file))
             logger.info(f" [HMM Search] {PM.family_name} - HMM Query : {qry_file} with {len(dict_Fasta)} sequences")

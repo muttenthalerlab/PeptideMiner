@@ -172,15 +172,17 @@ def read_cds(PM, Overwrite=False):
            _cds_lst.append({'seq_id':seq_id['id'],'n_cds':0,'cds':seq_id['precursor']})
     
     # Upload and make unique by cds_id
-    _cds_ids = []
     PM.cds_lst = []        
+    _cds_ids = []
     for cds in _cds_lst:
         cds_id = upload_cds(PM.db,cds['cds'],cds['seq_id'])
         if cds_id not in _cds_ids:
             cds['cds_id'] = cds_id
             PM.cds_lst.append(cds)
+            print(cds)
         else:
             _cds_ids.append(cds_id)
+            print(_cds_ids)
                    
     logger.info(f" [HMM Search] CDS: {len(PM.cds_lst)} uploaded")
 

@@ -18,18 +18,20 @@ def run_signalp(seq_id,sequence,cutoff,signal_path,temp_path='/tmp'):
         tmp.write(f">{seq_id}\n{sequence}")
     
     #out_file = os.path.join(temp_path,f"{seq_id}.out")
+    if os.path.isfile(signal_path):
+        # SignalP 4.1  : eukariotic 
+        cmd = f"{signal_path} -t euk -M -U {cutoff} -u {cutoff} {seq_file} "
+        p = subprocess.run(cmd,shell=True,capture_output=True, text=True)
+        ret = p.stdout
+        os.remove(seq_file)
 
-    # SignalP 4.1  : eukariotic 
-    cmd = f"{signal_path} -t euk -M -U {cutoff} -u {cutoff} {seq_file} "
-    p = subprocess.run(cmd,shell=True,capture_output=True, text=True)
-    ret = p.stdout
-    os.remove(seq_file)
+        signalp_dict = dict(zip(SIGNALP_HEADER,ret.splitlines()[2].split()))
 
-    signalp_dict = dict(zip(SIGNALP_HEADER,ret.splitlines()[2].split()))
-
-    logger.info(f" [SignalP] -> {seq_id} {signalp_dict['SP']} at {signalp_dict['CMax_pos']}")
-    return(signalp_dict)
-
+        logger.info(f" [SignalP] -> {seq_id} {signalp_dict['SP']} at {signalp_dict['CMax_pos']}")
+        return(signalp_dict)
+    else:
+        logger.error(f" [SignalP] ERROR unable to find  {signal_path}")
+        return(None)
 # ====================================================================================================
 def signalp_cds(PM,Overwrite=False):
 # ====================================================================================================

@@ -412,7 +412,7 @@ class result:
         return(retStr)
     
 # ====================================================================================================
-def select_mature(PM,E_Cutoff,Min_Length,Max_Length, Overwrite=False):
+def select_mature(PM,Overwrite=False):
 # ====================================================================================================
 
     csv_dir = PM.pipeline_dir
@@ -433,7 +433,7 @@ def select_mature(PM,E_Cutoff,Min_Length,Max_Length, Overwrite=False):
                 evalues.append(float(r.E))
 
             if len(mpep_ali.results) > 0:
-                # Get best alignment and check if <E_Cutoff
+                # Get best alignment and check if < mature_evalue_cutoff
                 r = mpep_ali.results[0]
                 score = r.lenseq - r.overlap
                 if float(r.E) < PM.mature_evalue_cutoff and (best['result'] is None or best['score'] > score):
@@ -467,4 +467,4 @@ def select_mature(PM,E_Cutoff,Min_Length,Max_Length, Overwrite=False):
         csvwriter.writeheader()
         for mpep in PM.matureseq_lst:
             csvwriter.writerow(mpep)
-    logger.info(f" [Fasta36] MatureSeq: CutOffs: E-value:{E_Cutoff} Length: {Min_Length}-{Max_Length}) -> {csv_filename} ({len(PM.matureseq_lst)} sequences)")
+    logger.info(f" [Fasta36] MatureSeq: CutOffs: E-value:{E_Cutoff} Length: {PM.mature_min_length}-{PM.mature_max_length}) -> {csv_filename} ({len(PM.matureseq_lst)} sequences)")

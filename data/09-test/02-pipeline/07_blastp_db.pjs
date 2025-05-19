@@ -1,0 +1,25 @@
+{
+  "version": "1.2",
+  "dbname": "07_blastp_db",
+  "dbtype": "Protein",
+  "db-version": 5,
+  "description": "./work/02-pipeline/07_blastp_db.fna",
+  "number-of-letters": 596,
+  "number-of-sequences": 62,
+  "last-updated": "2025-05-19T21:45:00",
+  "number-of-volumes": 1,
+  "bytes-total": 46269,
+  "bytes-to-cache": 1275,
+  "files": [
+    "07_blastp_db.pdb",
+    "07_blastp_db.phd",
+    "07_blastp_db.phi",
+    "07_blastp_db.phr",
+    "07_blastp_db.pin",
+    "07_blastp_db.pog",
+    "07_blastp_db.pot",
+    "07_blastp_db.psq",
+    "07_blastp_db.ptf",
+    "07_blastp_db.pto"
+  ]
+}

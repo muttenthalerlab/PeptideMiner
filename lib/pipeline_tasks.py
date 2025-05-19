@@ -74,6 +74,40 @@ class PeptideMiner():
         self.sql_create = os.path.join(self.data_dir,self.database_sql)
         self.db = sql_connector(data_file= self.sql_database_file, sql_create= self.sql_create)
 
+    # ----------------------------------------------------------
+    @staticmethod
+    def read_fasta_file(FastA_File):
+        """
+         Reads FastA file into Dict with >line as key and sequence as value
+        """
+        dict_Seq = {}
+        kSeq = None
+        if os.path.isfile(FastA_File):
+            with open(FastA_File,encoding='latin-1') as f:
+                for line in f:
+                    if line.startswith('>'):
+                        kSeq = line[1:]
+                        dict_Seq[kSeq] = "" 
+                    else:
+                        dict_Seq[kSeq] += line.strip()
+        return(dict_Seq)
+
+    # ----------------------------------------------------------
+    @staticmethod
+    def write_fasta_file(Fasta_File,Fasta_Dict):
+        """
+         Writes FastA file from Dict with >line as key and sequence as value
+        """
+        with open(Fasta_File,'w') as f:
+            for key in Fasta_Dict:
+                f.write(f">{key}\n{Fasta_Dict[key]}\n")
+
+    # ----------------------------------------------------------
+    def check_paths(self):
+        Error_Dict = {}
+        if not os.path.isfile(self.signalp_path):
+            Error_Dict['SignalP'] = f"Not Found {self.signalp_path}"
+        return(Error_Dict)
 
 # ====================================================================================================
 def read_known_peptides(PM):

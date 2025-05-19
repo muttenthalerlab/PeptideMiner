@@ -66,7 +66,6 @@ def signalp_cds(PM,Overwrite=False):
                     
                 update_seqreads_signalp(PM.db,cds['cds_id'],signalp_pos)
 
-        
         with open(os.path.join(csv_dir,csv_filename),'w',newline='') as f:
             csvwriter = csv.DictWriter(f, fieldnames=csv_header)                
             csvwriter.writeheader()

@@ -420,7 +420,7 @@ def select_mature(PM,Overwrite=False):
 
     csv_dir = PM.pipeline_dir
     csv_filename = f"{PM.pipeline_filename['05']['filename']}.csv"
-    csv_header=['cds_id','mature_sequence']
+    csv_header=['cds_id','sigp_pos','mature_sequence']
 
     PM.matureseq_lst = []
     evalues = []
@@ -460,7 +460,7 @@ def select_mature(PM,Overwrite=False):
 
             for i,seq in enumerate(mature_sequences):
                 if len(seq) >= PM.mature_min_length and len(seq) <= PM.mature_max_length:
-                    PM.matureseq_lst.append({'cds_id':mpep['cds_id'],'mature_sequence':seq})
+                    PM.matureseq_lst.append({'cds_id':mpep['cds_id'],'sigp_pos':mpep['signalp_pos'],'mature_sequence':seq})
 
     logger.info(f" [Fasta36] MatureSeq: E-values GeoMean: {np.exp(np.log(evalues).mean()):.5f} [Q1: {np.quantile(evalues,0.25):.5f} Mean: {np.mean(evalues):.5f} Q3: {np.quantile(evalues,0.75):.5f} ]")
 

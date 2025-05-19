@@ -56,6 +56,7 @@ class PeptideMiner():
  
         # Pipeline Properties
         self.hmm_lst = []
+        self.hmm_seq_lst = []
         self.knownpep_lst = []
         self.hmm_search_files = []
         self.hmm_query_files = []
@@ -228,7 +229,7 @@ def summary(PM, Overwrite=False):
         out.write(f"\t{','.join(PM.hmm_query_files)}\n")
         out.write("\n")
         out.write(f"Output:\n")
-        out.write(f"hmmsearch hits: {len(PM.hmm_search_files)}\n")
+        out.write(f"hmmsearch hits: {len(PM.hmm_seq_lst)}\n") #
         out.write(f"PeptideMiner hits: {len(_set_peptideminer_hits)}\n")
         out.write(f"\tNumber of unique CDS: {len(_set_unique_pre)}\n")
         out.write(f"\tNumber of unique mature peptides: {len(_set_unique_matseq)}\n")

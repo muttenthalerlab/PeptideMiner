@@ -481,10 +481,10 @@ def upload_mature(PM, Overwrite=False):
     csv_dir = PM.pipeline_dir
     fasta_filename = f"{PM.pipeline_filename['06']['filename']}.fna" 
 
-    logger.info(f" [Fasta36] MatureSeq: Uploading sequences)")
+    logger.info(f" [Fasta36] MatureSeq: Uploading sequences")
     for matseq in PM.matureseq_lst:
-        upload_matureseq(PM.db,matseq['cds_id'],matseq['mature_sequence'],verbose=1)
-        upload_noduplicates(PM.db,matseq['cds_id'],matseq['mature_sequence'],verbose=1)
+        upload_matureseq(PM.db,matseq['cds_id'],matseq['mature_sequence'],verbose=0)
+        upload_noduplicates(PM.db,matseq['cds_id'],matseq['mature_sequence'],verbose=0)
 
     # Get NoDuplicates for HMM_ID
     _seq = []

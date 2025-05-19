@@ -56,7 +56,7 @@ def run_blast(PM, Overwrite=False):
     blast_filename = f"{PM.pipeline_filename['07']['filename']}_db"
 
     qry_fasta = f"{PM.pipeline_filename['06']['filename']}.fna"  
-    qry_out = f"{PM.pipeline_filename['07']['filename']}_query.fna"
+    qry_out = f"{PM.pipeline_filename['07']['filename']}_query.csv"
     
     # Write Fasta file
     _fasta = {}
@@ -70,7 +70,9 @@ def run_blast(PM, Overwrite=False):
     make_blastp_db(os.path.join(csv_dir,blast_filename))
 
     # Run and Parse BlastP query for unique qry_names with lowest evalue
-    run_blastp_query(os.path.join(csv_dir,blast_filename),os.path.join(csv_dir,qry_fasta),os.path.join(csv_dir,qry_out))
+    run_blastp_query(os.path.join(csv_dir,blast_filename),
+                     os.path.join(csv_dir,qry_fasta),
+                     os.path.join(csv_dir,qry_out))
     blastp_out = parse_blastp_query(os.path.join(csv_dir,qry_out))
     unq_qry_names = set([b['qry_name'] for b in blastp_out])
     

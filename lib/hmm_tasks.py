@@ -143,6 +143,10 @@ def read_hmmsearch(PM, Overwrite=False):
     for k in hmm_id_dict:
         PM.hmm_lst.append({'hmm_id':hmm_id_dict[k][0],'hmm_name':hmm_id_dict[k][1],'transcriptome':hmm_id_dict[k][2]})
 
+    PM.hmm_seq_lst = []
+    for k in seq_id_dict:
+        PM.hmm_seq_lst.append({'seq_id':seq_id_dict[k][0],'sequence':seq_id_dict[k][1],'hmm_id':seq_id_dict[k][2],'hmm_name':seq_id_dict[k][3]})
+
     logger.info(f" [HMM Search] HMM's: {len(hmm_id_dict)} uploaded")
     logger.info(f" [HMM Search] Seq's: {len(seq_id_dict)} uploaded")
         

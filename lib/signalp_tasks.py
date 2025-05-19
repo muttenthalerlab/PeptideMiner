@@ -61,7 +61,9 @@ def signalp_cds(PM,Overwrite=False):
                         PM.maturepep_lst.append({'cds_id':cds['cds_id'],'signalp_pos':signalp_pos,'mature_peptide':mature_seq})
                     else:
                         PM.maturepep_lst.append({'cds_id':cds['cds_id'],'signalp_pos':signalp_pos,'mature_peptide':cds['cds']})
-
+                else:
+                    PM.maturepep_lst.append({'cds_id':cds['cds_id'],'signalp_pos':signalp_pos,'mature_peptide':cds['cds']})
+                    
                 update_seqreads_signalp(PM.db,cds['cds_id'],signalp_pos)
 
         

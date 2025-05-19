@@ -201,6 +201,7 @@ def summary(PM, Overwrite=False):
             csvwriter.writerow(s)
 
     print(sum_data)
+    print(PM.hmm_id_dict)
     _set_peptideminer_hits = set(l['hit id'] for l in sum_data)
     _set_querydb = set(l['hit query DB'] for l in sum_data)
     _set_phmm = set(l['pHMM name'] for l in sum_data)

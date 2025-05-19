@@ -179,10 +179,7 @@ def read_cds(PM, Overwrite=False):
         if cds_id not in _cds_ids:
             cds['cds_id'] = cds_id
             PM.cds_lst.append(cds)
-            print(cds)
-        else:
             _cds_ids.append(cds_id)
-            print(_cds_ids)
                    
     logger.info(f" [HMM Search] CDS: {len(PM.cds_lst)} uploaded")
 

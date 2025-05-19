@@ -1,0 +1,124 @@
+>1:None:Synthetic::
+CYIQDCLRV
+>1:1:New World Monkeys::
+CYIQNCPAG
+>1:1:Conus striatus::
+CIIRNCPRG
+>1:1:Synthetic::
+CLFTNCPRG
+>1:1:Florida lancelet::
+CYIINCPRG
+>1:1:Nematodes::
+CFLNSCPYRRI
+>1:1:Armadillo::
+CYLQNCPLG
+>1:1:Leeches and molluscs::
+CFIRNCPKG
+>1:None:Marsupials and pigs::0
+CYFQNCPKG
+>1:None:Queensland lungfish::1
+CFIQNCPIG
+>1:None:New World Monkeys::2
+CFIQNCPLG
+>1:None:Marsupials::3
+CFFQNCPRG
+>1:None:Quokka::4
+CYFQNCPIG
+>1:None:Nematodes::5
+CFLNSCPFRRY
+>1:None:NWM and Tree shrew::6
+CYIQNCPPG
+>1:None:Mustached bat::7
+CYITNCPVG
+>1:None:Tenrec::8
+CYFTNCPRG
+>1:None:New World Monkeys::9
+CYIQNCPTG
+>1:2:New World Monkeys::0
+CYVQNCPPG
+>1:3:Florida carpenter ant::1
+CLIVNCPRG
+>1:4:Red-legged Salamander::2
+CYIVNCPIG
+>1:None:Earth worm:Annetocin :3
+CFVRNCPTG
+>1:None:Water flea and red spider mite:Arachnotocin 1 :4
+CFITNCPPG
+>1:7:Arthropods::5
+CFITNCPIG
+>1:None:Spiny dogfish:Aspartocin :6
+CYINNCPLG
+>1:None:Starfish :Asterotocin :7
+CLVQDCPEG
+>1:None:Cartilaginous fish:Asvatocin :8
+CYINNCPVG
+>1:None:Synthetic:Au6.1 :9
+CKAENELCNIFIQNCCDGTCLLICIQNPQ
+>1:None:Common octopus :Cephalotocin :0
+CYFRNCPIG
+>1:None:Ciona intestinalis :Ciona VP/OT-related peptide :1
+CFFRDCSNMDWYR
+>1:None:Synthetic:Conopressin G2 :2
+CFIANCPVG
+>1:None:Conus tulipa:Conopressin T :3
+CYIQNCLRV
+>1:None:Conus textile :Conopressin Tx1 :4
+CFIRNCPGG
+>1:None:Conus textile :Conopressin Tx2 :5
+CFIRNCPRG
+>1:None:Synthetic:Conopressin Va1 :6
+CFVRNCPNG
+>1:None:Conus villepinii :Conopressin-Vil :7
+CLIQDCPgG
+>1:None:Sea urchin :Echinotocin :8
+CFISNCPKG
+>1:None:Conus villepinii:gamma-conopressin vil :9
+CLIQDCPEG
+>1:None:Thornback Ray:Glumitocin :0
+CYISNCPQG
+>1:None:Annelids:Hirudotocin :1
+CFIRNCPLG
+>1:None:African clawed frog:Hydrin 1 :2
+CYIQNCPRGGKR
+>1:None:Edible frog:Hydrin 2 :3
+CYIQNCPRGG
+>1:None:Arthropods:Inotocin :4
+CLITNCPRG
+>1:None:Bony fish:Isotocin :5
+CYISNCPIG
+>1:None:Centipede:Myriatocin :7
+CYITNCPPG
+>1:None:Nematodes:Nematocin :8
+CFLNSCPYRRY
+>1:None:Common octopus):Octopressin :9
+CFWTSCPIG
+>1:None:Eutherian mammals and cartilagenous fish:Oxytocin :0
+CYIQNCPLG
+>1:None:Annelid worm:Pdu-Vasotocin :1
+CFVRNCPPG
+>1:None:Japanese banded houndshark:Phasitocin :2
+CYFNNCPIG
+>1:None:Small-spotted catshark:Phasvatocin :3
+CYFNNCPVG
+>1:None:Sepia officinallis :Pro-Sepiatocin :4
+CFFRNCPPG
+>1:None:Sepia officinallis:Sepiatocin :5
+CFWTTCPIG
+>1:None:African common toad:Seritocin :6
+CYIQSCPIG
+>1:None:Acorn worm :Sk-Vasotocin :7
+CFISDCARG
+>1:None:Styela plicata :Styela OT-related peptide :8
+CYISDCPNSRFWST
+>1:None:Eutherian mammal:Tenrec VP-like :9
+CYLPNCVKD
+>1:None:Spiny dogfish:Valitocin :0
+CYIQNCPVG
+>1:None:Eutherian mammals and marsupials:Vasopressin :1
+CYFQNCPRG
+>1:None:Nonmammalian vertebrates:Vasotocin :2
+CYIQNCPRG
+>1:None:Lungfish and marsupials:Mesotocin :24
+CYIQNCPIG
+>1:None:Conus textile:Conopressin :25
+CFIRNCPP

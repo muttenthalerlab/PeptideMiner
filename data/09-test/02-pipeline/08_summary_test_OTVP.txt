@@ -1,0 +1,13 @@
+Summary PeptideMiner peptide search
+Date: 19/05/2025
+
+Number of profile-HMMs used: 1
+	test_OTVP_mat-pre
+Number of databases searched: 1
+	test_OTVP2.fna
+
+Output:
+hmmsearch hits: 58
+PeptideMiner hits: 56
+	Number of unique CDS: 51
+	Number of unique mature peptides: 24

@@ -114,6 +114,12 @@ class PeptideMiner():
             for key in Fasta_Dict:
                 f.write(f">{key}\n{Fasta_Dict[key]}\n")
 
+    # ----------------------------------------------------------
+    def check_paths(self):
+        Error_Dict = {}
+        if not os.path.isfile(self.signal_path):
+            Error_Dict['SignalP'] = f"Not Found {self.signal_path}"
+        return(Error_Dict)
 
 # --------------------------------------------------------------------------------------
 def main(prgArgs):
@@ -121,14 +127,18 @@ def main(prgArgs):
     
     PM_Work = PeptideMiner(prgArgs)
 
-    #Step 1, 2 
-    read_known_peptides(PM_Work)
-    hmmsearch(PM_Work)
-    read_hmmsearch(PM_Work)
+    err_Dict = PM_Work.check_paths()
+    if err_Dict:
+        print(err_Dict)
+    else:
+        #Step 1, 2 
+        read_known_peptides(PM_Work)
+        hmmsearch(PM_Work)
+        read_hmmsearch(PM_Work)
 
-    #Step 3,4
-    read_cds(PM_Work)
-    signalp_cds(PM_Work)
+        #Step 3,4
+        read_cds(PM_Work)
+        signalp_cds(PM_Work)
 
 #==============================================================================
 if __name__ == "__main__":

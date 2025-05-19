@@ -25,13 +25,16 @@ class PeptideMiner():
 # --------------------------------------------------------------------------------------
 
     def __init__(self, prgArgs):
-        
+
+        # Run Parameters
+        self.cds_min_length = prgArgs.cds_min_length
+
         # Data Folders
         self.data_dir = prgArgs.workdir
         self.known_pep_dir = os.path.join(self.data_dir,'01-known_seq')
         self.hmm_dir = os.path.join(self.data_dir,'02-pHMM')
         self.database_file = 'sqlite.db'
-        self.database_sql = 'PeptideMiner_DB.sql'
+        self.database_sql = 'PeptideMiner.sql'
 
         # Work Folders
         self.work_dir = prgArgs.datadir
@@ -40,12 +43,12 @@ class PeptideMiner():
         
         # Pipeline
         self.peptide_family = prgArgs.peptide_family
-        self.query = prgArgs.query
+        self.query_dir = prgArgs.querydir
 
         self.pipeline_filename = {
-            '01': {'filename': '01_hmmsearch_hmm',    },
+            '01': {'filename': '01_hmmsearch',    },
             '02': {'filename': '02_hmmsearch_seq',    },
-            '03': {'filename': '03_cds_seq',          },
+            '03': {'filename': '03_cds',          },
             '04': {'filename': '04_signalp',  },
             '05': {'filename': '05_mature_sequences.csv', },
             '06': {'filename': '06_mature_sequences.csv', },
@@ -53,6 +56,7 @@ class PeptideMiner():
             '08': {'filename': '08_mature_sequences.csv', },
         }
  
+        # Pipeline Properties
         self.hmm_id_dict = {}
         self.knownpep_lst = []
         self.hmm_search_files = []

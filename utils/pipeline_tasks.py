@@ -3,11 +3,11 @@ import os, csv
 import logging
 logger = logging.getLogger(__name__)
 
-from utils.db_tasks import upload_known_peptides
+from utils.db_tasks import upload_known_peptides, upload_cds, get_seqreads
 
-# -------------------------------------------
+# ====================================================================================================
 def read_known_peptides(PM):
-# -------------------------------------------
+# ====================================================================================================
     PM.known_peptide = []
     
     pep_dir = os.path.join(PM.known_pep_dir,PM.family_name)
@@ -36,3 +36,39 @@ def read_known_peptides(PM):
                                             'sequence':dict_Seq[k]})
     else:
         logger.error(f" [Known Peptides] {PM.family_name} - {PM.n_known_peptide} peptide uploaded")
+
+# ====================================================================================================
+def read_cds(PM, CDS_Min_Length, Overwrite=False):
+# ====================================================================================================
+
+    csv_dir = PM.pipeline_dir
+    csv_filename = f"{PM.pipeline_filename['03']}_sequences.csv"
+    csv_header=['cds_id','seq_id','n_cds','cds']
+
+    # All Sequences or just from the specific hmm_id
+    seq_id_dict = get_seqreads(PM.db) 
+
+    PM.cds_lst = []
+    for seq_id in seq_id_dict:
+        
+        for seq_seg in seq_id['precursor'].split('*'):
+            n_cds = 0
+            seq_M = seq_seg
+            
+            if len(seq_seg) >= CDS_Min_Length and 'M' in seq_seg:
+                seq_M = seq_seg[seq_seg.index('M'):]
+                if len(seq_M) >= CDS_Min_Length:
+                    n_cds += 1                
+                    PM.cds_lst.append({'seq_id':seq_id['id'],'n_cds':n_cds,'cds':seq_M})
+            
+    for cds in PM.cds_lst:
+        cds_id = upload_cds(PM.db,cds['cds'],cds['seq_id'])
+        cds['cds_id'] = cds_id   
+    logger.info(f" [HMM Search] CDS: {len(PM.cds_lst)} uploaded")
+
+    with open(os.path.join(csv_dir,csv_filename),'w',newline='') as f:
+        csvwriter = csv.DictWriter(f, fieldnames=csv_header)                
+        csvwriter.writeheader()
+        for cds in PM.cds_lst:
+            csvwriter.writerow(cds)
+    logger.info(f" [HMM Search] CDS: -> {csv_filename} ({len(PM.cds_lst)} )")

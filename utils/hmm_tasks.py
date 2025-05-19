@@ -5,6 +5,7 @@ import subprocess
 import logging
 logger = logging.getLogger(__name__)
 
+from utils.db_tasks import upload_hmmsearch
 
 HMM_SEARCH_HEADER =["ID", "accession", "query_name", "accession", "full_E-value", "full_score", "full_bias", 
                     "dom_E-value", "dom_score", "dom_bias", "exp", "reg", "clu", "ov", "env", "dom", "rep", 
@@ -64,8 +65,9 @@ def filter_hmmsearch(hmmsearch_dir,hmmsearch_csv,hmm_name, transcriptome_name):
     return(lowest_hmm_search)
         
 
-# ---------------------------------------------------------
+# ====================================================================================================
 def hmmsearch(PM, Overwrite=False):
+# ====================================================================================================
 
     # Output Summary        
     hmm_search_outfile = os.path.join(PM.hmmsearch_dir,f"{PM.pipeline_filename['01']}.txt") 
@@ -82,17 +84,17 @@ def hmmsearch(PM, Overwrite=False):
         logger.info(f" [HMM Search] {PM.family_name} - HMM Files : {HMM_Files}")
         
         #For each Query (fna) file run hmmsearch
-        Query_Files = [q for q in os.listdir(PM.query) if q.endswith('fna')]
+        Query_Files = [q for q in os.listdir(PM.query_dir) if q.endswith('fna')]
         for qry_file in Query_Files:
             
-            dict_Fasta = PM.read_fasta_file(os.path.join(PM.query,qry_file))
+            dict_Fasta = PM.read_fasta_file(os.path.join(PM.query_dir,qry_file))
             logger.info(f" [HMM Search] {PM.family_name} - HMM Query : {qry_file} with {len(dict_Fasta)} sequences")
 
             for hmm in HMM_Files:
                 hmm_out = f"{hmm.split('.')[0]}.{qry_file.replace('.fna','')}"
                 
                 # Run HMM Search 
-                _ret = run_hmmsearch(os.path.join(PM.hmmsearch_dir,hmm_out),os.path.join(PM.hmm_dir,hmm),os.path.join(PM.query,qry_file))
+                _ret = run_hmmsearch(os.path.join(PM.hmmsearch_dir,hmm_out),os.path.join(PM.hmm_dir,hmm),os.path.join(PM.query_dir,qry_file))
                 hmm_search_out.append(_ret)
                                             
                 # Add Seqeunce infor to HMM Search Output CSV file
@@ -105,3 +107,49 @@ def hmmsearch(PM, Overwrite=False):
                 out.writelines(line)
     else:
         logger.info(f" [HMM Search] Exists {PM.hmm_search_files} in {PM.hmmsearch_dir}")
+
+# ====================================================================================================
+def read_hmmsearch(PM, Overwrite=False):
+# ====================================================================================================
+    
+    if len(PM.hmm_search_files)>0:
+        logger.info(f" [HMM Search] Files: {len(PM.hmm_search_files)}")
+        
+        PM.hmm_id_dict = {}
+        seq_id_dict = {}
+                    
+        for hmm in  PM.hmm_search_files:
+            _hmm_lst = hmm.split('.')                
+            hmm_name = _hmm_lst[0]
+            transcriptome_name =_hmm_lst[1]
+            
+            hmm_lstdict = filter_hmmsearch(PM.hmmsearch_dir,hmm,hmm_name,transcriptome_name)
+            for id in hmm_lstdict:
+                evalue = hmm_lstdict[id][3]
+                sequence = hmm_lstdict[id][4]
+                hmm_id, sqeq_id = upload_hmmsearch(PM.db,hmm_name,transcriptome_name,id,evalue,sequence)
+
+                PM.hmm_id_dict[hmm_id] = [hmm_id,hmm_name,transcriptome_name]
+                seq_id_dict[sqeq_id] = [sqeq_id,sequence,hmm_id,hmm_name]
+
+    logger.info(f" [HMM Search] HMM's: {len(PM.hmm_id_dict)} uploaded")
+    logger.info(f" [HMM Search] Seq's: {len(seq_id_dict)} uploaded")
+        
+    # Pipeline CSV Log
+    csv_filename = f"{PM.pipeline_filename['01']}.csv" 
+    with open(os.path.join(PM.pipeline_dir,csv_filename),'w',newline='') as csvfile:
+        csvwriter = csv.writer(csvfile)
+        csv_header=['hmm_id','hmm_name','transcriptome']
+        csvwriter.writerow(csv_header)
+        for key in PM.hmm_id_dict:
+            csvwriter.writerow(PM.hmm_id_dict[key])
+    logger.info(f" [HMM Search] HMM's -> {csv_filename} ({len(PM.hmm_id_dict)})")
+
+    csv_filename = f"{PM.pipeline_filename['01']}_sequences.csv"
+    with open(os.path.join(PM.pipeline_dir,csv_filename),'w',newline='') as csvfile:
+        csvwriter = csv.writer(csvfile)
+        csv_header=['seq_id','sequence','hmm_id','hmm_name']
+        csvwriter.writerow(csv_header)
+        for key in seq_id_dict:
+            csvwriter.writerow(seq_id_dict[key])
+    logger.info(f" [HMM Search] Seq's -> {csv_filename} ({len(seq_id_dict)})")

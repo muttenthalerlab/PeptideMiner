@@ -60,7 +60,6 @@ def signalp_cds(PM,Overwrite=False):
                     if len(mature_seq) >= PM.signalp_min_length:
                         PM.maturepep_lst.append({'cds_id':cds['cds_id'],'signalp_pos':signalp_pos,'mature_peptide':mature_seq})
                     else:
-                        # ???? Not sure
                         PM.maturepep_lst.append({'cds_id':cds['cds_id'],'signalp_pos':signalp_pos,'mature_peptide':cds['cds']})
 
                 update_seqreads_signalp(PM.db,cds['cds_id'],signalp_pos)

@@ -158,9 +158,8 @@ def read_cds(PM, Overwrite=False):
 
     PM.cds_lst = []
     for seq_id in seq_id_dict:
-        
+        n_cds = 0
         for seq_seg in seq_id['precursor'].split('*'):
-            n_cds = 0
             seq_M = seq_seg
             
             if len(seq_seg) >= PM.cds_min_length and 'M' in seq_seg:
@@ -168,6 +167,9 @@ def read_cds(PM, Overwrite=False):
                 if len(seq_M) >= PM.cds_min_length:
                     n_cds += 1                
                     PM.cds_lst.append({'seq_id':seq_id['id'],'n_cds':n_cds,'cds':seq_M})
+        if n_cds == 0:
+            # if no cds 
+            PM.cds_lst.append({'seq_id':seq_id['id'],'n_cds':0,'cds':seq_id['precursor']})
             
     for cds in PM.cds_lst:
         cds_id = upload_cds(PM.db,cds['cds'],cds['seq_id'])

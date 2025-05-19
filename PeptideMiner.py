@@ -45,7 +45,7 @@ class PeptideMiner():
         self.pipeline_dir = os.path.join(self.work_dir,'02-pipeline')
         
         # Programs
-        self.hmmsearch = 'hmmsearch'
+        self.hmmsearch_path = 'hmmsearch'
         self.signalp_path = prgArgs.signalp_path
 
         # Pipeline

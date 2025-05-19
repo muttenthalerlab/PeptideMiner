@@ -4,6 +4,9 @@ import os
 import csv
 import subprocess
 import numpy as np
+
+from utils.db_tasks import upload_matureseq, upload_noduplicates, get_noduplicates
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -468,3 +471,30 @@ def select_mature(PM,Overwrite=False):
         for mpep in PM.matureseq_lst:
             csvwriter.writerow(mpep)
     logger.info(f" [Fasta36] MatureSeq: CutOffs: E-value:{PM.mature_evalue_cutoff} Length: {PM.mature_min_length}-{PM.mature_max_length}) -> {csv_filename} ({len(PM.matureseq_lst)} sequences)")
+
+
+# ====================================================================================================
+    # ---------------------------------------------------------
+def upload_mature(PM, Overwrite=False):
+# ====================================================================================================
+
+    csv_dir = PM.pipeline_dir
+    fasta_filename = f"{PM.pipeline_filename['05']['filename']}.fna" 
+
+    logger.info(f" [Fasta36] MatureSeq: Uploading sequences)")
+    for matseq in PM.matureseq_lst:
+        upload_matureseq(PM.db,matseq['cds_id'],matseq['mature_sequence'],verbose=1)
+        upload_noduplicates(PM.db,matseq['cds_id'],matseq['mature_sequence'],verbose=1)
+
+    # Get NoDuplicates for HMM_ID
+    _seq = []
+    for hmm_id in PM.hmm_id_dict:
+        _seq += get_noduplicates(PM.db,hmm_id)
+    
+    # Write Fasta file
+    _fasta = {}
+    for s in _seq:
+        _name = ":".join([str(s['id']),str(s['hmm_id']),s['transcriptome']])
+        _fasta[_name] = s['matseq']
+    logger.info(f" [Fasta36] MatureSeq: -> {fasta_filename}")
+    PM.write_fasta_file(os.path.join(csv_dir,fasta_filename),_fasta)

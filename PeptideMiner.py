@@ -21,7 +21,7 @@ from utils.database import sql_connector
 from utils.pipeline_tasks import (read_known_peptides, read_cds)
 from utils.hmm_tasks import hmmsearch, read_hmmsearch
 from utils.signalp_tasks import signalp_cds
-from utils.matpep_tasks import select_mature
+from utils.matpep_tasks import select_mature, upload_mature
 
 # --------------------------------------------------------------------------------------
 class PeptideMiner():
@@ -65,6 +65,7 @@ class PeptideMiner():
             '03': {'filename': '03_cds',          },
             '04': {'filename': '04_signalp',  },
             '05': {'filename': '05_mature_sequences.csv', },
+
             '06': {'filename': '06_mature_sequences.csv', },
             '07': {'filename': '07_mature_sequences.csv', },
             '08': {'filename': '08_mature_sequences.csv', },
@@ -150,7 +151,7 @@ def main(prgArgs):
 
         # Step 5, 6
         select_mature(PM_Work)
-        #pWork.upload_mature(prgArgs.peptide_family)
+        upload_mature(PM_Work)
 
         # Step 7, 8
         #pWork.run_blast()

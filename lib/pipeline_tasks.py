@@ -213,7 +213,7 @@ def summary(PM, Overwrite=False):
         out.write(f"Date: {SumTime.strftime('%d/%m/%Y')}\n")
         out.write("\n")
         out.write(f"Number of profile-HMMs used: {len(PM.hmm_id_dict)}\n")
-        out.write(f"\t{','.join([i[1] for i in PM.hmm_id_dict])}\n")
+        out.write(f"\t{','.join([PM.hmm_id_dict.keys()])}\n")
         out.write(f"Number of databases searched: {len(PM.hmm_query_files)}\n")
         out.write(f"\t{','.join(PM.hmm_query_files)}\n")
         out.write("\n")

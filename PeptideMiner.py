@@ -125,7 +125,7 @@ def main(prgArgs):
     hmmsearch(PM_Work)
     read_hmmsearch(PM_Work)
 
-    read_cds(int(prgArgs.cds_min_length))
+    read_cds(PM_Work)
 
 #==============================================================================
 if __name__ == "__main__":

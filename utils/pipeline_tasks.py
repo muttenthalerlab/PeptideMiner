@@ -38,7 +38,7 @@ def read_known_peptides(PM):
         logger.error(f" [Known Peptides] {PM.family_name} - {PM.n_known_peptide} peptide uploaded")
 
 # ====================================================================================================
-def read_cds(PM, CDS_Min_Length, Overwrite=False):
+def read_cds(PM, Overwrite=False):
 # ====================================================================================================
 
     csv_dir = PM.pipeline_dir
@@ -55,9 +55,9 @@ def read_cds(PM, CDS_Min_Length, Overwrite=False):
             n_cds = 0
             seq_M = seq_seg
             
-            if len(seq_seg) >= CDS_Min_Length and 'M' in seq_seg:
+            if len(seq_seg) >= PM.cds_min_length and 'M' in seq_seg:
                 seq_M = seq_seg[seq_seg.index('M'):]
-                if len(seq_M) >= CDS_Min_Length:
+                if len(seq_M) >= PM.cds_min_length:
                     n_cds += 1                
                     PM.cds_lst.append({'seq_id':seq_id['id'],'n_cds':n_cds,'cds':seq_M})
             

@@ -117,8 +117,8 @@ class PeptideMiner():
     # ----------------------------------------------------------
     def check_paths(self):
         Error_Dict = {}
-        if not os.path.isfile(self.signal_path):
-            Error_Dict['SignalP'] = f"Not Found {self.signal_path}"
+        if not os.path.isfile(self.signalp_path):
+            Error_Dict['SignalP'] = f"Not Found {self.signalp_path}"
         return(Error_Dict)
 
 # --------------------------------------------------------------------------------------

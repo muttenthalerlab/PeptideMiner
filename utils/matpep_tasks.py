@@ -3,7 +3,7 @@ import re,glob,random,gzip,bz2,os
 import os
 import csv
 import subprocess
-
+import numpy as np
 import logging
 logger = logging.getLogger(__name__)
 
@@ -238,12 +238,13 @@ def create_temp_fasta (sequence,name='seq'):
 # -----------------------------------------------------------------------
 class alignment:
 # -----------------------------------------------------------------------
-    def __init__ (self,qry_sequence,lib_file='',gap_penalty=-10,evalue='1'):
+    def __init__ (self,qry_sequence,lib_file='',gap_penalty=-10,evalue='1',fasta36_path='fasta36'):
         self.gap_penalty = gap_penalty
         self.evalue = evalue
         self.qry_sequence = qry_sequence
         self.lib_file = lib_file
 
+        self.fasta36_path = fasta36_path
         self.fasta36_out = []
         self.results = []
 
@@ -252,7 +253,7 @@ class alignment:
         
     def run_fasta36(self):
         tmp_seq_file = create_temp_fasta(self.qry_sequence)
-        cmd = f"fasta36 -f {self.gap_penalty} -z 0 -E {self.evalue} -q {tmp_seq_file} {self.lib_file} "
+        cmd = f"{self.fasta36_path} -f {self.gap_penalty} -z 0 -E {self.evalue} -q {tmp_seq_file} {self.lib_file} "
         #print(cmd)
         p = subprocess.run(cmd,shell=True,capture_output=True, text=True, encoding='latin-1')
         self.fasta36_out = p.stdout.splitlines()
@@ -409,3 +410,61 @@ class result:
         retStr += f"E {self.E} Z {self.Z}\n"
         retStr += f"{self.ali}"
         return(retStr)
+    
+# ====================================================================================================
+def select_mature(PM,E_Cutoff,Min_Length,Max_Length, Overwrite=False):
+# ====================================================================================================
+
+    csv_dir = PM.pipeline_dir
+    csv_filename = f"{PM.pipeline_filename['05']['filename']}.csv"
+    csv_header=['cds_id','mature_sequence']
+
+    PM.matureseq_lst = []
+    evalues = []
+
+    for mpep in PM.maturepep_lst:
+        mpep_seq = mpep['mature_peptide']
+        best = {'result':None, 'score': None}
+        sequences = []
+
+        for filename in PM.known_peptide:
+            mpep_ali = alignment(mpep_seq,filename,fasta36_path=PM.fasta36_path)
+            for r in mpep_ali.results:
+                evalues.append(float(r.E))
+
+            if len(mpep_ali.results) > 0:
+                # Get best alignment and check if <E_Cutoff
+                r = mpep_ali.results[0]
+                score = r.lenseq - r.overlap
+                if float(r.E) < PM.mature_evalue_cutoff and (best['result'] is None or best['score'] > score):
+                    best['result'] = r
+                    best['score']  = score
+                    for r in mpep_ali.results:
+                        if float(r.E) < PM.mature_evalue_cutoff:
+                            sequences.append({'before_seq':mpep_seq[:r.start_q-1],
+                                                'mid_seq':   mpep_seq[r.start_q-1:r.end_q],
+                                                'after_seq': mpep_seq[r.end_q:],
+                                                'e-value': float(r.E)})
+
+        if len(sequences) >0:
+            mature_sequences = []
+            for seq in sequences:
+                nterm = Nterm(seq['before_seq'])
+                cterm = Cterm(seq['after_seq'])
+                mature_sequences.append(nterm['sequence']+seq['mid_seq']+cterm['sequence'])
+                #print(f"[{nterm['sequence']}] [{seq['mid_seq']}] [{cterm['sequence']}]")
+            mature_sequences = list(set(mature_sequences))
+
+            for i,seq in enumerate(mature_sequences):
+                if len(seq) >= PM.mature_min_length and len(seq) <= PM.mature_max_length:
+                    PM.matureseq_lst.append({'cds_id':mpep['cds_id'],'mature_sequence':seq})
+
+    logger.info(f" [Fasta36] MatureSeq: E-values GeoMean: {np.exp(np.log(evalues).mean()):.5f} [Q1: {np.quantile(evalues,0.25):.5f} Mean: {np.mean(evalues):.5f} Q3: {np.quantile(evalues,0.75):.5f} ]")
+
+    # Write CSV file
+    with open(os.path.join(csv_dir,csv_filename),'w',newline='') as f:
+        csvwriter = csv.DictWriter(f, fieldnames=csv_header)                
+        csvwriter.writeheader()
+        for mpep in PM.matureseq_lst:
+            csvwriter.writerow(mpep)
+    logger.info(f" [Fasta36] MatureSeq: CutOffs: E-value:{E_Cutoff} Length: {Min_Length}-{Max_Length}) -> {csv_filename} ({len(PM.matureseq_lst)} sequences)")

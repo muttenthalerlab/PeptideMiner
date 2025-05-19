@@ -21,6 +21,7 @@ from utils.database import sql_connector
 from utils.pipeline_tasks import (read_known_peptides, read_cds)
 from utils.hmm_tasks import hmmsearch, read_hmmsearch
 from utils.signalp_tasks import signalp_cds
+from utils.matpep_tasks import select_mature
 
 # --------------------------------------------------------------------------------------
 class PeptideMiner():
@@ -47,6 +48,7 @@ class PeptideMiner():
         
         # Programs
         self.hmmsearch_path = 'hmmsearch'
+        self.fasta36_path = 'fasta36'
         self.signalp_path = prgArgs.signalp_path
 
         # Pipeline
@@ -119,6 +121,7 @@ class PeptideMiner():
         Error_Dict = {}
         if not os.path.isfile(self.signalp_path):
             Error_Dict['SignalP'] = f"Not Found {self.signalp_path}"
+
         return(Error_Dict)
 
 # --------------------------------------------------------------------------------------
@@ -139,6 +142,16 @@ def main(prgArgs):
         #Step 3,4
         read_cds(PM_Work)
         signalp_cds(PM_Work)
+
+
+        # Step 5, 6
+        select_mature(PM_Work)
+        #pWork.upload_mature(prgArgs.peptide_family)
+
+        # Step 7, 8
+        #pWork.run_blast()
+        #pWork.summary(prgArgs.peptide_family)
+
 
 #==============================================================================
 if __name__ == "__main__":

@@ -201,7 +201,7 @@ def summary(PM, Overwrite=False):
             csvwriter.writerow(s)
 
     print(sum_data)
-    _set_peptideminer_hits = set(l['hit_id'] for l in sum_data)
+    _set_peptideminer_hits = set(l['hit id'] for l in sum_data)
     _set_querydb = set(l['hit query DB'] for l in sum_data)
     _set_phmm = set(l['pHMM name'] for l in sum_data)
     _set_unique_matseq = set(l['hit mature sequence'] for l in sum_data)

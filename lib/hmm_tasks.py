@@ -135,11 +135,12 @@ def read_hmmsearch(PM, Overwrite=False):
                 hmm_id_dict[hmm_id] = [hmm_id,hmm_name,transcriptome_name]
                 seq_id_dict[sqeq_id] = [sqeq_id,sequence,hmm_id,hmm_name]
 
+    # Convert dict_lst into lst_dict
     PM.hmm_lst = []
     for k in hmm_id_dict:
         PM.hmm_lst.append({'hmm_id':hmm_id_dict[k][0],'hmm_name':hmm_id_dict[k][1],'transcriptome':hmm_id_dict[k][2]})
 
-    logger.info(f" [HMM Search] HMM's: {len(PM.hmm_id_dict)} uploaded")
+    logger.info(f" [HMM Search] HMM's: {len(hmm_id_dict)} uploaded")
     logger.info(f" [HMM Search] Seq's: {len(seq_id_dict)} uploaded")
         
     # Pipeline CSV Log
@@ -149,10 +150,8 @@ def read_hmmsearch(PM, Overwrite=False):
         csv_header=['hmm_id','hmm_name','transcriptome']
         csvwriter.writerow(csv_header)
         for key in PM.hmm_id_dict:
-            csvwriter.writerow(PM.hmm_id_dict[key])
-
-
-    logger.info(f" [HMM Search] HMM's -> {csv_filename} ({len(PM.hmm_id_dict)})")
+            csvwriter.writerow(hmm_id_dict[key])
+    logger.info(f" [HMM Search] HMM's -> {csv_filename} ({len(hmm_id_dict)})")
 
     csv_filename = f"{PM.pipeline_filename['01']['filename']}_sequences.csv"
     with open(os.path.join(PM.pipeline_dir,csv_filename),'w',newline='') as csvfile:

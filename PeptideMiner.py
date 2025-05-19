@@ -34,6 +34,10 @@ class PeptideMiner():
         self.signalp_cutoff = float(prgArgs.signalp_cutoff)
         self.signalp_min_length = int(prgArgs.signalp_min_length)
 
+        self.mature_evalue_cutoff = float(prgArgs.mature_evalue_cutoff)
+        self.mature_min_length = int(prgArgs.mature_min_length)
+        self.mature_max_length = int(prgArgs.mature_max_length)
+
         # Data Folders
         self.data_dir = prgArgs.datadir
         self.known_pep_dir = os.path.join(self.data_dir,'01-known_seq')

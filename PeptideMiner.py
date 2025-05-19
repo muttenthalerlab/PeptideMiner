@@ -139,6 +139,7 @@ def main(prgArgs):
     if err_Dict:
         print(err_Dict)
     else:
+        logger.info(f" [PeptideMiner] Peptide Family: {PM_Work.family_name} - Query {PM_Work.query_dir}")
         #Step 1, 2 
         read_known_peptides(PM_Work)
         hmmsearch(PM_Work)
@@ -155,7 +156,7 @@ def main(prgArgs):
 
         # Step 7, 8
         run_blast(PM_Work)
-        summary(prgArgs.peptide_family)
+        summary(PM_Work)
 
 
 #==============================================================================

@@ -168,7 +168,7 @@ def read_cds(PM, Overwrite=False):
                     n_cds += 1                
                     PM.cds_lst.append({'seq_id':seq_id['id'],'n_cds':n_cds,'cds':seq_M})
         if n_cds == 0:
-            # if no cds 
+            # if no cds use original precursor
             PM.cds_lst.append({'seq_id':seq_id['id'],'n_cds':0,'cds':seq_id['precursor']})
             
     for cds in PM.cds_lst:

@@ -467,4 +467,4 @@ def select_mature(PM,Overwrite=False):
         csvwriter.writeheader()
         for mpep in PM.matureseq_lst:
             csvwriter.writerow(mpep)
-    logger.info(f" [Fasta36] MatureSeq: CutOffs: E-value:{E_Cutoff} Length: {PM.mature_min_length}-{PM.mature_max_length}) -> {csv_filename} ({len(PM.matureseq_lst)} sequences)")
+    logger.info(f" [Fasta36] MatureSeq: CutOffs: E-value:{PM.mature_evalue_cutoff} Length: {PM.mature_min_length}-{PM.mature_max_length}) -> {csv_filename} ({len(PM.matureseq_lst)} sequences)")

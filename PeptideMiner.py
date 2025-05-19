@@ -18,7 +18,7 @@ logging.basicConfig(
     level=logLevel)
 
 from utils.database import sql_connector
-from utils.pipeline_tasks import (read_known_peptides)
+from utils.pipeline_tasks import (read_known_peptides, read_cds)
 from utils.hmm_tasks import hmmsearch, read_hmmsearch
 
 # --------------------------------------------------------------------------------------
@@ -28,7 +28,9 @@ class PeptideMiner():
     def __init__(self, prgArgs):
 
         # Run Parameters
-        self.cds_min_length = prgArgs.cds_min_length
+        self.cds_min_length = int(prgArgs.cds_min_length)
+        self.signalp_cutoff = float(prgArgs.signalp_cutoff)
+        self.signalp_min_length = int(prgArgs.signalp_min_length)
 
         # Data Folders
         self.data_dir = prgArgs.datadir
@@ -42,6 +44,10 @@ class PeptideMiner():
         self.hmmsearch_dir = os.path.join(self.work_dir,'01-hmmsearch')
         self.pipeline_dir = os.path.join(self.work_dir,'02-pipeline')
         
+        # Programs
+        self.hmmsearch = 'hmmsearch'
+        self.signalp_path = prgArgs.signalp_path
+
         # Pipeline
         self.family_name = prgArgs.peptide_family
         self.query_dir = prgArgs.querydir
@@ -118,6 +124,8 @@ def main(prgArgs):
     read_known_peptides(PM_Work)
     hmmsearch(PM_Work)
     read_hmmsearch(PM_Work)
+
+    read_cds(int(prgArgs.cds_min_length))
 
 #==============================================================================
 if __name__ == "__main__":

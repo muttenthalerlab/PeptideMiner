@@ -13,9 +13,9 @@ HMM_SEARCH_HEADER =["ID", "accession", "query_name", "accession", "full_E-value"
 
 
 # -----------------------------------------------------------------------
-def run_hmmsearch(Output,HmmFile,Query):
+def run_hmmsearch(HmmSearchPath,Output,HmmFile,Query):
 # -----------------------------------------------------------------------
-    cmd = f"hmmsearch --tblout {Output}.tbl {HmmFile} {Query}" 
+    cmd = f"{HmmSearchPath} --tblout {Output}.tbl {HmmFile} {Query}" 
     
     logger.info(f" [HMM Search] -> {Output}.tbl")
     p = subprocess.run(cmd,shell=True,capture_output=True, text=True)
@@ -94,7 +94,10 @@ def hmmsearch(PM, Overwrite=False):
                 hmm_out = f"{hmm.split('.')[0]}.{qry_file.replace('.fna','')}"
                 
                 # Run HMM Search 
-                _ret = run_hmmsearch(os.path.join(PM.hmmsearch_dir,hmm_out),os.path.join(PM.hmm_dir,hmm),os.path.join(PM.query_dir,qry_file))
+                _ret = run_hmmsearch(PM.hmmsearch_path, 
+                                     os.path.join(PM.hmmsearch_dir,hmm_out),
+                                     os.path.join(PM.hmm_dir,hmm),
+                                     os.path.join(PM.query_dir,qry_file))
                 hmm_search_out.append(_ret)
                                             
                 # Add Seqeunce infor to HMM Search Output CSV file

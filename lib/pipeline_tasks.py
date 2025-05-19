@@ -3,7 +3,7 @@ import os, csv
 import logging
 logger = logging.getLogger(__name__)
 
-from lib.db_tasks import upload_known_peptides, upload_cds, get_seqreads
+from lib.db_tasks import upload_known_peptides, upload_cds, get_seqreads, get_summary_familyname
 
 # ====================================================================================================
 def read_known_peptides(PM):
@@ -72,3 +72,21 @@ def read_cds(PM, Overwrite=False):
         for cds in PM.cds_lst:
             csvwriter.writerow(cds)
     logger.info(f" [HMM Search] CDS: -> {csv_filename} ({len(PM.cds_lst)} )")
+
+# ====================================================================================================
+def summary(PM, Overwrite=False):
+# ====================================================================================================
+
+    csv_dir = PM.pipeline_dir
+    csv_filename = f"{PM.pipeline_filename['08']['filename']}_{PM.family_name}.csv"
+
+    sum_data = get_summary_familyname(PM.db,PM.family_name)
+    csv_header = list(sum_data[0].keys())
+    # Write CSV file
+
+    logger.info(f" [BlastP] Annotations -> {csv_filename} ({len(PM.blastp_annotations)})")
+    with open(os.path.join(csv_dir,csv_filename),'w',newline='') as f:
+        csvwriter = csv.DictWriter(f, fieldnames=csv_header)                
+        csvwriter.writeheader()
+        for s in sum_data:
+            csvwriter.writerow(s)

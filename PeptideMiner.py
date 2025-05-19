@@ -128,7 +128,7 @@ def main(prgArgs):
 
     #Step 3,4
     read_cds(PM_Work)
-    signalp_cds(PM)
+    signalp_cds(PM_Work)
 
 #==============================================================================
 if __name__ == "__main__":

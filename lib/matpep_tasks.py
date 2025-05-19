@@ -488,8 +488,8 @@ def upload_mature(PM, Overwrite=False):
 
     # Get NoDuplicates for HMM_ID
     _seq = []
-    for hmm_id in PM.hmm_id_dict:
-        _seq += get_noduplicates(PM.db,hmm_id)
+    for hmm in PM.hmm_lst:
+        _seq += get_noduplicates(PM.db,hmm['hmm_id'])
     
     # Write Fasta file
     _fasta = {}

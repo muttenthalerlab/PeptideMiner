@@ -149,7 +149,7 @@ def read_hmmsearch(PM, Overwrite=False):
         csvwriter = csv.writer(csvfile)
         csv_header=['hmm_id','hmm_name','transcriptome']
         csvwriter.writerow(csv_header)
-        for key in PM.hmm_id_dict:
+        for key in hmm_id_dict:
             csvwriter.writerow(hmm_id_dict[key])
     logger.info(f" [HMM Search] HMM's -> {csv_filename} ({len(hmm_id_dict)})")
 

@@ -55,7 +55,7 @@ class PeptideMiner():
         }
  
         # Pipeline Properties
-        self.hmm_id_dict = {}
+        self.hmm_lst = []
         self.knownpep_lst = []
         self.hmm_search_files = []
         self.hmm_query_files = []
@@ -201,20 +201,20 @@ def summary(PM, Overwrite=False):
             csvwriter.writerow(s)
 
     print(sum_data)
-    print(PM.hmm_id_dict)
+    print(PM.hmm_lst)
     _set_peptideminer_hits = set(l['hit id'] for l in sum_data)
     _set_querydb = set(l['hit query DB'] for l in sum_data)
     _set_phmm = set(l['pHMM name'] for l in sum_data)
     _set_unique_matseq = set(l['hit mature sequence'] for l in sum_data)
     _set_unique_pre = set(l['hit CDS'] for l in sum_data)
-
+    _set_hmm = set(l['hmm_name'] for l in PM.hmm_lst)
 
     with open(os.path.join(csv_dir,txt_filename),'w') as out:
         out.write(f"Summary PeptideMiner peptide search\n")
         out.write(f"Date: {SumTime.strftime('%d/%m/%Y')}\n")
         out.write("\n")
-        out.write(f"Number of profile-HMMs used: {len(PM.hmm_id_dict)}\n")
-        out.write(f"\t{','.join(list(PM.hmm_id_dict.keys()))}\n")
+        out.write(f"Number of profile-HMMs used: {len(_set_hmm)}\n")
+        out.write(f"\t{','.join(_set_hmm)}\n")
         out.write(f"Number of databases searched: {len(PM.hmm_query_files)}\n")
         out.write(f"\t{','.join(PM.hmm_query_files)}\n")
         out.write("\n")

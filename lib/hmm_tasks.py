@@ -118,7 +118,7 @@ def read_hmmsearch(PM, Overwrite=False):
     if len(PM.hmm_search_files)>0:
         logger.info(f" [HMM Search] Files: {len(PM.hmm_search_files)}")
         
-        PM.hmm_id_dict = {}
+        hmm_id_dict = {}
         seq_id_dict = {}
                     
         for hmm in  PM.hmm_search_files:
@@ -132,8 +132,12 @@ def read_hmmsearch(PM, Overwrite=False):
                 sequence = hmm_lstdict[id][4]
                 hmm_id, sqeq_id = upload_hmmsearch(PM.db,hmm_name,transcriptome_name,id,evalue,sequence)
 
-                PM.hmm_id_dict[hmm_id] = [hmm_id,hmm_name,transcriptome_name]
+                hmm_id_dict[hmm_id] = [hmm_id,hmm_name,transcriptome_name]
                 seq_id_dict[sqeq_id] = [sqeq_id,sequence,hmm_id,hmm_name]
+
+    PM.hmm_lst = []
+    for k in hmm_id_dict:
+        PM.hmm_lst.append({'hmm_id':hmm_id_dict[0],'hmm_name':hmm_id_dict[1],'transcriptome':hmm_id_dict[2]})
 
     logger.info(f" [HMM Search] HMM's: {len(PM.hmm_id_dict)} uploaded")
     logger.info(f" [HMM Search] Seq's: {len(seq_id_dict)} uploaded")
@@ -146,6 +150,8 @@ def read_hmmsearch(PM, Overwrite=False):
         csvwriter.writerow(csv_header)
         for key in PM.hmm_id_dict:
             csvwriter.writerow(PM.hmm_id_dict[key])
+
+
     logger.info(f" [HMM Search] HMM's -> {csv_filename} ({len(PM.hmm_id_dict)})")
 
     csv_filename = f"{PM.pipeline_filename['01']['filename']}_sequences.csv"

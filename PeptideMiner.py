@@ -43,7 +43,7 @@ class PeptideMiner():
         self.pipeline_dir = os.path.join(self.work_dir,'02-pipeline')
         
         # Pipeline
-        self.peptide_family = prgArgs.peptide_family
+        self.family_name = prgArgs.peptide_family
         self.query_dir = prgArgs.querydir
 
         self.pipeline_filename = {

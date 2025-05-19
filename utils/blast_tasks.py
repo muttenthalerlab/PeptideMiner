@@ -2,6 +2,8 @@ import os
 import csv
 import subprocess
 
+from utils.db_tasks import upload_annotations
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -42,3 +44,53 @@ def parse_blastp_query(QueryOut):
             for row in csvreader:
                 qry_outlst.append(row)
     return(qry_outlst)
+
+
+# ====================================================================================================
+def run_blast(PM, Overwrite=False):
+# ====================================================================================================
+
+    csv_dir = PM.pipeline_dir
+    csv_filename = f"{PM.pipeline_filename['07']['filename']}_annotation.csv"
+
+    blast_filename = f"{PM.pipeline_filename['07']['filename']}_database.csv"
+
+    qry_fasta = f"{PM.pipeline_filename['06']['filename']}.fna"  
+    qry_out = f"{PM.pipeline_filename['07']['filename']}_query.fna"
+    
+    # Write Fasta file
+    _fasta = {}
+    for s in PM.knownpep_lst:
+        _name = ":".join([str(s['family_id']),str(s['peptide_id']),s['species'],s['name'],s['accession']])
+        _fasta[_name] = s['sequence']
+    logger.info(f" [BlastP] MatureSeq: -> {blast_filename}.fna")
+    PM.write_fasta_file(f"{os.path.join(csv_dir,blast_filename)}.fna",_fasta)
+
+    # Make BlastP database
+    make_blastp_db(os.path.join(csv_dir,blast_filename))
+
+    # Run and Parse BlastP query for unique qry_names with lowest evalue
+    run_blastp_query(os.path.join(csv_dir,blast_filename),os.path.join(csv_dir,qry_fasta),os.path.join(csv_dir,qry_out))
+    blastp_out = parse_blastp_query(os.path.join(csv_dir,qry_out))
+    unq_qry_names = set([b['qry_name'] for b in blastp_out])
+    
+    PM.blastp_annotations = []
+    for qn in unq_qry_names:
+        _q = [i for i in blastp_out if i['qry_name'] == qn]
+        _q.sort(key=lambda i:float(i['evalue']))
+        PM.blastp_annotations.append(_q[0])
+    
+    # Upload Annotation
+    for a in PM.blastp_annotations:
+        _nid = a['qry_name'].split(':')[0]
+        _kid = a['subject_name'].split(':')[0]
+        upload_annotations(PM.db,_nid,_kid,float(a['pct_identity']),float(a['evalue']),int(a['length']))
+    logger.info(f" [BlastP] Annotations {len(PM.blastp_annotations)} uploded")
+
+    # Write CSV file
+    logger.info(f" [BlastP] Annotations -> {csv_filename} ({len(PM.blastp_annotations)})")
+    with open(os.path.join(csv_dir,csv_filename),'w',newline='') as f:
+        csvwriter = csv.DictWriter(f, fieldnames=BLASTP_QRY_HEADER)                
+        csvwriter.writeheader()
+        for a in PM.blastp_annotations:
+            csvwriter.writerow(a)

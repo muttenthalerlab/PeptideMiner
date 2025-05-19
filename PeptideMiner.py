@@ -22,6 +22,7 @@ from utils.pipeline_tasks import (read_known_peptides, read_cds)
 from utils.hmm_tasks import hmmsearch, read_hmmsearch
 from utils.signalp_tasks import signalp_cds
 from utils.matpep_tasks import select_mature, upload_mature
+from utils.blast_tasks import run_blast
 
 # --------------------------------------------------------------------------------------
 class PeptideMiner():
@@ -63,12 +64,11 @@ class PeptideMiner():
             '01': {'filename': '01_hmmsearch',    },
             '02': {'filename': '02_hmmsearch_seq',    },
             '03': {'filename': '03_cds',          },
-            '04': {'filename': '04_signalp',  },
-            '05': {'filename': '05_mature_sequences.csv', },
-
-            '06': {'filename': '06_mature_sequences.csv', },
-            '07': {'filename': '07_mature_sequences.csv', },
-            '08': {'filename': '08_mature_sequences.csv', },
+            '04': {'filename': '04_signalp_seq',  },
+            '05': {'filename': '05_mature_seq', },
+            '06': {'filename': '06_mature_rmduplicate_seq', },
+            '07': {'filename': '07_blastp', },
+            '08': {'filename': '08_summary', },
         }
  
         # Pipeline Properties
@@ -154,7 +154,7 @@ def main(prgArgs):
         upload_mature(PM_Work)
 
         # Step 7, 8
-        #pWork.run_blast()
+        run_blast(PM_Work)
         #pWork.summary(prgArgs.peptide_family)
 
 

@@ -479,7 +479,7 @@ def upload_mature(PM, Overwrite=False):
 # ====================================================================================================
 
     csv_dir = PM.pipeline_dir
-    fasta_filename = f"{PM.pipeline_filename['05']['filename']}.fna" 
+    fasta_filename = f"{PM.pipeline_filename['06']['filename']}.fna" 
 
     logger.info(f" [Fasta36] MatureSeq: Uploading sequences)")
     for matseq in PM.matureseq_lst:

@@ -156,7 +156,7 @@ def read_cds(PM, Overwrite=False):
     # All Sequences or just from the specific hmm_id
     seq_id_dict = get_seqreads(PM.db) 
 
-    PM.cds_lst = []
+    _cds_lst = []
     for seq_id in seq_id_dict:
         n_cds = 0
         for seq_seg in seq_id['precursor'].split('*'):
@@ -166,14 +166,22 @@ def read_cds(PM, Overwrite=False):
                 seq_M = seq_seg[seq_seg.index('M'):]
                 if len(seq_M) >= PM.cds_min_length:
                     n_cds += 1                
-                    PM.cds_lst.append({'seq_id':seq_id['id'],'n_cds':n_cds,'cds':seq_M})
+                    _cds_lst.append({'seq_id':seq_id['id'],'n_cds':n_cds,'cds':seq_M})
         if n_cds == 0:
             # if no cds use original precursor
-            PM.cds_lst.append({'seq_id':seq_id['id'],'n_cds':0,'cds':seq_id['precursor']})
-            
-    for cds in PM.cds_lst:
+           _cds_lst.append({'seq_id':seq_id['id'],'n_cds':0,'cds':seq_id['precursor']})
+    
+    # Upload and make unique by cds
+    _cds_id = {}
+    PM.cds_lst = []        
+    for cds in _cds_lst:
         cds_id = upload_cds(PM.db,cds['cds'],cds['seq_id'])
-        cds['cds_id'] = cds_id   
+        if cds_id not in _cds_id:
+            cds['cds_id'] = cds_id
+            PM.cds_lst.append(cds)
+        else:
+            _cds_id[cds_id] = 1
+                   
     logger.info(f" [HMM Search] CDS: {len(PM.cds_lst)} uploaded")
 
     with open(os.path.join(csv_dir,csv_filename),'w',newline='') as f:

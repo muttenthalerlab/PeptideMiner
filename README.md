@@ -16,7 +16,7 @@ PeptideMiner is a pipeline that uses profile hidden Markov models (profile-HMMs)
 
 2) Create conda enviroment for PeptideMiner:
 
-conda create -n PeptideMiner -c bioconda -c conda-forge -c defaults hmmer blast sqlite fasta3 configargparse python=3.10
+conda create -n PeptideMiner -c bioconda -c conda-forge -c defaults hmmer blast sqlite fasta3 configargparse numpy python=3.10
 conda activate PeptideMiner
 
 3) Installing signalp

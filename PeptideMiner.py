@@ -20,6 +20,7 @@ logging.basicConfig(
 from utils.database import sql_connector
 from utils.pipeline_tasks import (read_known_peptides, read_cds)
 from utils.hmm_tasks import hmmsearch, read_hmmsearch
+from utils.signalp_tasks import signalp_cds
 
 # --------------------------------------------------------------------------------------
 class PeptideMiner():
@@ -120,12 +121,14 @@ def main(prgArgs):
     
     PM_Work = PeptideMiner(prgArgs)
 
-    #Step 01 
+    #Step 1, 2 
     read_known_peptides(PM_Work)
     hmmsearch(PM_Work)
     read_hmmsearch(PM_Work)
 
+    #Step 3,4
     read_cds(PM_Work)
+    signalp_cds(PM)
 
 #==============================================================================
 if __name__ == "__main__":

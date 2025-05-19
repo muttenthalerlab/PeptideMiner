@@ -19,7 +19,7 @@ logging.basicConfig(
 
 from utils.database import sql_connector
 from utils.pipeline_tasks import (read_known_peptides)
-from utils.hmm_tasks import hmmsearch
+from utils.hmm_tasks import hmmsearch, read_hmmsearch
 
 # --------------------------------------------------------------------------------------
 class PeptideMiner():

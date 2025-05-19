@@ -70,7 +70,7 @@ def hmmsearch(PM, Overwrite=False):
 # ====================================================================================================
 
     # Output Summary        
-    hmm_search_outfile = os.path.join(PM.hmmsearch_dir,f"{PM.pipeline_filename['01']}.txt") 
+    hmm_search_outfile = os.path.join(PM.hmmsearch_dir,f"{PM.pipeline_filename['01']['filename']}.txt") 
     hmm_search_out = []
     
     # Check if hmmsearch has been run before
@@ -136,7 +136,7 @@ def read_hmmsearch(PM, Overwrite=False):
     logger.info(f" [HMM Search] Seq's: {len(seq_id_dict)} uploaded")
         
     # Pipeline CSV Log
-    csv_filename = f"{PM.pipeline_filename['01']}.csv" 
+    csv_filename = f"{PM.pipeline_filename['01']['filename']}.csv" 
     with open(os.path.join(PM.pipeline_dir,csv_filename),'w',newline='') as csvfile:
         csvwriter = csv.writer(csvfile)
         csv_header=['hmm_id','hmm_name','transcriptome']
@@ -145,7 +145,7 @@ def read_hmmsearch(PM, Overwrite=False):
             csvwriter.writerow(PM.hmm_id_dict[key])
     logger.info(f" [HMM Search] HMM's -> {csv_filename} ({len(PM.hmm_id_dict)})")
 
-    csv_filename = f"{PM.pipeline_filename['01']}_sequences.csv"
+    csv_filename = f"{PM.pipeline_filename['01']['filename']}_sequences.csv"
     with open(os.path.join(PM.pipeline_dir,csv_filename),'w',newline='') as csvfile:
         csvwriter = csv.writer(csvfile)
         csv_header=['seq_id','sequence','hmm_id','hmm_name']

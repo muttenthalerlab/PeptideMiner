@@ -42,7 +42,7 @@ def read_cds(PM, CDS_Min_Length, Overwrite=False):
 # ====================================================================================================
 
     csv_dir = PM.pipeline_dir
-    csv_filename = f"{PM.pipeline_filename['03']}_sequences.csv"
+    csv_filename = f"{PM.pipeline_filename['03']['filename']}_sequences.csv"
     csv_header=['cds_id','seq_id','n_cds','cds']
 
     # All Sequences or just from the specific hmm_id

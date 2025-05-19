@@ -32,6 +32,7 @@ def run_signalp(seq_id,sequence,cutoff,signal_path,temp_path='/tmp'):
 # ====================================================================================================
 def signalp_cds(PM,Overwrite=False):
 # ====================================================================================================
+# Step 4
 
     csv_dir = PM.pipeline_dir
     csv_filename = f"{PM.pipeline_filename['04']['filename']}.csv"
@@ -54,7 +55,7 @@ def signalp_cds(PM,Overwrite=False):
                 signalp_dict = run_signalp(f"{cds['cds_id']}_{cds['n_cds']:02d}",cds['cds'],PM.signalp_cutoff,PM.signalp_path)
 
                 if signalp_dict['SP'] == 'Y':
-                    signalp_pos = int(signalp_dict['CMax_pos'])
+                    signalp_pos = int(signalp_dict['CMax_pos'])-1
                     mature_seq = cds['cds'][signalp_pos:]
                     if len(mature_seq) >= PM.signalp_min_length:
                         PM.maturepep_lst.append({'cds_id':cds['cds_id'],'signalp_pos':signalp_pos,'mature_peptide':mature_seq})

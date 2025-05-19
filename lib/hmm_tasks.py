@@ -68,7 +68,8 @@ def filter_hmmsearch(hmmsearch_dir,hmmsearch_csv,hmm_name, transcriptome_name):
 # ====================================================================================================
 def hmmsearch(PM, Overwrite=False):
 # ====================================================================================================
-
+# Step 1.2 HMM search
+#
     # Output Summary        
     hmm_search_outfile = os.path.join(PM.hmmsearch_dir,f"{PM.pipeline_filename['01']['filename']}.txt") 
     hmm_search_out = []
@@ -114,6 +115,8 @@ def hmmsearch(PM, Overwrite=False):
 # ====================================================================================================
 def read_hmmsearch(PM, Overwrite=False):
 # ====================================================================================================
+# Step 1.2 Read HMMsearch
+#
     
     if len(PM.hmm_search_files)>0:
         logger.info(f" [HMM Search] Files: {len(PM.hmm_search_files)}")
@@ -130,10 +133,10 @@ def read_hmmsearch(PM, Overwrite=False):
             for id in hmm_lstdict:
                 evalue = hmm_lstdict[id][3]
                 sequence = hmm_lstdict[id][4]
-                hmm_id, sqeq_id = upload_hmmsearch(PM.db,hmm_name,transcriptome_name,id,evalue,sequence)
+                hmm_id, seq_id = upload_hmmsearch(PM.db,hmm_name,transcriptome_name,id,evalue,sequence)
 
                 hmm_id_dict[hmm_id] = [hmm_id,hmm_name,transcriptome_name]
-                seq_id_dict[sqeq_id] = [sqeq_id,sequence,hmm_id,hmm_name]
+                seq_id_dict[seq_id] = [seq_id,sequence,hmm_id,hmm_name]
 
     # Convert dict_lst into lst_dict
     PM.hmm_lst = []

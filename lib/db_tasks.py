@@ -43,6 +43,7 @@ def upload_hmmsearch(DB,hmm_name,transcriptome_name,id,evalue,sequence, verbose=
         DB.insert('seqreads',{'name':id,'hmmid':hmm_id,'transcriptome':transcriptome_name,'evalue':evalue,'signalseq_length':0,'precursor':sequence})
         if verbose > 0:
             logger.info(f" [SQLlite] Table [seqreads] new {id} for {hmm_name} {transcriptome_name}")
+        seqreads_id = DB.onevalue('seqreads','id',{'name':id,'hmmid':hmm_id})
         # readname = DB.onevalue('name','seqreads',{'name':id})
         # hmmid_seqread = DB.onevalue('hmmid','seqreads',{'hmmid':hmm_id})
 

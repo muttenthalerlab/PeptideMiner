@@ -24,8 +24,6 @@ from lib.signalp_tasks import signalp_cds
 from lib.matpep_tasks import select_mature, upload_mature
 from lib.blast_tasks import run_blast
 
-
-
 # --------------------------------------------------------------------------------------
 def main(prgArgs):
 # --------------------------------------------------------------------------------------

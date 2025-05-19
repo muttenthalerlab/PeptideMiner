@@ -114,6 +114,8 @@ class PeptideMiner():
 # ====================================================================================================
 def read_known_peptides(PM):
 # ====================================================================================================
+# Step 1.1 - Read known peptide sequences
+#
     PM.known_peptide = []
     
     pep_dir = os.path.join(PM.known_pep_dir,PM.family_name)

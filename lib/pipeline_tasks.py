@@ -209,7 +209,7 @@ def summary(PM, Overwrite=False):
 
     with open(os.path.join(csv_dir,txt_filename),'w') as out:
         out.write(f"Summary PeptideMiner peptide search\n")
-        out.write(f"Date: {SumTime.strftime("%d/%m/%Y")}\n")
+        out.write(f"Date: {SumTime.strftime('%d/%m/%Y')}\n")
         out.write("\n")
         out.write(f"Number of profile-HMMs used: {len(PM.hmm_id_dict)}\n")
         out.write(f"\t{','.join(PM.hmm_id_dict)}\n")

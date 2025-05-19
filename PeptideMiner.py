@@ -31,14 +31,14 @@ class PeptideMiner():
         self.cds_min_length = prgArgs.cds_min_length
 
         # Data Folders
-        self.data_dir = prgArgs.workdir
+        self.data_dir = prgArgs.datadir
         self.known_pep_dir = os.path.join(self.data_dir,'01-known_seq')
         self.hmm_dir = os.path.join(self.data_dir,'02-pHMM')
         self.database_file = 'sqlite.db'
         self.database_sql = 'PeptideMiner.sql'
 
         # Work Folders
-        self.work_dir = prgArgs.datadir
+        self.work_dir = prgArgs.workdir
         self.hmmsearch_dir = os.path.join(self.work_dir,'01-hmmsearch')
         self.pipeline_dir = os.path.join(self.work_dir,'02-pipeline')
         

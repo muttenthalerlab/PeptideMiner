@@ -3,7 +3,77 @@ import os, csv
 import logging
 logger = logging.getLogger(__name__)
 
+from lib.database import sql_connector
 from lib.db_tasks import upload_known_peptides, upload_cds, get_seqreads, get_summary_familyname
+
+# ====================================================================================================
+class PeptideMiner():
+# ====================================================================================================
+
+    def __init__(self, prgArgs):
+
+        # Run Parameters
+        self.cds_min_length = int(prgArgs.cds_min_length)
+        self.signalp_cutoff = float(prgArgs.signalp_cutoff)
+        self.signalp_min_length = int(prgArgs.signalp_min_length)
+
+        self.mature_evalue_cutoff = float(prgArgs.mature_evalue_cutoff)
+        self.mature_min_length = int(prgArgs.mature_min_length)
+        self.mature_max_length = int(prgArgs.mature_max_length)
+
+        # Data Folders
+        self.data_dir = prgArgs.datadir
+        self.known_pep_dir = os.path.join(self.data_dir,'01-known_seq')
+        self.hmm_dir = os.path.join(self.data_dir,'02-pHMM')
+        self.database_file = 'sqlite.db'
+        self.database_sql = 'PeptideMiner.sql'
+
+        # Work Folders
+        self.work_dir = prgArgs.workdir
+        self.hmmsearch_dir = os.path.join(self.work_dir,'01-hmmsearch')
+        self.pipeline_dir = os.path.join(self.work_dir,'02-pipeline')
+        
+        # Programs
+        self.hmmsearch_path = 'hmmsearch'
+        self.fasta36_path = 'fasta36'
+        self.signalp_path = prgArgs.signalp_path
+
+        # Pipeline
+        self.family_name = prgArgs.peptide_family
+        self.query_dir = prgArgs.querydir
+
+        self.pipeline_filename = {
+            '01': {'filename': '01_hmmsearch',    },
+            '02': {'filename': '02_hmmsearch_seq',    },
+            '03': {'filename': '03_cds',          },
+            '04': {'filename': '04_signalp_seq',  },
+            '05': {'filename': '05_mature_seq', },
+            '06': {'filename': '06_mature_rmduplicate_seq', },
+            '07': {'filename': '07_blastp', },
+            '08': {'filename': '08_summary', },
+        }
+ 
+        # Pipeline Properties
+        self.hmm_id_dict = {}
+        self.knownpep_lst = []
+        self.hmm_search_files = []
+        self.cds_lst = []
+        self.maturepep_lst = []
+        self.matureseq_lst = []
+        self.blastp_annotations = []
+        #self.seq_id_dict = {}
+
+        # Initialise Working Folders
+        if not os.path.exists(self.hmmsearch_dir):
+            os.makedirs(self.hmmsearch_dir)
+        if not os.path.exists(self.pipeline_dir):
+            os.makedirs(self.pipeline_dir)
+
+        # SQL Database
+        self.sql_database_file = os.path.join(self.data_dir,self.database_file)
+        self.sql_create = os.path.join(self.data_dir,self.database_sql)
+        self.db = sql_connector(data_file= self.sql_database_file, sql_create= self.sql_create)
+
 
 # ====================================================================================================
 def read_known_peptides(PM):

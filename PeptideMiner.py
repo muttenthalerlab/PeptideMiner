@@ -17,117 +17,117 @@ logging.basicConfig(
     handlers=[logging.StreamHandler()],
     level=logLevel)
 
-from lib.database import sql_connector
-from lib.pipeline_tasks import (read_known_peptides, read_cds)
+#from lib.database import sql_connector
+from lib.pipeline_tasks import PeptideMiner, read_known_peptides, read_cds, summary
 from lib.hmm_tasks import hmmsearch, read_hmmsearch
 from lib.signalp_tasks import signalp_cds
 from lib.matpep_tasks import select_mature, upload_mature
 from lib.blast_tasks import run_blast
 
-# --------------------------------------------------------------------------------------
-class PeptideMiner():
-# --------------------------------------------------------------------------------------
+# # --------------------------------------------------------------------------------------
+# class PeptideMiner():
+# # --------------------------------------------------------------------------------------
 
-    def __init__(self, prgArgs):
+#     def __init__(self, prgArgs):
 
-        # Run Parameters
-        self.cds_min_length = int(prgArgs.cds_min_length)
-        self.signalp_cutoff = float(prgArgs.signalp_cutoff)
-        self.signalp_min_length = int(prgArgs.signalp_min_length)
+#         # Run Parameters
+#         self.cds_min_length = int(prgArgs.cds_min_length)
+#         self.signalp_cutoff = float(prgArgs.signalp_cutoff)
+#         self.signalp_min_length = int(prgArgs.signalp_min_length)
 
-        self.mature_evalue_cutoff = float(prgArgs.mature_evalue_cutoff)
-        self.mature_min_length = int(prgArgs.mature_min_length)
-        self.mature_max_length = int(prgArgs.mature_max_length)
+#         self.mature_evalue_cutoff = float(prgArgs.mature_evalue_cutoff)
+#         self.mature_min_length = int(prgArgs.mature_min_length)
+#         self.mature_max_length = int(prgArgs.mature_max_length)
 
-        # Data Folders
-        self.data_dir = prgArgs.datadir
-        self.known_pep_dir = os.path.join(self.data_dir,'01-known_seq')
-        self.hmm_dir = os.path.join(self.data_dir,'02-pHMM')
-        self.database_file = 'sqlite.db'
-        self.database_sql = 'PeptideMiner.sql'
+#         # Data Folders
+#         self.data_dir = prgArgs.datadir
+#         self.known_pep_dir = os.path.join(self.data_dir,'01-known_seq')
+#         self.hmm_dir = os.path.join(self.data_dir,'02-pHMM')
+#         self.database_file = 'sqlite.db'
+#         self.database_sql = 'PeptideMiner.sql'
 
-        # Work Folders
-        self.work_dir = prgArgs.workdir
-        self.hmmsearch_dir = os.path.join(self.work_dir,'01-hmmsearch')
-        self.pipeline_dir = os.path.join(self.work_dir,'02-pipeline')
+#         # Work Folders
+#         self.work_dir = prgArgs.workdir
+#         self.hmmsearch_dir = os.path.join(self.work_dir,'01-hmmsearch')
+#         self.pipeline_dir = os.path.join(self.work_dir,'02-pipeline')
         
-        # Programs
-        self.hmmsearch_path = 'hmmsearch'
-        self.fasta36_path = 'fasta36'
-        self.signalp_path = prgArgs.signalp_path
+#         # Programs
+#         self.hmmsearch_path = 'hmmsearch'
+#         self.fasta36_path = 'fasta36'
+#         self.signalp_path = prgArgs.signalp_path
 
-        # Pipeline
-        self.family_name = prgArgs.peptide_family
-        self.query_dir = prgArgs.querydir
+#         # Pipeline
+#         self.family_name = prgArgs.peptide_family
+#         self.query_dir = prgArgs.querydir
 
-        self.pipeline_filename = {
-            '01': {'filename': '01_hmmsearch',    },
-            '02': {'filename': '02_hmmsearch_seq',    },
-            '03': {'filename': '03_cds',          },
-            '04': {'filename': '04_signalp_seq',  },
-            '05': {'filename': '05_mature_seq', },
-            '06': {'filename': '06_mature_rmduplicate_seq', },
-            '07': {'filename': '07_blastp', },
-            '08': {'filename': '08_summary', },
-        }
+#         self.pipeline_filename = {
+#             '01': {'filename': '01_hmmsearch',    },
+#             '02': {'filename': '02_hmmsearch_seq',    },
+#             '03': {'filename': '03_cds',          },
+#             '04': {'filename': '04_signalp_seq',  },
+#             '05': {'filename': '05_mature_seq', },
+#             '06': {'filename': '06_mature_rmduplicate_seq', },
+#             '07': {'filename': '07_blastp', },
+#             '08': {'filename': '08_summary', },
+#         }
  
-        # Pipeline Properties
-        self.hmm_id_dict = {}
-        self.knownpep_lst = []
-        self.hmm_search_files = []
-        self.cds_lst = []
-        self.maturepep_lst = []
-        self.matureseq_lst = []
-        self.blastp_annotations = []
-        #self.seq_id_dict = {}
+#         # Pipeline Properties
+#         self.hmm_id_dict = {}
+#         self.knownpep_lst = []
+#         self.hmm_search_files = []
+#         self.cds_lst = []
+#         self.maturepep_lst = []
+#         self.matureseq_lst = []
+#         self.blastp_annotations = []
+#         #self.seq_id_dict = {}
 
-        # Initialise Working Folders
-        if not os.path.exists(self.hmmsearch_dir):
-            os.makedirs(self.hmmsearch_dir)
-        if not os.path.exists(self.pipeline_dir):
-            os.makedirs(self.pipeline_dir)
+#         # Initialise Working Folders
+#         if not os.path.exists(self.hmmsearch_dir):
+#             os.makedirs(self.hmmsearch_dir)
+#         if not os.path.exists(self.pipeline_dir):
+#             os.makedirs(self.pipeline_dir)
 
-        # SQL Database
-        self.sql_database_file = os.path.join(self.data_dir,self.database_file)
-        self.sql_create = os.path.join(self.data_dir,self.database_sql)
-        self.db = sql_connector(data_file= self.sql_database_file, sql_create= self.sql_create)
+#         # SQL Database
+#         self.sql_database_file = os.path.join(self.data_dir,self.database_file)
+#         self.sql_create = os.path.join(self.data_dir,self.database_sql)
+#         self.db = sql_connector(data_file= self.sql_database_file, sql_create= self.sql_create)
 
 
-    # ----------------------------------------------------------
-    @staticmethod
-    def read_fasta_file(FastA_File):
-        """
-         Reads FastA file into Dict with >line as key and sequence as value
-        """
-        dict_Seq = {}
-        kSeq = None
-        if os.path.isfile(FastA_File):
-            with open(FastA_File,encoding='latin-1') as f:
-                for line in f:
-                    if line.startswith('>'):
-                        kSeq = line[1:]
-                        dict_Seq[kSeq] = "" 
-                    else:
-                        dict_Seq[kSeq] += line.strip()
-        return(dict_Seq)
+    # # ----------------------------------------------------------
+    # @staticmethod
+    # def read_fasta_file(FastA_File):
+    #     """
+    #      Reads FastA file into Dict with >line as key and sequence as value
+    #     """
+    #     dict_Seq = {}
+    #     kSeq = None
+    #     if os.path.isfile(FastA_File):
+    #         with open(FastA_File,encoding='latin-1') as f:
+    #             for line in f:
+    #                 if line.startswith('>'):
+    #                     kSeq = line[1:]
+    #                     dict_Seq[kSeq] = "" 
+    #                 else:
+    #                     dict_Seq[kSeq] += line.strip()
+    #     return(dict_Seq)
 
-    # ----------------------------------------------------------
-    @staticmethod
-    def write_fasta_file(Fasta_File,Fasta_Dict):
-        """
-         Writes FastA file from Dict with >line as key and sequence as value
-        """
-        with open(Fasta_File,'w') as f:
-            for key in Fasta_Dict:
-                f.write(f">{key}\n{Fasta_Dict[key]}\n")
+    # # ----------------------------------------------------------
+    # @staticmethod
+    # def write_fasta_file(Fasta_File,Fasta_Dict):
+    #     """
+    #      Writes FastA file from Dict with >line as key and sequence as value
+    #     """
+    #     with open(Fasta_File,'w') as f:
+    #         for key in Fasta_Dict:
+    #             f.write(f">{key}\n{Fasta_Dict[key]}\n")
 
-    # ----------------------------------------------------------
-    def check_paths(self):
-        Error_Dict = {}
-        if not os.path.isfile(self.signalp_path):
-            Error_Dict['SignalP'] = f"Not Found {self.signalp_path}"
+    # # ----------------------------------------------------------
+    # def check_paths(self):
+    #     Error_Dict = {}
+    #     if not os.path.isfile(self.signalp_path):
+    #         Error_Dict['SignalP'] = f"Not Found {self.signalp_path}"
 
-        return(Error_Dict)
+    #     return(Error_Dict)
 
 # --------------------------------------------------------------------------------------
 def main(prgArgs):
@@ -155,7 +155,7 @@ def main(prgArgs):
 
         # Step 7, 8
         run_blast(PM_Work)
-        #pWork.summary(prgArgs.peptide_family)
+        summary(prgArgs.peptide_family)
 
 
 #==============================================================================

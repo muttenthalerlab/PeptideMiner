@@ -5,7 +5,7 @@ import subprocess
 import logging
 logger = logging.getLogger(__name__)
 
-from utils.db_tasks import upload_hmmsearch
+from lib.db_tasks import upload_hmmsearch
 
 HMM_SEARCH_HEADER =["ID", "accession", "query_name", "accession", "full_E-value", "full_score", "full_bias", 
                     "dom_E-value", "dom_score", "dom_bias", "exp", "reg", "clu", "ov", "env", "dom", "rep", 

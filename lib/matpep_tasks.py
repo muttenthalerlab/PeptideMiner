@@ -1,14 +1,14 @@
-import re,glob,random,gzip,bz2,os
+import re,random,os
 
 import os
 import csv
 import subprocess
 import numpy as np
 
-from utils.db_tasks import upload_matureseq, upload_noduplicates, get_noduplicates
-
 import logging
 logger = logging.getLogger(__name__)
+
+from lib.db_tasks import upload_matureseq, upload_noduplicates, get_noduplicates
 
 # -----------------------------------------------------------------------
 def find_cys_region (sequence):

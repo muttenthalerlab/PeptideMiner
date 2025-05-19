@@ -5,7 +5,7 @@ import subprocess
 import logging
 logger = logging.getLogger(__name__)
 
-from utils.db_tasks import update_seqreads_signalp
+from lib.db_tasks import update_seqreads_signalp
 
 SIGNALP_HEADER = ['name','Cmax','CMax_pos','Ymax','Ymax_pos','Smax','Smax_pos','Smean','Dscore','SP','Dmaxcut','Networks-used']
 

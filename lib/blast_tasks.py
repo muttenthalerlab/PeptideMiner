@@ -2,10 +2,10 @@ import os
 import csv
 import subprocess
 
-from utils.db_tasks import upload_annotations
-
 import logging
 logger = logging.getLogger(__name__)
+
+from lib.db_tasks import upload_annotations
 
 BLASTP_QRY_HEADER = ['qry_name','subject_name',
                      'pct_identity','length','n_mismatch','n_gap',

@@ -17,12 +17,12 @@ logging.basicConfig(
     handlers=[logging.StreamHandler()],
     level=logLevel)
 
-from utils.database import sql_connector
-from utils.pipeline_tasks import (read_known_peptides, read_cds)
-from utils.hmm_tasks import hmmsearch, read_hmmsearch
-from utils.signalp_tasks import signalp_cds
-from utils.matpep_tasks import select_mature, upload_mature
-from utils.blast_tasks import run_blast
+from lib.database import sql_connector
+from lib.pipeline_tasks import (read_known_peptides, read_cds)
+from lib.hmm_tasks import hmmsearch, read_hmmsearch
+from lib.signalp_tasks import signalp_cds
+from lib.matpep_tasks import select_mature, upload_mature
+from lib.blast_tasks import run_blast
 
 # --------------------------------------------------------------------------------------
 class PeptideMiner():

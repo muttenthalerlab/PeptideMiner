@@ -3,7 +3,7 @@ import os, csv
 import logging
 logger = logging.getLogger(__name__)
 
-from utils.db_tasks import upload_known_peptides, upload_cds, get_seqreads
+from lib.db_tasks import upload_known_peptides, upload_cds, get_seqreads
 
 # ====================================================================================================
 def read_known_peptides(PM):

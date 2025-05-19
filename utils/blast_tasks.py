@@ -53,7 +53,7 @@ def run_blast(PM, Overwrite=False):
     csv_dir = PM.pipeline_dir
     csv_filename = f"{PM.pipeline_filename['07']['filename']}_annotation.csv"
 
-    blast_filename = f"{PM.pipeline_filename['07']['filename']}_database.csv"
+    blast_filename = f"{PM.pipeline_filename['07']['filename']}_db"
 
     qry_fasta = f"{PM.pipeline_filename['06']['filename']}.fna"  
     qry_out = f"{PM.pipeline_filename['07']['filename']}_query.fna"

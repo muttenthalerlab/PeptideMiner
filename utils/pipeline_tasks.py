@@ -1,0 +1,38 @@
+import os, csv
+
+import logging
+logger = logging.getLogger(__name__)
+
+from utils.db_tasks import upload_known_peptides
+
+# -------------------------------------------
+def read_known_peptides(PM):
+# -------------------------------------------
+    PM.known_peptide = []
+    
+    pep_dir = os.path.join(PM.known_pep_dir,PM.family_name)
+    for k in os.listdir(pep_dir):
+        if k.endswith('.fna'):
+            PM.known_peptide.append(os.path.join(pep_dir,k))
+
+    for fna_file in PM.known_peptide:
+        if os.path.isfile(fna_file):
+            logger.info(f" [Known Peptides] {PM.family_name} - Reading {fna_file}")
+            dict_Seq = PM.read_fasta_file(fna_file)
+            PM.n_known_peptide = 0
+            for k in dict_Seq:
+                # Parsing Fast Header
+                #>P13204_ANFB [Bos taurus]
+                #>acession_name [specie]
+                #
+                species = k.strip().split('[')[-1].replace(']','').split('(')[0]
+                accession = k.split('_')[0][1:]
+                name = ' '.join(k.split('[')[0].split('_')[1:])
+
+                family_id,peptide_id = upload_known_peptides(PM.db, PM.family_name,species,accession,name,dict_Seq[k])
+                PM.n_known_peptide += 1
+                PM.knownpep_lst.append({'family_id':family_id,'peptide_id':peptide_id,
+                                            'species':species,'accession':accession,'name':name,
+                                            'sequence':dict_Seq[k]})
+    else:
+        logger.error(f" [Known Peptides] {PM.family_name} - {PM.n_known_peptide} peptide uploaded")

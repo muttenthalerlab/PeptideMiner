@@ -1,26 +1,27 @@
 # PeptideMiner
 PeptideMiner neuropeptide mining pipeline
 
-Readme.txt file for PeptideMiner
-
 PeptideMiner is a pipeline that uses profile hidden Markov models (profile-HMMs) of neuropeptide families to search query datasets for neuropeptide homologues. This document outlines the program requirements (section 1), how to do a test run (section 2) and the profile-HMMs it comes with (section 3). 
+
+The manuscript of this repository is in preparation.
 
 
 # 1. PeptideMiner requirements and installation
-1) Programs that need to be installed for PeptideMiner to run include:
+## Programs that need to be installed for PeptideMiner to run :
 
-- signal-4.1
+* signal-4.1
 
-- python and conda (miniconda or anaconda)
+* python and conda (miniconda or anaconda)
     blast (makeblastdb and blastp), fasta36 and hmmer (hmmsearch) can be install via conda (bioconda) or installed as standalone
-
-2) Create conda enviroment for PeptideMiner:
-
+  
+## Create conda enviroment for PeptideMiner:
+```
 conda create -n PeptideMiner -c bioconda -c conda-forge -c defaults hmmer blast sqlite fasta3 configargparse numpy python=3.10
 conda activate PeptideMiner
+```
 
-3) Installing signalp
-
+## Installing signalp
+```
 https://services.healthtech.dtu.dk/cgi-bin/sw_request?software=signalp&version=4.1&packageversion=4.1g&platform=Linux
 tar xzf signalp-4.1g.Linux.tar.gz
 cd signalp-4.1
@@ -29,14 +30,13 @@ vi signalp
 
 vi PeptideMiner.cfg
  edit line 12 - signalp_path : <path to installed signalp-4.1>/signalp
-
+```
 PeptideMiner is currently validated only for SignalP v4.1. 
 Newer version of SignalP are available (https://services.healthtech.dtu.dk/) and while they should work with PeptideMiner, they have higher hardware and software requirements.   
 
-
 # 2. Running PeptideMiner
 
-1) The user creates a directory from where the program will run (working directory). All output files will be directed to the working directory
+1) The user creates a directory from where the program will run (working directory), with all output files directed to the working directory
 
 2) Copy the PeptideMiner.cfg file into this directory and update the PeptideMiner.cfg file with the user PATHS and search variables.
 
@@ -45,8 +45,8 @@ Newer version of SignalP are available (https://services.healthtech.dtu.dk/) and
 3) Query databases must be in amino acids, fasta format and have the .fna extension. You can search multiple query databases in one search by putting them in the same directory.
 
 4) Run the program from the command line from the working directory: 
-
-    python PATH/TO/PeptideMiner/PeptideMiner.py --peptide_family <name of peptide family> --query <folder of query fasta files> 
+```
+python PATH/TO/PeptideMiner/PeptideMiner.py --peptide_family <name of peptide family> --query <folder of query fasta files> 
 
   Parameters for command line :
     --peptide_family : Name of the peptide family. 
@@ -63,43 +63,28 @@ Newer version of SignalP are available (https://services.healthtech.dtu.dk/) and
     --mature_min_length : Minimum lenght of mature peptids (Default 7)
     --mature_max_length : Maximum lenght of mature peptides (Default 15)
     --mature_evalue_cutoff : Cutoff of Fasta36 E-value alignment (Default 1)
-
+```
 
 # 3. Test PeptideMiner
-1) Copy the Test.cfg from ./data/09-test/ to  chosen working directory
-
-2) Adjust the signalp_path variable in the Test.cfg:
-
-signalp_path : <path to signalp 4.1>/signalp
-
-3) Run python PeptideMiner.py --config Test.cfg
-
-4) Compare output in ./work/02-pipeline to output in ./data/09-test/02-pipeline
-
+1) Copy  Test.cfg from ./data/09-test/ to chosen working directory
+2) Adjust the signalp_path variable in the Test.cfg 'signalp_path : <path to signalp 4.1>/signalp`
+3) Run `>python PeptideMiner.py --config Test.cfg`
+4) Compare output in `./work/02-pipeline` to output in `./data/09-test/02-pipeline`
 
 # 4. Available Data
-1) Available profile-HMMs
+## Available profile-HMMs
 
-PeptideMiner comes with five profile-HMMs :
-insulin, natriuretic peptide, oxytocin, somatostatin, and tachykinin. 
+PeptideMiner comes with five profile-HMMs: 
+* insulin
+* natriuretic peptide (natriureticpeptides)
+* oxytocin
+* somatostatin
+* tachykinin
+* test_OTVP 
 
-profile-HMMs currently available:
+PeptideMiner can search multiple query databases with more than one profile-HMM for the same neuropeptide family. To achieve this, PeptideMiner splits the file names of each profile-HMM in the data/02-pHMM directory at '_'. It matches the phrase preceding the first '_' to the  "peptide_family" name provided ion command line (or in the PeptideMiner.cfg file) and uses the profile-HMMs that match.
 
-Choose from:
-	
-  - test_OTVP
-	
-  - insulin
-	
-  - natriureticpeptides
-	
-  - oxytocin
-	
-  - tachykinin
+## Using your own profile-HMM
 
-It can search multiple query databases with more than one profile-HMM for the same neuropeptide family. To achieve this, PeptideMiner splits the file names of each profile-HMM in the data/02-pHMM directory at '_'. It matches the phrase preceding the first '_' to the  "neuropeptide_family" name provided in the config.txt and uses the profile-HMMs that match.
-
-3.2. Using your own profile-HMM
-
-When using your own profile-HMM the first word in the file name needs to match the "neuropeptide_family" specified in the config.txt file. The same applies to the directory where the known mature peptide sequences are stored in the data/01-known_seq directory. 
+When using your own profile-HMM the first word in the file name needs to match the "peptide_family" specified on command line (or in the PeptideMiner.cfg file). The same applies to the directory name containing the known mature peptide sequences for the custom peptide_family (default: data/01-known_seq/<peptide_family>). 
 

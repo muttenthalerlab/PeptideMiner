@@ -9,7 +9,7 @@ The manuscript of this repository is in preparation.
 # 1. PeptideMiner requirements and installation
 ## Programs that need to be installed for PeptideMiner to run :
 
-* signal-4.1
+* SignalP-4.1 (https://services.healthtech.dtu.dk/)
 
 * python and conda (miniconda or anaconda)
     blast (makeblastdb and blastp), fasta36 and hmmer (hmmsearch) can be install via conda (bioconda) or installed as standalone
@@ -26,10 +26,10 @@ https://services.healthtech.dtu.dk/cgi-bin/sw_request?software=signalp&version=4
 tar xzf signalp-4.1g.Linux.tar.gz
 cd signalp-4.1
 vi signalp 
- edit line 13 - path to installed signalp-4.1
+ edit path to installed signalp-4.1
 
 vi PeptideMiner.cfg
- edit line 12 - signalp_path : <path to installed signalp-4.1>/signalp
+ edit signalp_path : <path to installed signalp-4.1>/signalp
 ```
 PeptideMiner is currently validated only for SignalP v4.1. 
 Newer version of SignalP are available (https://services.healthtech.dtu.dk/) and while they should work with PeptideMiner, they have higher hardware and software requirements.   

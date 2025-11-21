@@ -147,7 +147,7 @@ def get_summary_familyname(DB,FamilyName):
                     'hit mature sequence','pBLAST known sequence accession','pBLAST known sequence','pBLAST %ID','pBLAST length','pBLAST evalue']
 
     family_id = get_fammilyid(DB,FamilyName)
-
+    #print(f" [get_summary_familyname] FamyliID {family_id} ")
     sql_tables = ('known_NP k','neuropeptide_family n','annotated a','noduplicates o','seqreads s', 'cds c','mature m','hmm h')
     sql_fields = ('s.id','s.name','h.name','s.transcriptome','s.evalue','s.precursor','c.sequence','s.signalseq_length',
                             'o.matseq','k.accession','k.sequence','a.pid','a.length_alignment','a.evalue')
@@ -156,4 +156,5 @@ def get_summary_familyname(DB,FamilyName):
     for res in DB.selectall(sql_tables,sql_fields,sql_where):
         _dict = dict(zip(summary_header,res))
         summary.append(_dict)
+
     return(summary)

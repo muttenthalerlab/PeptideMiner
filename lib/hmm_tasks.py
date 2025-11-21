@@ -110,7 +110,7 @@ def hmmsearch(PM, Overwrite=False):
             for line in hmm_search_out:
                 out.writelines(line)
     else:
-        logger.info(f" [HMM Search] Exists {PM.hmm_search_files} in {PM.hmmsearch_dir}")
+        logger.info(f" [HMM Search] Found {len(PM.hmm_search_files)} HMM Searches in {PM.hmmsearch_dir}")
 
 # ====================================================================================================
 def read_hmmsearch(PM, Overwrite=False):
@@ -119,7 +119,7 @@ def read_hmmsearch(PM, Overwrite=False):
 #
     
     if len(PM.hmm_search_files)>0:
-        logger.info(f" [HMM Search] Files: {len(PM.hmm_search_files)}")
+        logger.info(f" [HMM Search] Reading {len(PM.hmm_search_files)} HMM Searches ")
         
         hmm_id_dict = {}
         seq_id_dict = {}

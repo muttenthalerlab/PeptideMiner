@@ -62,8 +62,8 @@ def run_blast(PM, Overwrite=False):
     _fasta = {}
     for s in PM.knownpep_lst:
         _name = ":".join([str(s['family_id']),str(s['peptide_id']),s['species'],s['name'],s['accession']])
-        _fasta[_name] = s['sequence']
-    logger.info(f" [BlastP] MatureSeq: -> {blast_filename}.fna")
+        _fasta[_name.strip()] = s['sequence']
+    logger.info(f" [BlastP] MatureSeq: -> {blast_filename}.fna ({len(_fasta)})")
     PM.write_fasta_file(f"{os.path.join(csv_dir,blast_filename)}.fna",_fasta)
 
     # Make BlastP database
@@ -74,8 +74,11 @@ def run_blast(PM, Overwrite=False):
                      os.path.join(csv_dir,qry_fasta),
                      os.path.join(csv_dir,qry_out))
     blastp_out = parse_blastp_query(os.path.join(csv_dir,qry_out))
+    logger.info(f" [BlastP] BastP Out {len(blastp_out)} ")
     unq_qry_names = set([b['qry_name'] for b in blastp_out])
     
+    logger.info(f" [BlastP] UnqQryNames {len(unq_qry_names)} ")
+
     PM.blastp_annotations = []
     for qn in unq_qry_names:
         _q = [i for i in blastp_out if i['qry_name'] == qn]

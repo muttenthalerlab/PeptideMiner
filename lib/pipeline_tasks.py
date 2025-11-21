@@ -103,6 +103,7 @@ class PeptideMiner():
         """
         with open(Fasta_File,'w') as f:
             for key in Fasta_Dict:
+                #print(f" [write_fasta_file] - [{key}]")
                 f.write(f">{key}\n{Fasta_Dict[key]}\n")
 
     # ----------------------------------------------------------
@@ -202,34 +203,38 @@ def summary(PM, Overwrite=False):
     txt_filename = f"{PM.pipeline_filename['08']['filename']}_{PM.family_name}.txt"
 
     sum_data = get_summary_familyname(PM.db,PM.family_name)
-    csv_header = list(sum_data[0].keys())
-    # Write CSV file
+    print(f" [Summary] {len(sum_data)}")
+    if sum_data:
+        csv_header = list(sum_data[0].keys())
+        # Write CSV file
 
-    logger.info(f" [BlastP] Annotations -> {csv_filename} ({len(PM.blastp_annotations)})")
-    with open(os.path.join(csv_dir,csv_filename),'w',newline='') as f:
-        csvwriter = csv.DictWriter(f, fieldnames=csv_header)                
-        csvwriter.writeheader()
-        for s in sum_data:
-            csvwriter.writerow(s)
+        logger.info(f" [BlastP] Annotations -> {csv_filename} ({len(PM.blastp_annotations)})")
+        with open(os.path.join(csv_dir,csv_filename),'w',newline='') as f:
+            csvwriter = csv.DictWriter(f, fieldnames=csv_header)                
+            csvwriter.writeheader()
+            for s in sum_data:
+                csvwriter.writerow(s)
 
-    _set_peptideminer_hits = set(l['hit id'] for l in sum_data)
-    _set_querydb = set(l['hit query DB'] for l in sum_data)
-    _set_phmm = set(l['pHMM name'] for l in sum_data)
-    _set_unique_matseq = set(l['hit mature sequence'] for l in sum_data)
-    _set_unique_pre = set(l['hit CDS'] for l in sum_data)
-    _set_hmm = set(l['hmm_name'] for l in PM.hmm_lst)
+        _set_peptideminer_hits = set(l['hit id'] for l in sum_data)
+        _set_querydb = set(l['hit query DB'] for l in sum_data)
+        _set_phmm = set(l['pHMM name'] for l in sum_data)
+        _set_unique_matseq = set(l['hit mature sequence'] for l in sum_data)
+        _set_unique_pre = set(l['hit CDS'] for l in sum_data)
+        _set_hmm = set(l['hmm_name'] for l in PM.hmm_lst)
 
-    with open(os.path.join(csv_dir,txt_filename),'w') as out:
-        out.write(f"Summary PeptideMiner peptide search\n")
-        out.write(f"Date: {SumTime.strftime('%d/%m/%Y')}\n")
-        out.write("\n")
-        out.write(f"Number of profile-HMMs used: {len(_set_hmm)}\n")
-        out.write(f"\t{','.join(_set_hmm)}\n")
-        out.write(f"Number of databases searched: {len(PM.hmm_query_files)}\n")
-        out.write(f"\t{','.join(PM.hmm_query_files)}\n")
-        out.write("\n")
-        out.write(f"Output:\n")
-        out.write(f"hmmsearch hits: {len(PM.hmm_seq_lst)}\n") #
-        out.write(f"PeptideMiner hits: {len(_set_peptideminer_hits)}\n")
-        out.write(f"\tNumber of unique CDS: {len(_set_unique_pre)}\n")
-        out.write(f"\tNumber of unique mature peptides: {len(_set_unique_matseq)}\n")
+        with open(os.path.join(csv_dir,txt_filename),'w') as out:
+            out.write(f"Summary PeptideMiner peptide search\n")
+            out.write(f"Date: {SumTime.strftime('%d/%m/%Y')}\n")
+            out.write("\n")
+            out.write(f"Number of profile-HMMs used: {len(_set_hmm)}\n")
+            out.write(f"\t{','.join(_set_hmm)}\n")
+            out.write(f"Number of databases searched: {len(PM.hmm_query_files)}\n")
+            out.write(f"\t{','.join(PM.hmm_query_files)}\n")
+            out.write("\n")
+            out.write(f"Output:\n")
+            out.write(f"hmmsearch hits: {len(PM.hmm_seq_lst)}\n") #
+            out.write(f"PeptideMiner hits: {len(_set_peptideminer_hits)}\n")
+            out.write(f"\tNumber of unique CDS: {len(_set_unique_pre)}\n")
+            out.write(f"\tNumber of unique mature peptides: {len(_set_unique_matseq)}\n")
+    else:
+        logger.error(f" [BlastP] NO Hits found !!")
